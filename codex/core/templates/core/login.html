@@ -1,0 +1,47 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Login | Codex{% endblock title %}
+
+{% block content %}
+<div class="max-w-md mx-auto">
+  <div class="card bg-base-100 shadow-2xl">
+    <div class="card-body">
+      <h1 class="card-title text-3xl mb-2">Login</h1>
+      <p class="text-sm text-base-content/70 mb-4">Acesse sua conta para continuar.</p>
+
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div role="alert" class="alert alert-error">
+            <span>{{ form.non_field_errors|striptags }}</span>
+          </div>
+        {% endif %}
+
+        <label class="form-control w-full">
+          <span class="label-text mb-1">Usuario</span>
+          <input
+            type="text"
+            name="username"
+            class="input input-bordered w-full"
+            value="{{ form.username.value|default:'' }}"
+            required
+          />
+        </label>
+
+        <label class="form-control w-full">
+          <span class="label-text mb-1">Senha</span>
+          <input type="password" name="password" class="input input-bordered w-full" required />
+        </label>
+
+        <button type="submit" class="btn btn-primary w-full">Entrar</button>
+      </form>
+
+      <p class="text-sm text-center mt-4">
+        Nao tem conta?
+        <a href="{% url 'register' %}" class="link link-primary">Crie agora</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock content %}

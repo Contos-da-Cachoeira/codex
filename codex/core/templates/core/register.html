@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Registro | Codex{% endblock title %}
+
+{% block content %}
+<div class="max-w-xl mx-auto">
+  <div class="card bg-base-100 shadow-2xl">
+    <div class="card-body">
+      <h1 class="card-title text-3xl mb-2">Criar conta</h1>
+      <p class="text-sm text-base-content/70 mb-4">Escolha seu tipo de usuario e registre-se.</p>
+
+      <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="md:col-span-2" role="alert">
+            <div class="alert alert-error">
+              <span>{{ form.non_field_errors|striptags }}</span>
+            </div>
+          </div>
+        {% endif %}
+
+        <label class="form-control md:col-span-2">
+          <span class="label-text mb-1">Usuario</span>
+          <input type="text" name="username" class="input input-bordered" value="{{ form.username.value|default:'' }}" required />
+          {% if form.username.errors %}<span class="label-text-alt text-error">{{ form.username.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <label class="form-control md:col-span-2">
+          <span class="label-text mb-1">Email</span>
+          <input type="email" name="email" class="input input-bordered" value="{{ form.email.value|default:'' }}" required />
+          {% if form.email.errors %}<span class="label-text-alt text-error">{{ form.email.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <label class="form-control">
+          <span class="label-text mb-1">Senha</span>
+          <input type="password" name="password1" class="input input-bordered" required />
+          {% if form.password1.errors %}<span class="label-text-alt text-error">{{ form.password1.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <label class="form-control">
+          <span class="label-text mb-1">Confirmar senha</span>
+          <input type="password" name="password2" class="input input-bordered" required />
+          {% if form.password2.errors %}<span class="label-text-alt text-error">{{ form.password2.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <label class="form-control md:col-span-2">
+          <span class="label-text mb-1">Tipo de usuario</span>
+          <select name="role" class="select select-bordered" required>
+            {% for value, label in form.role.field.choices %}
+              <option value="{{ value }}" {% if form.role.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+          <button type="submit" class="btn btn-primary">Registrar</button>
+          <a href="{% url 'login' %}" class="btn btn-ghost">Ja tenho conta</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}

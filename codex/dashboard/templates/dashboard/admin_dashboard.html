@@ -1,0 +1,143 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Area Admin | Codex{% endblock title %}
+
+{% block content %}
+<section class="space-y-6">
+  <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
+    <h1 class="text-3xl font-bold">Area Administrativa</h1>
+    <p class="mt-2 text-base-content/80">Acesso restrito por view com decorator para usuarios Admin.</p>
+    <div class="mt-4">
+      <button class="btn btn-primary" onclick="user_roles_modal.showModal()">Alterar tipo de usuario</button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="card bg-base-100 shadow-md border border-base-300">
+      <div class="card-body">
+        <h2 class="card-title">Painel Django</h2>
+        <p>Acesse o gerenciamento completo de dados e usuarios.</p>
+        <div class="card-actions justify-end">
+          <a href="/admin/" class="btn btn-primary btn-sm">Abrir</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-md border border-base-300">
+      <div class="card-body">
+        <h2 class="card-title">Usuarios</h2>
+        <p>Gerencie contas, permissoes e status da equipe.</p>
+        <div class="card-actions justify-end">
+          <a href="/admin/auth/user/" class="btn btn-secondary btn-sm">Gerenciar</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-md border border-base-300">
+      <div class="card-body">
+        <h2 class="card-title">Perfis</h2>
+        <p>Controle papeis de acesso entre Admin e Usuario comum.</p>
+        <div class="card-actions justify-end">
+          <a href="/admin/core/profile/" class="btn btn-accent btn-sm">Perfis</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <dialog id="user_roles_modal" class="modal">
+    <div class="modal-box max-w-5xl">
+      <h3 class="font-bold text-xl">Usuarios e Tipos de Conta</h3>
+      <p class="text-sm text-base-content/70 mt-1 mb-4">Altere o tipo entre Admin e Usuario comum.</p>
+
+      <form method="get" class="bg-base-200 rounded-box p-3 mb-4 grid grid-cols-1 md:grid-cols-4 gap-2 items-end">
+        <input type="hidden" name="open_users_modal" value="1" />
+        <label class="form-control md:col-span-2">
+          <span class="label-text text-xs">Buscar por usuario ou email</span>
+          <input type="text" name="q" value="{{ q_value }}" class="input input-bordered input-sm" placeholder="Digite para filtrar" />
+        </label>
+        <label class="form-control">
+          <span class="label-text text-xs">Tipo</span>
+          <select name="role_filter" class="select select-bordered select-sm">
+            {% for value, label in filter_role_options %}
+              <option value="{{ value }}" {% if role_filter == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <div class="flex gap-2 md:justify-end">
+          <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
+          <a href="{% url 'admin_dashboard' %}?open_users_modal=1" class="btn btn-sm btn-ghost">Limpar</a>
+        </div>
+      </form>
+
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="bulk_update_roles" />
+
+        <div class="overflow-x-auto rounded-box border border-base-300">
+          <table class="table table-zebra">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Tipo atual</th>
+                <th class="text-right">Alterar tipo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in users_with_role %}
+                <tr>
+                  <td>
+                    <div class="font-semibold">{{ item.username }}</div>
+                    {% if item.is_superuser %}
+                      <span class="badge badge-warning badge-sm">superusuario</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ item.email|default:'Nao informado' }}</td>
+                  <td>{{ item.role_label }}</td>
+                  <td class="text-right">
+                    {% if item.is_superuser %}
+                      <span class="text-sm text-base-content/70">Nao editavel</span>
+                    {% else %}
+                      <input type="hidden" name="user_ids" value="{{ item.id }}" />
+                      <select name="role_{{ item.id }}" class="select select-bordered select-sm w-full max-w-xs" required>
+                        {% for value, label in role_choices %}
+                          <option value="{{ value }}" {% if item.role_value == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                      </select>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center text-base-content/70">Nenhum usuario encontrado.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-action">
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <form method="dialog">
+            <button class="btn">Fechar</button>
+          </form>
+        </div>
+      </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+</section>
+
+{% if open_users_modal %}
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      const modal = document.getElementById('user_roles_modal');
+      if (modal) {
+        modal.showModal();
+      }
+    });
+  </script>
+{% endif %}
+{% endblock content %}
