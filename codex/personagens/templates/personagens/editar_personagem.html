@@ -1,0 +1,81 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Editar {{ personagem.nome }} | Codex{% endblock title %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto space-y-6">
+  <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
+    <h1 class="text-3xl font-bold">Editar Personagem</h1>
+    <p class="mt-2 text-base-content/80">Atualize os dados de {{ personagem.nome }}.</p>
+  </div>
+
+  <div class="card bg-base-100 shadow-md border border-base-300">
+    <div class="card-body">
+      <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="md:col-span-2 alert alert-error">
+            <span>{{ form.non_field_errors|striptags }}</span>
+          </div>
+        {% endif %}
+
+        <label class="form-control md:col-span-2">
+          <span class="label-text mb-1">Nome</span>
+          <input type="text" name="nome" class="input input-bordered" value="{{ form.nome.value|default:'' }}" required />
+          {% if form.nome.errors %}<span class="label-text-alt text-error">{{ form.nome.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <label class="form-control">
+          <span class="label-text mb-1">Classe</span>
+          <select name="classe" class="select select-bordered">
+            {% for value, label in form.fields.classe.choices %}
+              <option value="{{ value }}" {% if form.classe.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.classe.errors %}<span class="label-text-alt text-error">{{ form.classe.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <label class="form-control">
+          <span class="label-text mb-1">Guilda</span>
+          <select name="guilda" class="select select-bordered">
+            {% for value, label in form.fields.guilda.choices %}
+              <option value="{{ value }}" {% if form.guilda.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {% if form.guilda.errors %}<span class="label-text-alt text-error">{{ form.guilda.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <label class="form-control md:col-span-2">
+          <span class="label-text mb-1">Historia</span>
+          <textarea name="historia" class="textarea textarea-bordered" rows="4">{{ form.historia.value|default:'' }}</textarea>
+          {% if form.historia.errors %}<span class="label-text-alt text-error">{{ form.historia.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <label class="form-control md:col-span-2">
+          <span class="label-text mb-1">Aparencia</span>
+          <textarea name="aparencia" class="textarea textarea-bordered" rows="3">{{ form.aparencia.value|default:'' }}</textarea>
+          {% if form.aparencia.errors %}<span class="label-text-alt text-error">{{ form.aparencia.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <label class="form-control md:col-span-2">
+          <span class="label-text mb-1">Objetivos</span>
+          <textarea name="objetivos" class="textarea textarea-bordered" rows="3">{{ form.objetivos.value|default:'' }}</textarea>
+          {% if form.objetivos.errors %}<span class="label-text-alt text-error">{{ form.objetivos.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <label class="form-control md:col-span-2">
+          <span class="label-text mb-1">Personalidade</span>
+          <textarea name="personalidade" class="textarea textarea-bordered" rows="3">{{ form.personalidade.value|default:'' }}</textarea>
+          {% if form.personalidade.errors %}<span class="label-text-alt text-error">{{ form.personalidade.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <div class="md:col-span-2 flex justify-end gap-2 mt-2">
+          <a href="{% url 'detalhe_personagem' personagem.slug %}" class="btn btn-ghost">Cancelar</a>
+          <button type="submit" class="btn btn-primary">Salvar alteracoes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock content %}

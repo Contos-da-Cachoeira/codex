@@ -10,18 +10,21 @@
 
 ## 📍 STATUS REAL DO PROJETO (25/03/2026)
 
-- Fase 1 parcialmente concluída
+- Fase 1 concluída
+- Fase 2 concluída
 - Autenticação unificada no app `accounts`
 - Perfil e tipo de usuário implementados via model `Profile`
 - Dashboard com área de admin e usuário implementado
 - Banco configurado para PostgreSQL
+- App `personagens` integrado ao projeto com constantes centralizadas
+- CRUD de personagens concluído (listar, criar, editar e detalhar)
 
 ## ▶ EXECUÇÃO IMEDIATA (PRÓXIMOS PASSOS)
 
 - [x] Definir se a próxima etapa usará SQLite (MVP) ou PostgreSQL
-- [ ] Iniciar Fase 2 criando app `personagens`
-- [ ] Modelar `Personagem` com relação 1:N para usuário
-- [ ] Criar CRUD básico de personagens (listar, criar, editar, detalhar)
+- [x] Iniciar Fase 2 criando app `personagens`
+- [x] Modelar `Personagem` com relação 1:N para usuário
+- [x] Criar CRUD básico de personagens (listar, criar, editar, detalhar)
 
 ---
 
@@ -47,14 +50,15 @@
 
 # 🔹 FASE 2 — PERSONAGENS
 
-- [ ] Criar app `personagens`
-- [ ] Criar model Personagem
-- [ ] Relacionar com usuário (1:N)
-- [ ] Criar CRUD de personagens
-- [ ] Criar página de listagem
-- [ ] Criar página de detalhe
-- [ ] Criar formulário de criação
-- [ ] Criar edição de personagem
+- [x] Criar app `personagens`
+- [x] Criar model Personagem
+- [x] Relacionar com usuário (1:N)
+- [x] Padronizar constantes de classes, guildas e status
+- [x] Criar CRUD de personagens
+- [x] Criar página de listagem
+- [x] Criar página de detalhe
+- [x] Criar formulário de criação
+- [x] Criar edição de personagem
 
 ---
 
@@ -195,7 +199,7 @@
 # 🚀 STATUS GLOBAL
 
 - [x] Fase 1 completa
-- [ ] Fase 2 completa
+- [x] Fase 2 completa
 - [ ] Fase 3 completa
 - [ ] Fase 4 completa
 - [ ] Fase 5 completa

@@ -37,9 +37,37 @@
     {% if messages %}
       <div class="space-y-2 mb-6">
         {% for message in messages %}
-          <div role="alert" class="alert alert-success">
-            <span>{{ message }}</span>
-          </div>
+          {% with level=message.level_tag %}
+            <div
+              role="alert"
+              class="alert {% if level == 'success' %}alert-success{% elif level == 'error' %}alert-error{% elif level == 'warning' %}alert-warning{% elif level == 'info' or level == 'debug' %}alert-info{% endif %} transition-opacity duration-300"
+              data-flash-message
+              data-timeout="5000"
+            >
+              <span>{{ message }}</span>
+              <button
+                type="button"
+                class="btn btn-ghost btn-xs"
+                aria-label="Fechar notificacao"
+                data-flash-close
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path d="M18 6L6 18"></path>
+                  <path d="M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          {% endwith %}
         {% endfor %}
       </div>
     {% endif %}
@@ -54,5 +82,40 @@
       <p class="text-xs text-base-content/60">© 2026 - Todos os direitos reservados.</p>
     </aside>
   </footer>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      function hideMessage(element) {
+        if (!element || element.dataset.hidden === '1') {
+          return;
+        }
+
+        element.dataset.hidden = '1';
+        element.classList.add('opacity-0');
+
+        window.setTimeout(function () {
+          if (element && element.parentNode) {
+            element.remove();
+          }
+        }, 300);
+      }
+
+      const flashMessages = document.querySelectorAll('[data-flash-message]');
+      flashMessages.forEach(function (messageElement) {
+        const closeButton = messageElement.querySelector('[data-flash-close]');
+        const timeoutMs = Number(messageElement.dataset.timeout || 5000);
+
+        if (closeButton) {
+          closeButton.addEventListener('click', function () {
+            hideMessage(messageElement);
+          });
+        }
+
+        window.setTimeout(function () {
+          hideMessage(messageElement);
+        }, timeoutMs);
+      });
+    });
+  </script>
 </body>
 </html>

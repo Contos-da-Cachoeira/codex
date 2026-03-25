@@ -7,8 +7,9 @@
   <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
     <h1 class="text-3xl font-bold">Area Administrativa</h1>
     <p class="mt-2 text-base-content/80">Acesso restrito por view com decorator para usuarios Admin.</p>
-    <div class="mt-4">
+    <div class="mt-4 flex flex-wrap gap-2">
       <button class="btn btn-primary" onclick="user_roles_modal.showModal()">Alterar tipo de usuario</button>
+      <button class="btn btn-secondary" onclick="character_modal.showModal()">Ler e editar personagens</button>
     </div>
   </div>
 
@@ -128,12 +129,144 @@
       <button>close</button>
     </form>
   </dialog>
+
+  <dialog id="character_modal" class="modal">
+    <div class="modal-box max-w-7xl">
+      <h3 class="font-bold text-xl">Personagens</h3>
+      <p class="text-sm text-base-content/70 mt-1 mb-4">Leia e edite os personagens em lote.</p>
+
+      <form method="get" class="bg-base-200 rounded-box p-3 mb-4 grid grid-cols-1 md:grid-cols-5 gap-2 items-end">
+        <input type="hidden" name="open_personagens_modal" value="1" />
+        <label class="form-control md:col-span-2">
+          <span class="label-text text-xs">Buscar por nome, slug, usuario, guilda ou classe</span>
+          <input type="text" name="character_q" value="{{ character_q_value }}" class="input input-bordered input-sm" placeholder="Digite para filtrar" />
+        </label>
+        <label class="form-control">
+          <span class="label-text text-xs">Status</span>
+          <select name="character_status_filter" class="select select-bordered select-sm">
+            {% for value, label in character_status_options %}
+              <option value="{{ value }}" {% if character_status_filter|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label class="form-control">
+          <span class="label-text text-xs">Aprovacao</span>
+          <select name="character_approval_filter" class="select select-bordered select-sm">
+            {% for value, label in character_approval_options %}
+              <option value="{{ value }}" {% if character_approval_filter|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+        </label>
+        <div class="flex gap-2 md:justify-end">
+          <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
+          <a href="{% url 'admin_dashboard' %}?open_personagens_modal=1" class="btn btn-sm btn-ghost">Limpar</a>
+        </div>
+      </form>
+
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="bulk_update_personagens" />
+
+        <div class="overflow-x-auto rounded-box border border-base-300 max-h-[60vh]">
+          <table class="table table-zebra table-pin-rows">
+            <thead>
+              <tr>
+                <th>Personagem</th>
+                <th>Usuario</th>
+                <th>Status</th>
+                <th>Classe</th>
+                <th>Guilda</th>
+                <th>XP</th>
+                <th>Ouro</th>
+                <th>Aprovacao</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in personagens_data %}
+                <tr>
+                  <td>
+                    <div class="font-semibold">{{ item.nome }}</div>
+                    <div class="text-xs text-base-content/70">{{ item.slug }}</div>
+                    <input type="hidden" name="personagem_ids" value="{{ item.id }}" />
+                  </td>
+                  <td>{{ item.usuario }}</td>
+                  <td>
+                    <select name="status_{{ item.id }}" class="select select-bordered select-sm w-full min-w-40" required>
+                      {% for value, label in character_status_options %}
+                        {% if value != 'ALL' %}
+                          <option value="{{ value }}" {% if item.status|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td>
+                    <select name="classe_{{ item.id }}" class="select select-bordered select-sm w-full min-w-40">
+                      <option value="">---------</option>
+                      {% for value, label in character_class_options %}
+                        <option value="{{ value }}" {% if item.classe|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td>
+                    <select name="guilda_{{ item.id }}" class="select select-bordered select-sm w-full min-w-40">
+                      <option value="">---------</option>
+                      {% for value, label in character_guild_options %}
+                        <option value="{{ value }}" {% if item.guilda|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td>
+                    <input type="number" min="0" name="xp_atual_{{ item.id }}" value="{{ item.xp_atual }}" class="input input-bordered input-sm w-24" />
+                  </td>
+                  <td>
+                    <input type="number" min="0" name="ouro_{{ item.id }}" value="{{ item.ouro }}" class="input input-bordered input-sm w-24" />
+                  </td>
+                  <td>
+                    <select name="status_aprovacao_{{ item.id }}" class="select select-bordered select-sm w-full min-w-40" required>
+                      {% for value, label in character_approval_options %}
+                        {% if value != 'ALL' %}
+                          <option value="{{ value }}" {% if item.status_aprovacao|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+                        {% endif %}
+                      {% endfor %}
+                    </select>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="8" class="text-center text-base-content/70">Nenhum personagem encontrado.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-action">
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <button type="button" class="btn" onclick="character_modal.close()">Fechar</button>
+        </div>
+      </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 </section>
 
 {% if open_users_modal %}
   <script>
     window.addEventListener('DOMContentLoaded', function () {
       const modal = document.getElementById('user_roles_modal');
+      if (modal) {
+        modal.showModal();
+      }
+    });
+  </script>
+{% endif %}
+
+{% if open_personagens_modal %}
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      const modal = document.getElementById('character_modal');
       if (modal) {
         modal.showModal();
       }

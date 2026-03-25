@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Meus Personagens | Codex{% endblock title %}
+
+{% block content %}
+<section class="space-y-6">
+  <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h1 class="text-3xl font-bold">Meus Personagens</h1>
+      <p class="mt-2 text-base-content/80">Gerencie os personagens da sua conta.</p>
+    </div>
+    <a href="{% url 'criar_personagem' %}" class="btn btn-primary">Novo personagem</a>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+    {% for personagem in personagens %}
+      <article class="card bg-base-100 shadow-md border border-base-300">
+        <div class="card-body">
+          <h2 class="card-title">{{ personagem.nome }}</h2>
+          <div class="text-sm text-base-content/70">{{ personagem.slug }}</div>
+
+          <div class="mt-2 space-y-1 text-sm">
+            <p><strong>Status:</strong> {{ personagem.get_status_display }}</p>
+            <p><strong>Classe:</strong> {{ personagem.get_classe_display|default:'Nao definida' }}</p>
+            <p><strong>Guilda:</strong> {{ personagem.get_guilda_display|default:'Sem guilda' }}</p>
+            <p><strong>XP:</strong> {{ personagem.xp_atual }} | <strong>Ouro:</strong> {{ personagem.ouro }}</p>
+          </div>
+
+          <div class="card-actions justify-end mt-3">
+            <a href="{% url 'detalhe_personagem' personagem.slug %}" class="btn btn-sm btn-ghost">Detalhes</a>
+            <a href="{% url 'editar_personagem' personagem.slug %}" class="btn btn-sm btn-secondary">Editar</a>
+            <span class="badge badge-outline">{{ personagem.get_status_aprovacao_display }}</span>
+            <span class="badge badge-outline">{{ personagem.get_status_display }}</span>
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <div class="md:col-span-2 xl:col-span-3 alert alert-info">
+        <span>Voce ainda nao tem personagens. Clique em Novo personagem para criar o primeiro.</span>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock content %}

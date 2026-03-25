@@ -8,6 +8,14 @@ from django.urls import reverse
 from django.shortcuts import redirect, render
 
 from core.models import Profile
+from personagens.consts import (
+    CLASSES_CHOICES,
+    GUILDAS_CHOICES,
+    STATUS_APROVACAO,
+    STATUS_APROVACAO_CHOICES,
+    STATUS_PERSONAGEM_CHOICES,
+)
+from personagens.models import Personagem
 
 
 def _is_admin(user):
@@ -78,12 +86,115 @@ def admin_dashboard(request):
 
             updated_count += 1
 
-        messages.success(request, f'Tipos de usuario atualizados ({updated_count} usuarios).')
+        messages.success(request, 'Tipos de usuario atualizados.')
         return redirect('admin_dashboard')
+
+    if request.method == 'POST' and request.POST.get('action') == 'bulk_update_personagens':
+        allowed_status = {choice[0] for choice in STATUS_PERSONAGEM_CHOICES}
+        allowed_aprovacao = {choice[0] for choice in STATUS_APROVACAO_CHOICES}
+        allowed_classes = {choice[0] for choice in CLASSES_CHOICES}
+        allowed_guildas = {choice[0] for choice in GUILDAS_CHOICES}
+        personagem_ids = request.POST.getlist('personagem_ids')
+        updated_count = 0
+
+        for personagem_id in personagem_ids:
+            personagem = Personagem.objects.filter(id=personagem_id).first()
+            if not personagem:
+                continue
+
+            changed_fields = []
+
+            status_raw = request.POST.get(f'status_{personagem_id}', str(personagem.status)).strip()
+            try:
+                new_status = int(status_raw)
+            except (TypeError, ValueError):
+                new_status = personagem.status
+
+            if new_status in allowed_status and personagem.status != new_status:
+                personagem.status = new_status
+                changed_fields.append('status')
+
+            classe_raw = request.POST.get(f'classe_{personagem_id}', '').strip()
+            new_classe = None
+            if classe_raw:
+                try:
+                    classe_candidate = int(classe_raw)
+                    if classe_candidate in allowed_classes:
+                        new_classe = classe_candidate
+                except (TypeError, ValueError):
+                    new_classe = personagem.classe
+
+            if personagem.classe != new_classe:
+                personagem.classe = new_classe
+                changed_fields.append('classe')
+
+            guilda_raw = request.POST.get(f'guilda_{personagem_id}', '').strip()
+            new_guilda = None
+            if guilda_raw:
+                try:
+                    guilda_candidate = int(guilda_raw)
+                    if guilda_candidate in allowed_guildas:
+                        new_guilda = guilda_candidate
+                except (TypeError, ValueError):
+                    new_guilda = personagem.guilda
+
+            if personagem.guilda != new_guilda:
+                personagem.guilda = new_guilda
+                changed_fields.append('guilda')
+
+            aprovacao_raw = request.POST.get(
+                f'status_aprovacao_{personagem_id}',
+                str(personagem.status_aprovacao),
+            ).strip()
+            try:
+                new_status_aprovacao = int(aprovacao_raw)
+            except (TypeError, ValueError):
+                new_status_aprovacao = personagem.status_aprovacao
+
+            if (
+                new_status_aprovacao in allowed_aprovacao
+                and personagem.status_aprovacao != new_status_aprovacao
+            ):
+                personagem.status_aprovacao = new_status_aprovacao
+                changed_fields.append('status_aprovacao')
+
+            xp_raw = request.POST.get(f'xp_atual_{personagem_id}', str(personagem.xp_atual)).strip()
+            ouro_raw = request.POST.get(f'ouro_{personagem_id}', str(personagem.ouro)).strip()
+
+            try:
+                new_xp = max(0, int(xp_raw))
+            except (TypeError, ValueError):
+                new_xp = personagem.xp_atual
+
+            try:
+                new_ouro = max(0, int(ouro_raw))
+            except (TypeError, ValueError):
+                new_ouro = personagem.ouro
+
+            if personagem.xp_atual != new_xp:
+                personagem.xp_atual = new_xp
+                changed_fields.append('xp_atual')
+
+            if personagem.ouro != new_ouro:
+                personagem.ouro = new_ouro
+                changed_fields.append('ouro')
+
+            if changed_fields:
+                changed_fields.append('data_atualizacao')
+                personagem.save(update_fields=changed_fields)
+                updated_count += 1
+
+        messages.success(request, 'Personagens atualizados.')
+        return redirect(f"{reverse('admin_dashboard')}?open_personagens_modal=1")
 
     q_value = request.GET.get('q', '').strip()
     role_filter = request.GET.get('role_filter', 'ALL')
     open_users_modal = request.GET.get('open_users_modal') == '1'
+
+    character_q_value = request.GET.get('character_q', '').strip()
+    character_status_filter = request.GET.get('character_status_filter', 'ALL')
+    character_approval_filter = request.GET.get('character_approval_filter', 'ALL')
+    open_personagens_modal = request.GET.get('open_personagens_modal') == '1'
 
     users = User.objects.all().order_by('username')
     if q_value:
@@ -120,18 +231,79 @@ def admin_dashboard(request):
             'role_label': role_label,
         })
 
+    personagens_queryset = Personagem.objects.select_related('usuario').order_by('nome')
+    if character_q_value:
+        query_lower = character_q_value.lower()
+        matching_guildas = [
+            guilda_id for guilda_id, guilda_nome in GUILDAS_CHOICES if query_lower in guilda_nome.lower()
+        ]
+        matching_classes = [
+            classe_id for classe_id, classe_nome in CLASSES_CHOICES if query_lower in classe_nome.lower()
+        ]
+        personagens_queryset = personagens_queryset.filter(
+            Q(nome__icontains=character_q_value)
+            | Q(slug__icontains=character_q_value)
+            | Q(usuario__username__icontains=character_q_value)
+            | Q(usuario__email__icontains=character_q_value)
+            | Q(guilda__in=matching_guildas)
+            | Q(classe__in=matching_classes)
+        )
+
+    if character_status_filter != 'ALL':
+        try:
+            personagens_queryset = personagens_queryset.filter(status=int(character_status_filter))
+        except (TypeError, ValueError):
+            pass
+
+    if character_approval_filter != 'ALL':
+        try:
+            personagens_queryset = personagens_queryset.filter(
+                status_aprovacao=int(character_approval_filter)
+            )
+        except (TypeError, ValueError):
+            pass
+
+    personagens_data = [
+        {
+            'id': personagem.id,
+            'nome': personagem.nome,
+            'slug': personagem.slug,
+            'usuario': personagem.usuario.username,
+            'status': personagem.status,
+            'status_display': personagem.get_status_display(),
+            'classe': personagem.classe,
+            'classe_display': personagem.get_classe_display() if personagem.classe else '',
+            'guilda': personagem.guilda,
+            'guilda_display': personagem.get_guilda_display() if personagem.guilda else '',
+            'xp_atual': personagem.xp_atual,
+            'ouro': personagem.ouro,
+            'status_aprovacao': personagem.status_aprovacao,
+            'status_aprovacao_display': personagem.get_status_aprovacao_display(),
+        }
+        for personagem in personagens_queryset
+    ]
+
     context = {
         'users_with_role': users_with_role,
         'role_choices': Profile.UserRole.choices,
         'q_value': q_value,
         'role_filter': role_filter,
         'open_users_modal': open_users_modal,
+        'personagens_data': personagens_data,
+        'character_q_value': character_q_value,
+        'character_status_filter': character_status_filter,
+        'character_approval_filter': character_approval_filter,
+        'open_personagens_modal': open_personagens_modal,
         'filter_role_options': [
             ('ALL', 'Todos os tipos'),
             ('ADMIN', 'Admin'),
             ('COMMON', 'Usuario comum'),
             ('SUPERUSER', 'Superusuario'),
         ],
+        'character_status_options': [('ALL', 'Todos os status'), *STATUS_PERSONAGEM_CHOICES],
+        'character_approval_options': [('ALL', 'Todos'), *STATUS_APROVACAO_CHOICES],
+        'character_class_options': CLASSES_CHOICES,
+        'character_guild_options': GUILDAS_CHOICES,
     }
     return render(request, 'dashboard/admin_dashboard.html', context)
 
