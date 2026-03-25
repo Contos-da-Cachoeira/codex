@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.shortcuts import redirect, render
 
-from core.models import Profile
+from core.models import HomePageConfig, Profile, SiteLayoutConfig
 from personagens.consts import (
     CLASSES_CHOICES,
     GUILDAS_CHOICES,
@@ -31,6 +31,8 @@ def _is_admin(user):
 def home(request):
     role_label = 'Visitante'
     is_admin = False
+    home_config = HomePageConfig.load()
+    layout_config = SiteLayoutConfig.load()
 
     if request.user.is_authenticated:
         if request.user.is_superuser:
@@ -44,6 +46,8 @@ def home(request):
     context = {
         'role_label': role_label,
         'is_admin': is_admin,
+        'home_config': home_config,
+        'layout_config': layout_config,
     }
 
     return render(request, 'dashboard/home.html', context)
@@ -59,6 +63,41 @@ def admin_dashboard(request):
         if role_value and role_value != 'ALL':
             params['role_filter'] = role_value
         return redirect(f"{reverse('admin_dashboard')}?{urlencode(params)}")
+
+    home_config = HomePageConfig.load()
+    layout_config = SiteLayoutConfig.load()
+
+    if request.method == 'POST' and request.POST.get('action') == 'update_home_components':
+        home_config.banner_visible = request.POST.get('banner_visible') == 'on'
+        home_config.banner_badge_text = request.POST.get('banner_badge_text', '').strip()
+        home_config.banner_title = request.POST.get('banner_title', '').strip()
+        home_config.banner_subtitle = request.POST.get('banner_subtitle', '').strip()
+
+        if request.POST.get('remove_banner_image') == 'on':
+            if home_config.banner_image:
+                home_config.banner_image.delete(save=False)
+            home_config.banner_image = None
+        elif request.FILES.get('banner_image'):
+            home_config.banner_image = request.FILES['banner_image']
+
+        home_config.menu_section_visible = request.POST.get('menu_section_visible') == 'on'
+        home_config.menu_section_title = request.POST.get('menu_section_title', '').strip()
+
+        home_config.text_section_visible = request.POST.get('text_section_visible') == 'on'
+        home_config.text_section_title = request.POST.get('text_section_title', '').strip()
+        home_config.text_section_content = request.POST.get('text_section_content', '').strip()
+        home_config.save()
+
+        layout_config.header_visible = request.POST.get('header_visible') == 'on'
+        layout_config.header_title = request.POST.get('header_title', '').strip()
+        layout_config.footer_visible = request.POST.get('footer_visible') == 'on'
+        layout_config.footer_title = request.POST.get('footer_title', '').strip()
+        layout_config.footer_description = request.POST.get('footer_description', '').strip()
+        layout_config.footer_copyright = request.POST.get('footer_copyright', '').strip()
+        layout_config.save()
+
+        messages.success(request, 'Componentes da Home atualizados com sucesso.')
+        return redirect(f"{reverse('admin_dashboard')}?open_home_components_modal=1")
 
     if request.method == 'POST' and request.POST.get('action') == 'bulk_update_roles':
         allowed_roles = {choice[0] for choice in Profile.UserRole.choices}
@@ -195,6 +234,7 @@ def admin_dashboard(request):
     character_status_filter = request.GET.get('character_status_filter', 'ALL')
     character_approval_filter = request.GET.get('character_approval_filter', 'ALL')
     open_personagens_modal = request.GET.get('open_personagens_modal') == '1'
+    open_home_components_modal = request.GET.get('open_home_components_modal') == '1'
 
     users = User.objects.all().order_by('username')
     if q_value:
@@ -304,6 +344,9 @@ def admin_dashboard(request):
         'character_approval_options': [('ALL', 'Todos'), *STATUS_APROVACAO_CHOICES],
         'character_class_options': CLASSES_CHOICES,
         'character_guild_options': GUILDAS_CHOICES,
+        'home_config': home_config,
+        'layout_config': layout_config,
+        'open_home_components_modal': open_home_components_modal,
     }
     return render(request, 'dashboard/admin_dashboard.html', context)
 

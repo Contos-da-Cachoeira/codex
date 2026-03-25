@@ -8,6 +8,7 @@
     <h1 class="text-3xl font-bold">Area Administrativa</h1>
     <p class="mt-2 text-base-content/80">Acesso restrito por view com decorator para usuarios Admin.</p>
     <div class="mt-4 flex flex-wrap gap-2">
+      <button class="btn btn-accent" onclick="home_components_modal.showModal()">Editar componentes da Home</button>
       <button class="btn btn-primary" onclick="user_roles_modal.showModal()">Alterar tipo de usuario</button>
       <button class="btn btn-secondary" onclick="character_modal.showModal()">Ler e editar personagens</button>
     </div>
@@ -122,6 +123,124 @@
           <form method="dialog">
             <button class="btn">Fechar</button>
           </form>
+        </div>
+      </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
+
+  <dialog id="home_components_modal" class="modal">
+    <div class="modal-box max-w-5xl">
+      <h3 class="font-bold text-xl">Componentes da Home</h3>
+      <p class="text-sm text-base-content/70 mt-1 mb-4">Edite banner, menu, secao de texto, cabecalho e rodape sem sair da area-admin.</p>
+
+      <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_home_components" />
+
+        <div class="bg-base-200 rounded-box p-4 space-y-4">
+          <h4 class="font-semibold">Banner (longo horizontal)</h4>
+          <label class="label cursor-pointer justify-start gap-3">
+            <input type="checkbox" name="banner_visible" class="checkbox checkbox-sm" {% if home_config.banner_visible %}checked{% endif %} />
+            <span class="label-text">Mostrar banner</span>
+          </label>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label class="form-control">
+              <span class="label-text text-xs">Badge</span>
+              <input type="text" name="banner_badge_text" value="{{ home_config.banner_badge_text }}" class="input input-bordered" maxlength="80" />
+            </label>
+            <label class="form-control md:col-span-2">
+              <span class="label-text text-xs">Titulo do banner</span>
+              <input type="text" name="banner_title" value="{{ home_config.banner_title }}" class="input input-bordered" maxlength="180" required />
+            </label>
+            <label class="form-control md:col-span-2">
+              <span class="label-text text-xs">Subtitulo do banner</span>
+              <textarea name="banner_subtitle" class="textarea textarea-bordered" rows="3" required>{{ home_config.banner_subtitle }}</textarea>
+            </label>
+          </div>
+
+          <div class="space-y-2">
+            <label class="form-control">
+              <span class="label-text text-xs">Imagem do banner</span>
+              <input type="file" name="banner_image" accept="image/*" class="file-input file-input-bordered" />
+            </label>
+            {% if home_config.banner_image %}
+              <div class="rounded-box border border-base-300 p-2 bg-base-100">
+                <img src="{{ home_config.banner_image.url }}" alt="Banner atual" class="w-full max-h-44 object-cover rounded" />
+              </div>
+              <label class="label cursor-pointer justify-start gap-3">
+                <input type="checkbox" name="remove_banner_image" class="checkbox checkbox-sm" />
+                <span class="label-text">Remover imagem atual</span>
+              </label>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="bg-base-200 rounded-box p-4 space-y-4">
+          <h4 class="font-semibold">Menu da Home</h4>
+          <label class="label cursor-pointer justify-start gap-3">
+            <input type="checkbox" name="menu_section_visible" class="checkbox checkbox-sm" {% if home_config.menu_section_visible %}checked{% endif %} />
+            <span class="label-text">Mostrar secao de menu</span>
+          </label>
+          <label class="form-control">
+            <span class="label-text text-xs">Titulo da secao de menu</span>
+            <input type="text" name="menu_section_title" value="{{ home_config.menu_section_title }}" class="input input-bordered" maxlength="120" required />
+          </label>
+        </div>
+
+        <div class="bg-base-200 rounded-box p-4 space-y-4">
+          <h4 class="font-semibold">Secao de texto</h4>
+          <label class="label cursor-pointer justify-start gap-3">
+            <input type="checkbox" name="text_section_visible" class="checkbox checkbox-sm" {% if home_config.text_section_visible %}checked{% endif %} />
+            <span class="label-text">Mostrar secao de texto</span>
+          </label>
+          <label class="form-control">
+            <span class="label-text text-xs">Titulo</span>
+            <input type="text" name="text_section_title" value="{{ home_config.text_section_title }}" class="input input-bordered" maxlength="140" required />
+          </label>
+          <label class="form-control">
+            <span class="label-text text-xs">Conteudo</span>
+            <textarea name="text_section_content" class="textarea textarea-bordered" rows="4" required>{{ home_config.text_section_content }}</textarea>
+          </label>
+        </div>
+
+        <div class="bg-base-200 rounded-box p-4 space-y-4">
+          <h4 class="font-semibold">Cabecalho e rodape padrao</h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label class="label cursor-pointer justify-start gap-3 md:col-span-2">
+              <input type="checkbox" name="header_visible" class="checkbox checkbox-sm" {% if layout_config.header_visible %}checked{% endif %} />
+              <span class="label-text">Mostrar cabecalho</span>
+            </label>
+            <label class="form-control md:col-span-2">
+              <span class="label-text text-xs">Titulo do cabecalho</span>
+              <input type="text" name="header_title" value="{{ layout_config.header_title }}" class="input input-bordered" maxlength="120" required />
+            </label>
+
+            <label class="label cursor-pointer justify-start gap-3 md:col-span-2 mt-2">
+              <input type="checkbox" name="footer_visible" class="checkbox checkbox-sm" {% if layout_config.footer_visible %}checked{% endif %} />
+              <span class="label-text">Mostrar rodape</span>
+            </label>
+            <label class="form-control md:col-span-2">
+              <span class="label-text text-xs">Titulo do rodape</span>
+              <input type="text" name="footer_title" value="{{ layout_config.footer_title }}" class="input input-bordered" maxlength="120" required />
+            </label>
+            <label class="form-control md:col-span-2">
+              <span class="label-text text-xs">Descricao do rodape</span>
+              <input type="text" name="footer_description" value="{{ layout_config.footer_description }}" class="input input-bordered" maxlength="220" required />
+            </label>
+            <label class="form-control md:col-span-2">
+              <span class="label-text text-xs">Copyright</span>
+              <input type="text" name="footer_copyright" value="{{ layout_config.footer_copyright }}" class="input input-bordered" maxlength="160" required />
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-action">
+          <button type="submit" class="btn btn-primary">Salvar componentes</button>
+          <button type="button" class="btn" onclick="home_components_modal.close()">Fechar</button>
         </div>
       </form>
     </div>
@@ -267,6 +386,17 @@
   <script>
     window.addEventListener('DOMContentLoaded', function () {
       const modal = document.getElementById('character_modal');
+      if (modal) {
+        modal.showModal();
+      }
+    });
+  </script>
+{% endif %}
+
+{% if open_home_components_modal %}
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      const modal = document.getElementById('home_components_modal');
       if (modal) {
         modal.showModal();
       }

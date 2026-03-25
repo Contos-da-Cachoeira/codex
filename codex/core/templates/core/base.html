@@ -8,30 +8,32 @@
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="min-h-screen bg-base-200">
-  <div class="navbar bg-base-100 shadow-sm px-4 md:px-8">
-    <div class="navbar-start">
-      <a href="{% url 'home' %}" class="btn btn-ghost text-xl">Codex</a>
+  {% if layout_config.header_visible %}
+    <div class="navbar bg-base-100 shadow-sm px-4 md:px-8">
+      <div class="navbar-start">
+        <a href="{% url 'home' %}" class="btn btn-ghost text-xl">{{ layout_config.header_title }}</a>
+      </div>
+      <div class="navbar-end gap-2">
+        {% if user.is_authenticated %}
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-sm btn-ghost">{{ user.username }}</div>
+            <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-10 mt-2 w-44 p-2 shadow border border-base-300">
+              <li><a href="{% url 'account_personal_data' %}">Minha conta</a></li>
+              <li>
+                <form method="post" action="{% url 'logout' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="w-full text-left">Sair</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+        {% else %}
+          <a href="{% url 'login' %}" class="btn btn-sm btn-ghost">Login</a>
+          <a href="{% url 'register' %}" class="btn btn-sm btn-primary">Registro</a>
+        {% endif %}
+      </div>
     </div>
-    <div class="navbar-end gap-2">
-      {% if user.is_authenticated %}
-        <div class="dropdown dropdown-end">
-          <div tabindex="0" role="button" class="btn btn-sm btn-ghost">{{ user.username }}</div>
-          <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-10 mt-2 w-44 p-2 shadow border border-base-300">
-            <li><a href="{% url 'account_personal_data' %}">Minha conta</a></li>
-            <li>
-              <form method="post" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit" class="w-full text-left">Sair</button>
-              </form>
-            </li>
-          </ul>
-        </div>
-      {% else %}
-        <a href="{% url 'login' %}" class="btn btn-sm btn-ghost">Login</a>
-        <a href="{% url 'register' %}" class="btn btn-sm btn-primary">Registro</a>
-      {% endif %}
-    </div>
-  </div>
+  {% endif %}
 
   <main class="container mx-auto px-4 py-8 md:py-12">
     {% if messages %}
@@ -75,13 +77,15 @@
     {% block content %}{% endblock content %}
   </main>
 
-  <footer class="footer footer-horizontal footer-center bg-base-100 text-base-content rounded p-8 border-t border-base-300">
-    <aside>
-      <p class="font-semibold">Codex da Cachoeira</p>
-      <p class="text-sm text-base-content/70">Plataforma com login, registro e perfis de acesso.</p>
-      <p class="text-xs text-base-content/60">© 2026 - Todos os direitos reservados.</p>
-    </aside>
-  </footer>
+  {% if layout_config.footer_visible %}
+    <footer class="footer footer-horizontal footer-center bg-base-100 text-base-content rounded p-8 border-t border-base-300">
+      <aside>
+        <p class="font-semibold">{{ layout_config.footer_title }}</p>
+        <p class="text-sm text-base-content/70">{{ layout_config.footer_description }}</p>
+        <p class="text-xs text-base-content/60">{{ layout_config.footer_copyright }}</p>
+      </aside>
+    </footer>
+  {% endif %}
 
   <script>
     window.addEventListener('DOMContentLoaded', function () {
