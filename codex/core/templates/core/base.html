@@ -14,12 +14,18 @@
     </div>
     <div class="navbar-end gap-2">
       {% if user.is_authenticated %}
-        <a href="{% url 'account_personal_data' %}" class="btn btn-sm btn-ghost">Minha conta</a>
-        <span class="badge badge-primary badge-outline">{{ user.username }}</span>
-        <form method="post" action="{% url 'logout' %}" class="inline">
-          {% csrf_token %}
-          <button type="submit" class="btn btn-sm btn-neutral">Sair</button>
-        </form>
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-sm btn-ghost">{{ user.username }}</div>
+          <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-10 mt-2 w-44 p-2 shadow border border-base-300">
+            <li><a href="{% url 'account_personal_data' %}">Minha conta</a></li>
+            <li>
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="w-full text-left">Sair</button>
+              </form>
+            </li>
+          </ul>
+        </div>
       {% else %}
         <a href="{% url 'login' %}" class="btn btn-sm btn-ghost">Login</a>
         <a href="{% url 'register' %}" class="btn btn-sm btn-primary">Registro</a>

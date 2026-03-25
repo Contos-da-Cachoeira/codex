@@ -8,3 +8,4 @@ Senha: fazoo123
 
 User
 Usuario: kiwi
+Senha: Thedude1!
