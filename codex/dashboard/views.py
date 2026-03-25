@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.urls import reverse
 from django.shortcuts import redirect, render
 
-from core.models import HomePageConfig, Profile, SiteLayoutConfig
+from core.models import HomeDynamicSection, HomePageConfig, Profile, SiteLayoutConfig
 from personagens.consts import (
     CLASSES_CHOICES,
     GUILDAS_CHOICES,
@@ -48,6 +48,7 @@ def home(request):
         'is_admin': is_admin,
         'home_config': home_config,
         'layout_config': layout_config,
+        'dynamic_sections': HomeDynamicSection.objects.filter(is_visible=True),
     }
 
     return render(request, 'dashboard/home.html', context)
@@ -95,6 +96,44 @@ def admin_dashboard(request):
         layout_config.footer_description = request.POST.get('footer_description', '').strip()
         layout_config.footer_copyright = request.POST.get('footer_copyright', '').strip()
         layout_config.save()
+
+        section_ids = request.POST.getlist('section_ids')
+        for section_id in section_ids:
+            section = HomeDynamicSection.objects.filter(id=section_id).first()
+            if not section:
+                continue
+
+            section.title = request.POST.get(f'section_title_{section_id}', section.title).strip()
+            section.content = request.POST.get(f'section_content_{section_id}', section.content).strip()
+            section.is_visible = request.POST.get(f'section_visible_{section_id}') == 'on'
+
+            order_raw = request.POST.get(f'section_order_{section_id}', section.display_order)
+            try:
+                section.display_order = max(1, int(order_raw))
+            except (TypeError, ValueError):
+                pass
+
+            section.save()
+
+        delete_section_ids = request.POST.getlist('delete_section_ids')
+        if delete_section_ids:
+            HomeDynamicSection.objects.filter(id__in=delete_section_ids).delete()
+
+        new_title = request.POST.get('new_section_title', '').strip()
+        new_content = request.POST.get('new_section_content', '').strip()
+        if new_title and new_content:
+            new_order_raw = request.POST.get('new_section_order', '1').strip()
+            try:
+                new_order = max(1, int(new_order_raw))
+            except (TypeError, ValueError):
+                new_order = 1
+
+            HomeDynamicSection.objects.create(
+                title=new_title,
+                content=new_content,
+                display_order=new_order,
+                is_visible=request.POST.get('new_section_visible') == 'on',
+            )
 
         messages.success(request, 'Componentes da Home atualizados com sucesso.')
         return redirect(f"{reverse('admin_dashboard')}?open_home_components_modal=1")
@@ -346,6 +385,7 @@ def admin_dashboard(request):
         'character_guild_options': GUILDAS_CHOICES,
         'home_config': home_config,
         'layout_config': layout_config,
+        'dynamic_sections': HomeDynamicSection.objects.all(),
         'open_home_components_modal': open_home_components_modal,
     }
     return render(request, 'dashboard/admin_dashboard.html', context)

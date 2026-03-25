@@ -1,94 +1,282 @@
 <!DOCTYPE html>
-<html lang="pt-br" data-theme="corporate">
+<html lang="pt-br" data-theme="bumblebee">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Codex{% endblock title %}</title>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <style>
+    :root {
+      --site-glow-1: 255 184 0;
+      --site-glow-2: 37 99 235;
+      --site-glow-3: 220 38 38;
+    }
+
+    [data-theme="halloween"] {
+      --site-glow-1: 249 115 22;
+      --site-glow-2: 139 92 246;
+      --site-glow-3: 5 150 105;
+    }
+
+    body {
+      min-height: 100vh;
+      background-image:
+        radial-gradient(50rem 50rem at -10% -20%, rgb(var(--site-glow-1) / 0.14), transparent 52%),
+        radial-gradient(40rem 40rem at 110% 10%, rgb(var(--site-glow-2) / 0.12), transparent 56%),
+        radial-gradient(36rem 36rem at 50% 110%, rgb(var(--site-glow-3) / 0.1), transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .site-shell {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .site-shell::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background: linear-gradient(to bottom, color-mix(in oklab, var(--color-base-200) 70%, transparent), color-mix(in oklab, var(--color-base-100) 92%, transparent));
+    }
+
+    .site-shell::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.2;
+      background-image:
+        linear-gradient(to right, color-mix(in oklab, var(--color-base-content) 8%, transparent) 1px, transparent 1px),
+        linear-gradient(to bottom, color-mix(in oklab, var(--color-base-content) 8%, transparent) 1px, transparent 1px);
+      background-size: 26px 26px;
+      mask-image: radial-gradient(ellipse at center, black 38%, transparent 88%);
+    }
+
+    .site-header {
+      backdrop-filter: blur(10px);
+      background-color: color-mix(in oklab, var(--color-base-100) 86%, transparent);
+    }
+
+    .card,
+    .hero,
+    .stats,
+    .modal-box {
+      box-shadow: 0 20px 40px -28px color-mix(in oklab, var(--color-neutral) 52%, transparent);
+    }
+
+    .btn,
+    .input,
+    .select,
+    .textarea,
+    .file-input {
+      transition: transform 140ms ease, box-shadow 160ms ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle-btn {
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    [data-animate-up] {
+      animation: rise-in 460ms ease-out both;
+    }
+
+    @keyframes rise-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-base-200">
-  {% if layout_config.header_visible %}
-    <div class="navbar bg-base-100 shadow-sm px-4 md:px-8">
-      <div class="navbar-start">
-        <a href="{% url 'home' %}" class="btn btn-ghost text-xl">{{ layout_config.header_title }}</a>
-      </div>
-      <div class="navbar-end gap-2">
-        {% if user.is_authenticated %}
-          <div class="dropdown dropdown-end">
-            <div tabindex="0" role="button" class="btn btn-sm btn-ghost">{{ user.username }}</div>
-            <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-10 mt-2 w-44 p-2 shadow border border-base-300">
-              <li><a href="{% url 'account_personal_data' %}">Minha conta</a></li>
+<body class="min-h-screen text-base-content">
+  <div class="site-shell">
+    {% if layout_config.header_visible %}
+      <div class="navbar site-header sticky top-0 z-40 border-b px-4 md:px-8" data-animate-up>
+        <div class="navbar-start">
+          <div class="dropdown md:hidden mr-1">
+            <div tabindex="0" role="button" class="btn btn-sm btn-ghost" aria-label="Abrir menu rapido">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </div>
+            <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-20 mt-2 w-52 p-2 shadow border border-base-300">
+              <li><a href="{% url 'home' %}">Home</a></li>
+              <li><a href="{% url 'listar_guildas' %}">Guildas</a></li>
               <li>
-                <form method="post" action="{% url 'logout' %}">
-                  {% csrf_token %}
-                  <button type="submit" class="w-full text-left">Sair</button>
-                </form>
+                {% if user.is_authenticated %}
+                  <a href="{% url 'meus_personagens' %}">Personagens</a>
+                {% else %}
+                  <a href="{% url 'login' %}?next=/personagens/">Personagens</a>
+                {% endif %}
               </li>
             </ul>
           </div>
-        {% else %}
-          <a href="{% url 'login' %}" class="btn btn-sm btn-ghost">Login</a>
-          <a href="{% url 'register' %}" class="btn btn-sm btn-primary">Registro</a>
-        {% endif %}
-      </div>
-    </div>
-  {% endif %}
-
-  <main class="container mx-auto px-4 py-8 md:py-12">
-    {% if messages %}
-      <div class="space-y-2 mb-6">
-        {% for message in messages %}
-          {% with level=message.level_tag %}
-            <div
-              role="alert"
-              class="alert {% if level == 'success' %}alert-success{% elif level == 'error' %}alert-error{% elif level == 'warning' %}alert-warning{% elif level == 'info' or level == 'debug' %}alert-info{% endif %} transition-opacity duration-300"
-              data-flash-message
-              data-timeout="5000"
-            >
-              <span>{{ message }}</span>
-              <button
-                type="button"
-                class="btn btn-ghost btn-xs"
-                aria-label="Fechar notificacao"
-                data-flash-close
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="h-4 w-4"
-                  aria-hidden="true"
-                >
-                  <path d="M18 6L6 18"></path>
-                  <path d="M6 6l12 12"></path>
-                </svg>
-              </button>
+          <a href="{% url 'home' %}" class="btn btn-ghost text-xl font-black tracking-wide">{{ layout_config.header_title }}</a>
+        </div>
+        <div class="navbar-center hidden md:flex">
+          <ul class="menu menu-horizontal gap-1 px-1 bg-base-100/60 rounded-box border border-base-300">
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'listar_guildas' %}">Guildas</a></li>
+            <li>
+              {% if user.is_authenticated %}
+                <a href="{% url 'meus_personagens' %}">Personagens</a>
+              {% else %}
+                <a href="{% url 'login' %}?next=/personagens/">Personagens</a>
+              {% endif %}
+            </li>
+          </ul>
+        </div>
+        <div class="navbar-end gap-2">
+          {% if user.is_authenticated %}
+            <div class="dropdown dropdown-end">
+              <div tabindex="0" role="button" class="btn btn-sm btn-ghost">{{ user.username }}</div>
+              <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-10 mt-2 w-56 p-2 shadow border border-base-300 gap-1">
+                <li><a href="{% url 'account_personal_data' %}">Minha conta</a></li>
+                <li>
+                  <a href="#" class="theme-toggle-btn" data-theme-toggle data-next-theme="halloween">Tema escuro</a>
+                </li>
+                <li>
+                  <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full text-left">Sair</button>
+                  </form>
+                </li>
+              </ul>
             </div>
-          {% endwith %}
-        {% endfor %}
+          {% else %}
+            <a href="{% url 'login' %}" class="btn btn-sm btn-ghost">Login</a>
+            <a href="{% url 'register' %}" class="btn btn-sm btn-primary">Registro</a>
+          {% endif %}
+        </div>
       </div>
     {% endif %}
 
-    {% block content %}{% endblock content %}
-  </main>
+    <main class="container mx-auto px-4 py-8 md:py-12" data-animate-up>
+      {% if messages %}
+        <div class="space-y-2 mb-6">
+          {% for message in messages %}
+            {% with level=message.level_tag %}
+              <div
+                role="alert"
+                class="alert {% if level == 'success' %}alert-success{% elif level == 'error' %}alert-error{% elif level == 'warning' %}alert-warning{% elif level == 'info' or level == 'debug' %}alert-info{% endif %} transition-opacity duration-300"
+                data-flash-message
+                data-timeout="5000"
+              >
+                <span>{{ message }}</span>
+                <button
+                  type="button"
+                  class="btn btn-ghost btn-xs"
+                  aria-label="Fechar notificacao"
+                  data-flash-close
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="h-4 w-4"
+                    aria-hidden="true"
+                  >
+                    <path d="M18 6L6 18"></path>
+                    <path d="M6 6l12 12"></path>
+                  </svg>
+                </button>
+              </div>
+            {% endwith %}
+          {% endfor %}
+        </div>
+      {% endif %}
 
-  {% if layout_config.footer_visible %}
-    <footer class="footer footer-horizontal footer-center bg-base-100 text-base-content rounded p-8 border-t border-base-300">
-      <aside>
-        <p class="font-semibold">{{ layout_config.footer_title }}</p>
-        <p class="text-sm text-base-content/70">{{ layout_config.footer_description }}</p>
-        <p class="text-xs text-base-content/60">{{ layout_config.footer_copyright }}</p>
-      </aside>
-    </footer>
-  {% endif %}
+      {% block content %}{% endblock content %}
+    </main>
+
+    {% if layout_config.footer_visible %}
+      <footer class="footer footer-horizontal footer-center bg-base-100/80 text-base-content rounded p-8 border-t border-base-300 backdrop-blur">
+        <aside>
+          <p class="font-semibold">{{ layout_config.footer_title }}</p>
+          <p class="text-sm text-base-content/70">{{ layout_config.footer_description }}</p>
+          <p class="text-xs text-base-content/60">{{ layout_config.footer_copyright }}</p>
+        </aside>
+      </footer>
+    {% endif %}
+  </div>
 
   <script>
     window.addEventListener('DOMContentLoaded', function () {
+      const availableThemes = ['bumblebee', 'halloween'];
+      const root = document.documentElement;
+      const body = document.body;
+
+      function safeGetStoredTheme() {
+        try {
+          return window.localStorage.getItem('site-theme');
+        } catch (error) {
+          return null;
+        }
+      }
+
+      function safeSetStoredTheme(themeName) {
+        try {
+          window.localStorage.setItem('site-theme', themeName);
+        } catch (error) {
+          // Ignore storage restrictions and keep runtime theme only.
+        }
+      }
+
+      function updateThemeToggle(activeTheme) {
+        const toggleButton = document.querySelector('[data-theme-toggle]');
+        if (!toggleButton) {
+          return;
+        }
+
+        const nextTheme = activeTheme === 'halloween' ? 'bumblebee' : 'halloween';
+        toggleButton.dataset.nextTheme = nextTheme;
+        toggleButton.textContent = nextTheme === 'halloween' ? 'Tema escuro' : 'Tema claro';
+      }
+
+      function applyTheme(themeName) {
+        const nextTheme = availableThemes.includes(themeName) ? themeName : 'bumblebee';
+        root.setAttribute('data-theme', nextTheme);
+        if (body) {
+          body.setAttribute('data-theme', nextTheme);
+        }
+        root.style.colorScheme = nextTheme === 'halloween' ? 'dark' : 'light';
+        safeSetStoredTheme(nextTheme);
+        updateThemeToggle(nextTheme);
+      }
+
+      const storedTheme = safeGetStoredTheme();
+      if (availableThemes.includes(storedTheme)) {
+        applyTheme(storedTheme);
+      } else {
+        applyTheme('bumblebee');
+      }
+
+      const themeToggleButton = document.querySelector('[data-theme-toggle]');
+      if (themeToggleButton) {
+        themeToggleButton.addEventListener('click', function (event) {
+          event.preventDefault();
+          applyTheme(themeToggleButton.dataset.nextTheme);
+        });
+      }
+
       function hideMessage(element) {
         if (!element || element.dataset.hidden === '1') {
           return;

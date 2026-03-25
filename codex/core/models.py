@@ -90,3 +90,19 @@ class HomePageConfig(SingletonBaseModel):
 
 	def __str__(self):
 		return 'Configuracao da Home'
+
+
+class HomeDynamicSection(models.Model):
+	title = models.CharField(max_length=140, verbose_name='Titulo')
+	content = models.TextField(verbose_name='Conteudo')
+	is_visible = models.BooleanField(default=True, verbose_name='Mostrar secao')
+	display_order = models.PositiveIntegerField(default=1, verbose_name='Ordem de exibicao')
+	created_at = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		verbose_name = 'Componente extra da Home'
+		verbose_name_plural = 'Componentes extras da Home'
+		ordering = ('display_order', 'id')
+
+	def __str__(self):
+		return f'#{self.display_order} - {self.title}'

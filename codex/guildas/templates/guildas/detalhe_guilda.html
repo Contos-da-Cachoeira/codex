@@ -1,0 +1,168 @@
+{% extends "core/base.html" %}
+
+{% block title %}{{ info_publica.nome|default:guilda }}{% endblock %}
+
+{% block content %}
+<section class="space-y-6">
+    <div class="hero rounded-box border border-base-300 bg-base-100">
+        <div class="hero-content text-center py-10">
+            <div class="max-w-3xl space-y-3">
+                <h1 class="text-4xl md:text-5xl font-bold">{% block guilda_icone %}🛡{% endblock %} {{ info_publica.nome }}</h1>
+                <p class="text-base-content/70">{% block guilda_subtitulo %}Informacoes publicas para todos e area restrita para membros da guilda.{% endblock %}</p>
+                {% if eh_membro %}
+                    <span class="badge badge-success badge-lg">Acesso de membro ativo</span>
+                {% else %}
+                    <span class="badge badge-outline">Acesso publico</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+        <article class="card bg-base-100 border border-base-300 shadow-lg lg:col-span-2">
+            <div class="card-body space-y-4">
+                <h2 class="card-title">Informacoes publicas</h2>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    {% if info_publica.divindade %}
+                        <div class="rounded-box bg-base-200 p-4">
+                            <p class="text-xs uppercase tracking-wide opacity-70">Divindade</p>
+                            <p class="font-medium">{{ info_publica.divindade }}</p>
+                        </div>
+                    {% endif %}
+                    {% if info_publica.terra_natal %}
+                        <div class="rounded-box bg-base-200 p-4">
+                            <p class="text-xs uppercase tracking-wide opacity-70">Terra natal</p>
+                            <p class="font-medium">{{ info_publica.terra_natal }}</p>
+                        </div>
+                    {% endif %}
+                    {% if info_publica.lideranca %}
+                        <div class="rounded-box bg-base-200 p-4">
+                            <p class="text-xs uppercase tracking-wide opacity-70">Lideranca</p>
+                            <p class="font-medium">{{ info_publica.lideranca }}</p>
+                        </div>
+                    {% endif %}
+                    {% if info_publica.vantagem %}
+                        <div class="rounded-box bg-base-200 p-4">
+                            <p class="text-xs uppercase tracking-wide opacity-70">Vantagem</p>
+                            <p class="font-medium">{{ info_publica.vantagem }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if info_publica.lema %}
+                    <blockquote class="text-lg italic border-l-4 border-primary pl-4">
+                        "{{ info_publica.lema }}"
+                    </blockquote>
+                {% endif %}
+
+                {% if info_publica.marca_nome %}
+                    <div role="alert" class="alert alert-error alert-soft">
+                        <span><strong>{{ info_publica.marca_nome }}:</strong> {{ info_publica.marca_efeito }}</span>
+                    </div>
+                {% endif %}
+            </div>
+        </article>
+
+        <aside class="space-y-5">
+            {% if eh_membro %}
+                <div class="stats stats-vertical shadow w-full bg-base-100 border border-base-300">
+                    <div class="stat">
+                        <div class="stat-title">Membros ativos</div>
+                        <div class="stat-value text-3xl">{{ total_membros }}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-title">Personagens da guilda</div>
+                        <div class="stat-value text-3xl">{{ total_personagens }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <div role="alert" class="alert alert-warning alert-soft">
+                    <span>Dados de membros e quantidade de personagens sao privados para nao membros.</span>
+                </div>
+            {% endif %}
+
+            <div class="card bg-base-100 border border-base-300">
+                <div class="card-body">
+                    <h3 class="card-title text-base">Navegacao</h3>
+                    <a href="{% url 'listar_guildas' %}" class="btn btn-outline btn-sm">Voltar para todas as guildas</a>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    {% if eh_membro and guilda.descricao_interna %}
+        <article class="card bg-base-100 border border-warning shadow-md">
+            <div class="card-body">
+                <h2 class="card-title">Canal interno da guilda</h2>
+                <div class="prose max-w-none text-base-content/90">{{ guilda.descricao_interna|linebreaks }}</div>
+            </div>
+        </article>
+    {% endif %}
+
+    {% if eh_membro %}
+        <article class="card bg-base-100 border border-base-300 shadow-md">
+            <div class="card-body">
+                <h2 class="card-title">Noticias internas</h2>
+                {% if noticias %}
+                    <ul class="list bg-base-100 rounded-box">
+                        {% for noticia in noticias %}
+                            <li class="list-row">
+                                <div>
+                                    <p class="font-semibold">{{ noticia.titulo }}</p>
+                                    <p class="text-xs opacity-70">{{ noticia.criado_em|date:"d/m/Y H:i" }}</p>
+                                    <p class="mt-2 text-sm">{{ noticia.conteudo }}</p>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-sm opacity-70">Nenhuma noticia interna publicada.</p>
+                {% endif %}
+            </div>
+        </article>
+    {% endif %}
+
+    <article class="card bg-base-100 border border-base-300 shadow-md">
+        <div class="card-body">
+            <h2 class="card-title">Personagens aprovados</h2>
+            {% if eh_membro %}
+                {% if personagens_guilda %}
+                    <div class="overflow-x-auto">
+                        <table class="table table-zebra">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Classe</th>
+                                    <th>Jogador</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for personagem in personagens_guilda %}
+                                    <tr>
+                                        <td>
+                                            {% if personagem.usuario == user %}
+                                                <a class="link link-primary" href="{% url 'detalhe_personagem' personagem.slug %}">{{ personagem.nome }}</a>
+                                            {% else %}
+                                                {{ personagem.nome }}
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ personagem.get_classe_display }}</td>
+                                        <td>{{ personagem.usuario.username }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-sm opacity-70">Nenhum personagem aprovado nesta guilda.</p>
+                {% endif %}
+            {% else %}
+                <div role="alert" class="alert alert-info alert-soft">
+                    <span>A lista de personagens da guilda e restrita para membros.</span>
+                </div>
+            {% endif %}
+        </div>
+    </article>
+</section>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import HomePageConfig, Profile, SiteLayoutConfig
+from .models import HomeDynamicSection, HomePageConfig, Profile, SiteLayoutConfig
 
 
 @admin.register(Profile)
@@ -57,3 +57,11 @@ class HomePageConfigAdmin(SingletonAdminMixin, admin.ModelAdmin):
 			),
 		}),
 	)
+
+
+@admin.register(HomeDynamicSection)
+class HomeDynamicSectionAdmin(admin.ModelAdmin):
+	list_display = ('title', 'display_order', 'is_visible')
+	list_filter = ('is_visible',)
+	search_fields = ('title', 'content')
+	ordering = ('display_order', 'id')

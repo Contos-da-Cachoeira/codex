@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'dashboard',
     'core',
     'personagens',
+    'guildas',
 ]
 
 MIDDLEWARE = [

@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('dashboard.urls')),
     path('', include('accounts.urls')),
     path('personagens/', include('personagens.urls')),
+    path('guildas/', include('guildas.urls')),
 ]
 
 if settings.DEBUG:
