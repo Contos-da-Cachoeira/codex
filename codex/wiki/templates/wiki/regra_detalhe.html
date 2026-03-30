@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Wiki | {{ regra.titulo }}{% endblock title %}
+
+{% block content %}
+  <nav class="breadcrumbs text-sm mb-6">
+    <ul>
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li><a href="{% url 'wiki_regras_lista' %}">Wiki</a></li>
+      <li>{{ regra.titulo }}</li>
+    </ul>
+  </nav>
+
+  <article class="card bg-base-100 border border-base-300">
+    <div class="card-body">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <h1 class="text-3xl font-black tracking-tight">{{ regra.titulo }}</h1>
+        <span class="badge badge-outline">{{ regra.categoria }}</span>
+      </div>
+
+      <p class="text-base-content/75">{{ regra.resumo }}</p>
+
+      <div class="divider my-2"></div>
+
+      <div class="space-y-6">
+        {% for secao in regra.secoes %}
+          <section>
+            <h2 class="text-xl font-bold mb-2">{{ secao.titulo }}</h2>
+            <ul class="list-disc pl-6 space-y-1 text-base-content/85">
+              {% for item in secao.itens %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          </section>
+        {% endfor %}
+      </div>
+
+      <div class="card-actions justify-between mt-6">
+        <div class="flex gap-2">
+          <a href="{% url 'wiki_classes_lista' %}" class="btn btn-ghost btn-sm">Classes</a>
+          <a href="{% url 'wiki_magias_lista' %}" class="btn btn-ghost btn-sm">Magias</a>
+          <a href="{% url 'wiki_itens_lista' %}" class="btn btn-ghost btn-sm">Itens</a>
+          <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-ghost btn-sm">Talentos</a>
+        </div>
+        <a href="{% url 'wiki_regras_lista' %}" class="btn btn-ghost btn-sm">Voltar para Wiki</a>
+      </div>
+    </div>
+  </article>
+{% endblock content %}

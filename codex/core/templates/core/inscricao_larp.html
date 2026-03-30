@@ -1,0 +1,181 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Inscricao no LARP | Codex{% endblock title %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto space-y-6">
+  <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
+    <h1 class="text-3xl font-bold">Inscricao no LARP</h1>
+    <p class="mt-1 text-base-content/70"><strong>{{ evento.titulo }}</strong></p>
+    <p class="text-sm text-base-content/70">{{ evento.local }} | {{ evento.data_evento|date:'d/m/Y H:i' }}</p>
+    <p class="mt-4 whitespace-pre-line text-base-content/85">{{ evento.historia }}</p>
+  </div>
+
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-error"><span>{{ form.non_field_errors|striptags }}</span></div>
+    {% endif %}
+
+    <div class="card bg-base-100 shadow-md border border-base-300">
+      <div class="card-body space-y-3">
+        <h2 class="card-title">1. Informacoes do Jogador</h2>
+
+        {% if player_data_status.nome_existe %}
+          <div class="rounded-lg border border-base-300 bg-base-200/60 p-3 text-sm">
+            <p><strong>Nome cadastrado:</strong> {{ form.player_data_preview.nome_completo_jogador|default:'Nao informado' }}</p>
+            <p><strong>Apelido cadastrado:</strong> {{ form.player_data_preview.apelido_cla|default:'Nao informado' }}</p>
+          </div>
+          <label class="cursor-pointer flex items-center gap-3">
+            <input type="checkbox" name="nome_confirmado" class="checkbox" {% if form.nome_confirmado.value %}checked{% endif %} required />
+            <span>Confirmo que meu nome esta correto.</span>
+          </label>
+          {% if form.nome_confirmado.errors %}<p class="text-error text-sm">{{ form.nome_confirmado.errors|striptags }}</p>{% endif %}
+        {% else %}
+          <label class="form-control">
+            <span class="label-text">Nome completo</span>
+            <input type="text" name="nome_completo_jogador" class="input input-bordered" value="{{ form.nome_completo_jogador.value|default:'' }}" required />
+            {% if form.nome_completo_jogador.errors %}<span class="label-text-alt text-error">{{ form.nome_completo_jogador.errors|striptags }}</span>{% endif %}
+          </label>
+        {% endif %}
+
+        <label class="form-control">
+          <span class="label-text">Apelido no cla (opcional)</span>
+          <input type="text" name="apelido_cla" class="input input-bordered" value="{{ form.apelido_cla.value|default:'' }}" />
+          {% if form.apelido_cla.errors %}<span class="label-text-alt text-error">{{ form.apelido_cla.errors|striptags }}</span>{% endif %}
+        </label>
+
+        {% if player_data_status.contato_existe %}
+          <label class="cursor-pointer flex items-center gap-3">
+            <input type="checkbox" name="telefone_cpf_confirmado" class="checkbox" {% if form.telefone_cpf_confirmado.value %}checked{% endif %} required />
+            <span>Confirmo que telefone e CPF cadastrados estao corretos.</span>
+          </label>
+          {% if form.telefone_cpf_confirmado.errors %}<p class="text-error text-sm">{{ form.telefone_cpf_confirmado.errors|striptags }}</p>{% endif %}
+        {% else %}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <label class="form-control">
+              <span class="label-text">Telefone</span>
+              <input type="text" name="telefone" class="input input-bordered" value="{{ form.telefone.value|default:'' }}" required />
+              {% if form.telefone.errors %}<span class="label-text-alt text-error">{{ form.telefone.errors|striptags }}</span>{% endif %}
+            </label>
+            <label class="form-control">
+              <span class="label-text">CPF</span>
+              <input type="text" name="cpf" class="input input-bordered" value="{{ form.cpf.value|default:'' }}" required />
+              {% if form.cpf.errors %}<span class="label-text-alt text-error">{{ form.cpf.errors|striptags }}</span>{% endif %}
+            </label>
+          </div>
+        {% endif %}
+
+        <div>
+          <p class="label-text mb-2">Possui fobia ou gatilho psicologico?</p>
+          <div class="flex gap-6">
+            <label class="cursor-pointer flex items-center gap-2">
+              <input type="radio" name="possui_fobia_gatilho" value="sim" class="radio" {% if form.possui_fobia_gatilho.value == 'sim' %}checked{% endif %} required />
+              <span>Sim</span>
+            </label>
+            <label class="cursor-pointer flex items-center gap-2">
+              <input type="radio" name="possui_fobia_gatilho" value="nao" class="radio" {% if form.possui_fobia_gatilho.value == 'nao' %}checked{% endif %} required />
+              <span>Nao</span>
+            </label>
+          </div>
+          {% if form.possui_fobia_gatilho.errors %}<p class="text-error text-sm mt-1">{{ form.possui_fobia_gatilho.errors|striptags }}</p>{% endif %}
+
+          <label class="form-control mt-3" id="fobia-wrapper">
+            <span class="label-text">Se sim, descreva</span>
+            <textarea id="fobia-field" name="fobia_gatilho" class="textarea textarea-bordered" rows="3">{{ form.fobia_gatilho.value|default:'' }}</textarea>
+            {% if form.fobia_gatilho.errors %}<span class="label-text-alt text-error">{{ form.fobia_gatilho.errors|striptags }}</span>{% endif %}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-md border border-base-300">
+      <div class="card-body space-y-3">
+        <div class="flex items-center justify-between gap-2">
+          <h2 class="card-title">2. Informacoes do Personagem</h2>
+          <button type="button" class="btn btn-sm btn-outline" onclick="personagem_modal.showModal()">Criar personagem agora</button>
+        </div>
+        <p class="text-sm text-base-content/70">Selecione um personagem ja criado para esta inscricao.</p>
+
+        <label class="form-control">
+          <span class="label-text">Personagem</span>
+          <select name="personagem" class="select select-bordered" required>
+            <option value="">Selecione</option>
+            {% for personagem in form.fields.personagem.queryset %}
+              <option value="{{ personagem.id }}" {% if form.personagem.value|stringformat:'s' == personagem.id|stringformat:'s' %}selected{% endif %}>{{ personagem.nome }} ({{ personagem.slug }})</option>
+            {% endfor %}
+          </select>
+          {% if form.personagem.errors %}<span class="label-text-alt text-error">{{ form.personagem.errors|striptags }}</span>{% endif %}
+        </label>
+
+        {% if not form.fields.personagem.queryset %}
+          <div class="alert alert-warning">
+            <span>Voce ainda nao tem personagens. Clique em "Criar personagem agora" para cadastrar um sem sair desta pagina.</span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-md border border-base-300">
+      <div class="card-body space-y-2">
+        <h2 class="card-title">3. Ultima confirmacao</h2>
+        <label class="cursor-pointer flex items-start gap-3">
+          <input type="checkbox" name="ciencia_concordancia" class="checkbox mt-1" {% if form.ciencia_concordancia.value %}checked{% endif %} required />
+          <span>Declaro que revisei os dados e confirmo minha inscricao no evento.</span>
+        </label>
+        {% if form.ciencia_concordancia.errors %}<p class="text-error text-sm">{{ form.ciencia_concordancia.errors|striptags }}</p>{% endif %}
+      </div>
+    </div>
+
+    <div class="flex justify-between items-center">
+      <a href="{% url 'listar_larps' %}" class="btn btn-ghost">Voltar</a>
+      <button type="submit" class="btn btn-primary">Finalizar inscricao</button>
+    </div>
+  </form>
+</section>
+
+<dialog id="personagem_modal" class="modal">
+  <div class="modal-box max-w-5xl p-0">
+    <div class="px-4 py-3 border-b border-base-300 flex justify-between items-center">
+      <h3 class="font-semibold">Criar personagem</h3>
+      <button type="button" class="btn btn-xs" onclick="personagem_modal.close()">Fechar</button>
+    </div>
+    <iframe src="{% url 'criar_personagem' %}?popup=1" class="w-full h-[70vh] border-0" title="Criar personagem"></iframe>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button>close</button></form>
+</dialog>
+
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    const fobiaRadios = document.querySelectorAll('input[name="possui_fobia_gatilho"]');
+    const fobiaWrapper = document.getElementById('fobia-wrapper');
+    const fobiaField = document.getElementById('fobia-field');
+
+    function toggleFobia() {
+      const selected = document.querySelector('input[name="possui_fobia_gatilho"]:checked');
+      const enabled = selected && selected.value === 'sim';
+      if (fobiaWrapper) {
+        fobiaWrapper.classList.toggle('hidden', !enabled);
+      }
+      if (fobiaField) {
+        fobiaField.required = enabled;
+        if (!enabled) {
+          fobiaField.value = '';
+        }
+      }
+    }
+
+    fobiaRadios.forEach(function (radio) {
+      radio.addEventListener('change', toggleFobia);
+    });
+    toggleFobia();
+
+    window.addEventListener('message', function (event) {
+      if (event.data && event.data.type === 'personagem-criado') {
+        window.location.reload();
+      }
+    });
+  });
+</script>
+{% endblock content %}

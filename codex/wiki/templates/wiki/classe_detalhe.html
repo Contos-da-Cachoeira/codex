@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Wiki | {{ classe.nome }}{% endblock title %}
+
+{% block content %}
+  <nav class="breadcrumbs text-sm mb-6">
+    <ul>
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li><a href="{% url 'wiki_classes_lista' %}">Classes</a></li>
+      <li>{{ classe.nome }}</li>
+    </ul>
+  </nav>
+
+  <article class="card bg-base-100 border border-base-300">
+    <div class="card-body gap-5">
+      <header>
+        {% if classe.imagem %}
+          <div class="mb-5 flex justify-center md:justify-start">
+            <img
+              src="{% static classe.imagem %}"
+              alt="Ilustracao da classe {{ classe.nome }}"
+              class="max-h-56 w-auto object-contain"
+              loading="lazy"
+            >
+          </div>
+        {% endif %}
+        <h1 class="text-3xl font-black tracking-tight">{{ classe.nome }}</h1>
+        <p class="text-base-content/75 mt-1">{{ classe.tipo }}</p>
+        <p class="mt-3">{{ classe.descricao }}</p>
+      </header>
+
+      <section class="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div class="rounded-xl border border-base-300 p-4 bg-base-200/50">
+          <h2 class="font-bold">Sabe usar</h2>
+          <p class="mt-1 text-base-content/80">{{ classe.sabe_usar }}</p>
+        </div>
+        <div class="rounded-xl border border-base-300 p-4 bg-base-200/50">
+          <h2 class="font-bold">Defesas</h2>
+          <p class="mt-1 text-base-content/80">{{ classe.defesas }}</p>
+        </div>
+        <div class="rounded-xl border border-base-300 p-4 bg-base-200/50">
+          <h2 class="font-bold">Magia</h2>
+          <p class="mt-1 text-base-content/80">{{ classe.magia }}</p>
+        </div>
+        <div class="rounded-xl border border-base-300 p-4 bg-base-200/50">
+          <h2 class="font-bold">Item inicial</h2>
+          <p class="mt-1 text-base-content/80">{{ classe.item_inicial }}</p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold mb-2">Habilidade especial</h2>
+        <p class="text-base-content/85">{{ classe.habilidade_especial }}</p>
+
+        {% if classe.habilidade_detalhes %}
+          <ul class="list-disc pl-6 space-y-1 mt-3 text-base-content/80">
+            {% for detalhe in classe.habilidade_detalhes %}
+              <li>{{ detalhe }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </section>
+
+      {% if classe.extra %}
+        <section class="alert alert-info">
+          <span><strong>Extra:</strong> {{ classe.extra }}</span>
+        </section>
+      {% endif %}
+
+      <div class="card-actions justify-between mt-2">
+        <a href="{% url 'wiki_magias_lista' %}" class="btn btn-ghost btn-sm">Ver Magias</a>
+        <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-ghost btn-sm">Ver Talentos</a>
+        <a href="{% url 'wiki_classes_lista' %}" class="btn btn-primary btn-sm">Voltar para Classes</a>
+      </div>
+    </div>
+  </article>
+{% endblock content %}

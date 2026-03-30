@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Wiki | Talentos{% endblock title %}
+
+{% block content %}
+  <section class="mb-8">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-4xl font-black tracking-tight">Wiki de Talentos</h1>
+        <p class="mt-2 text-base-content/70 max-w-3xl">
+          Um jogador pode gastar XP para melhorar seu personagem comprando talentos permanentes para
+          as proximas sessoes desse personagem.
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <a href="{% url 'wiki_classes_lista' %}" class="btn btn-outline btn-sm">Ver Classes</a>
+        <a href="{% url 'wiki_magias_lista' %}" class="btn btn-outline btn-sm">Ver Magias</a>
+        <a href="{% url 'wiki_itens_lista' %}" class="btn btn-outline btn-sm">Ver Itens</a>
+      </div>
+    </div>
+
+    <div class="alert alert-warning mt-4">
+      <span>
+        Regras gerais: maximo de 5 talentos ativos por personagem; e possivel trocar talentos antigos por novos;
+        talentos nao migram ao trocar de personagem; toda escolha deve ser justificada pela historia e evolucao.
+      </span>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {% for talento in talentos %}
+      <article class="card bg-base-100 border border-base-300">
+        <div class="card-body">
+          <div class="flex items-center justify-between gap-2">
+            <h2 class="card-title text-lg">{{ talento.nome }}</h2>
+            <span class="badge badge-primary">{{ talento.custo_xp }} XP</span>
+          </div>
+
+          <p class="text-sm text-base-content/70">{{ talento.descricao }}</p>
+
+          <div class="flex flex-wrap gap-2 text-xs mt-1">
+            {% if talento.stackavel %}
+              <span class="badge badge-success">Stackavel</span>
+            {% else %}
+              <span class="badge badge-ghost">Nao stackavel</span>
+            {% endif %}
+
+            {% if talento.requisito %}
+              <span class="badge badge-warning">Tem requisito</span>
+            {% endif %}
+          </div>
+
+          <div class="card-actions justify-end mt-2">
+            <a href="{% url 'wiki_talento_detalhe' talento.slug %}" class="btn btn-primary btn-sm">Detalhes do talento</a>
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <div class="alert alert-info">
+        <span>Nenhum talento cadastrado ainda.</span>
+      </div>
+    {% endfor %}
+  </section>
+{% endblock content %}

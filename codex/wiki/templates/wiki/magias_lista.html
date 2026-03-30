@@ -1,0 +1,60 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Wiki | Magias{% endblock title %}
+
+{% block content %}
+  <section class="mb-8 space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-4xl font-black tracking-tight">Wiki de Magias</h1>
+        <p class="mt-2 text-base-content/70 max-w-3xl">
+          Catalogo das magias jogaveis com invocacao, classes que usam e efeitos em jogo.
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <a href="{% url 'wiki_classes_lista' %}" class="btn btn-outline btn-sm">Ver Classes</a>
+        <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-outline btn-sm">Ver Talentos</a>
+        <a href="{% url 'wiki_itens_lista' %}" class="btn btn-outline btn-sm">Ver Itens</a>
+      </div>
+    </div>
+
+    <article class="card bg-base-100 border border-base-300">
+      <div class="card-body">
+        <h2 class="card-title">{{ regras_gerais_magia.titulo }}</h2>
+        <ul class="list-disc pl-6 space-y-1 text-base-content/85">
+          {% for item in regras_gerais_magia.itens %}
+            <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </article>
+  </section>
+
+  <section class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {% for magia in magias %}
+      <article class="card bg-base-100 border border-base-300">
+        <div class="card-body">
+          <div class="flex items-center justify-between gap-2">
+            <h2 class="card-title text-lg">{{ magia.nome }}</h2>
+            <span class="badge badge-outline">{{ magia.tipo }}</span>
+          </div>
+
+          <p class="text-sm text-base-content/70">{{ magia.descricao }}</p>
+
+          <div class="text-xs text-base-content/80">
+            <strong>Quem usa:</strong>
+            {{ magia.quem_usa|join:', ' }}
+          </div>
+
+          <div class="card-actions justify-end mt-2">
+            <a href="{% url 'wiki_magia_detalhe' magia.slug %}" class="btn btn-primary btn-sm">Detalhes da magia</a>
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <div class="alert alert-info">
+        <span>Nenhuma magia cadastrada ainda.</span>
+      </div>
+    {% endfor %}
+  </section>
+{% endblock content %}

@@ -1,0 +1,55 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Wiki | Itens{% endblock title %}
+
+{% block content %}
+  <section class="mb-8">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-4xl font-black tracking-tight">Wiki de Itens</h1>
+        <p class="mt-2 text-base-content/70 max-w-3xl">
+          Catalogo de itens, consumiveis e utilitarios com valor, tipo, raridade e observacoes de uso.
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <a href="{% url 'wiki_classes_lista' %}" class="btn btn-outline btn-sm">Ver Classes</a>
+        <a href="{% url 'wiki_magias_lista' %}" class="btn btn-outline btn-sm">Ver Magias</a>
+        <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-outline btn-sm">Ver Talentos</a>
+        <a href="{% url 'wiki_regras_lista' %}" class="btn btn-outline btn-sm">Ver Regras</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {% for item in itens %}
+      <article class="card bg-base-100 border border-base-300">
+        <div class="card-body">
+          <div class="flex items-center justify-between gap-2">
+            <h2 class="card-title text-lg">{{ item.nome }}</h2>
+            <span class="badge badge-outline">{{ item.tipo }}</span>
+          </div>
+
+          <div class="flex flex-wrap gap-2 text-xs">
+            <span class="badge badge-neutral">{{ item.valor }}</span>
+            <span class="badge {% if item.raridade == 'Lendario' %}badge-error{% elif item.raridade == 'Raro' %}badge-warning{% else %}badge-ghost{% endif %}">
+              {{ item.raridade }}
+            </span>
+            {% if item.alquimico %}
+              <span class="badge badge-success">Alquimico</span>
+            {% endif %}
+          </div>
+
+          <p class="text-sm text-base-content/70">{{ item.descricao }}</p>
+
+          <div class="card-actions justify-end mt-2">
+            <a href="{% url 'wiki_item_detalhe' item.slug %}" class="btn btn-primary btn-sm">Detalhes do item</a>
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <div class="alert alert-info">
+        <span>Nenhum item cadastrado ainda.</span>
+      </div>
+    {% endfor %}
+  </section>
+{% endblock content %}

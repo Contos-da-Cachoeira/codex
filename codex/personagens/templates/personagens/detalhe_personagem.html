@@ -34,6 +34,30 @@
     <article class="card bg-base-100 shadow-md border border-base-300 lg:col-span-2">
       <div class="card-body space-y-4">
         <div>
+          <h2 class="card-title text-lg">Magias que sabe</h2>
+          {% if personagem.magias_pretendidas %}
+            <ul class="list-disc pl-6 text-base-content/80 space-y-1">
+              {% for magia in personagem.magias_pretendidas %}
+                <li>{{ magia }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-base-content/80">Nenhuma magia selecionada.</p>
+          {% endif %}
+        </div>
+        <div>
+          <h2 class="card-title text-lg">Talentos iniciais</h2>
+          {% if personagem.talentos_iniciais %}
+            <ul class="list-disc pl-6 text-base-content/80 space-y-1">
+              {% for talento in personagem.talentos_iniciais %}
+                <li>{{ talento }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-base-content/80">Nenhum talento selecionado.</p>
+          {% endif %}
+        </div>
+        <div>
           <h2 class="card-title text-lg">Historia</h2>
           <p class="text-base-content/80 whitespace-pre-line">{{ personagem.historia|default:'Nao informada.' }}</p>
         </div>

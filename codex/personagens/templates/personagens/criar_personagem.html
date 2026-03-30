@@ -1,81 +1,200 @@
-{% extends 'core/base.html' %}
+﻿{% extends 'core/base.html' %}
 
-{% block title %}Criar Personagem | Codex{% endblock title %}
+{% block title %}Novo Personagem | Codex{% endblock title %}
+
+{% block head_extra %}
+  <style>
+    .field-block { animation: rise-in 280ms ease-out both; }
+  </style>
+{% endblock %}
 
 {% block content %}
 <section class="max-w-4xl mx-auto space-y-6">
   <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
-    <h1 class="text-3xl font-bold">Criar Personagem</h1>
-    <p class="mt-2 text-base-content/80">Preencha os dados iniciais do personagem.</p>
+    <h1 class="text-3xl font-bold">Criar novo personagem</h1>
+    <p class="mt-2 text-base-content/80">Preencha os dados do personagem para concluir o cadastro.</p>
   </div>
 
   <div class="card bg-base-100 shadow-md border border-base-300">
     <div class="card-body">
-      <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form method="post" id="personagem-form" class="space-y-4">
         {% csrf_token %}
 
         {% if form.non_field_errors %}
-          <div class="md:col-span-2 alert alert-error">
-            <span>{{ form.non_field_errors|striptags }}</span>
-          </div>
+          <div class="alert alert-error"><span>{{ form.non_field_errors|striptags }}</span></div>
         {% endif %}
 
-        <label class="form-control md:col-span-2">
-          <span class="label-text mb-1">Nome</span>
+        <label class="form-control field-block">
+          <span class="label-text mb-1">Nome do personagem</span>
           <input type="text" name="nome" class="input input-bordered" value="{{ form.nome.value|default:'' }}" required />
           {% if form.nome.errors %}<span class="label-text-alt text-error">{{ form.nome.errors|striptags }}</span>{% endif %}
         </label>
 
-        <label class="form-control">
-          <span class="label-text mb-1">Classe</span>
-          <select name="classe" class="select select-bordered">
-            {% for value, label in form.fields.classe.choices %}
-              <option value="{{ value }}" {% if form.classe.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+        <label class="form-control field-block">
+          <span class="label-text mb-1">Descricao do personagem</span>
+          <textarea name="descricao_personagem" class="textarea textarea-bordered" rows="4" required>{{ form.descricao_personagem.value|default:'' }}</textarea>
+          {% if form.descricao_personagem.errors %}<span class="label-text-alt text-error">{{ form.descricao_personagem.errors|striptags }}</span>{% endif %}
+        </label>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <label class="form-control field-block">
+            <span class="label-text mb-1">Guilda</span>
+            <select name="guilda" class="select select-bordered" required>
+              <option value="">Selecione uma guilda</option>
+              {% for value, label in form.fields.guilda.choices %}
+                <option value="{{ value }}" {% if form.guilda.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            {% if form.guilda.errors %}<span class="label-text-alt text-error">{{ form.guilda.errors|striptags }}</span>{% endif %}
+          </label>
+
+          <label class="form-control field-block">
+            <span class="label-text mb-1">Classe</span>
+            <select name="classe" id="classe-select" class="select select-bordered" required>
+              <option value="">Selecione uma classe</option>
+              {% for value, label in form.fields.classe.choices %}
+                <option value="{{ value }}" data-conjuradora="{% if value|stringformat:'s' == '2' or value|stringformat:'s' == '4' or value|stringformat:'s' == '5' or value|stringformat:'s' == '8' or value|stringformat:'s' == '9' %}1{% else %}0{% endif %}" data-fixa="{% if value|stringformat:'s' == '5' or value|stringformat:'s' == '9' %}1{% else %}0{% endif %}" {% if form.classe.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            {% if form.classe.errors %}<span class="label-text-alt text-error">{{ form.classe.errors|striptags }}</span>{% endif %}
+          </label>
+        </div>
+
+        <div class="rounded-box border border-base-300 p-4 field-block hidden" id="magias-wrapper">
+          <h3 class="font-semibold text-lg">Magias que o personagem sabe</h3>
+          <div class="mt-3 hidden" id="magias-fixas-info"><div class="alert alert-info">Para esta classe, as magias sao definidas automaticamente.</div></div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3" id="magias-opcoes">
+            <p class="text-sm text-base-content/70">Escolha uma classe conjuradora para liberar as opcoes.</p>
+          </div>
+          {% if form.magias_pretendidas.errors %}<div class="text-error text-sm mt-2">{{ form.magias_pretendidas.errors|striptags }}</div>{% endif %}
+        </div>
+
+        <div class="rounded-box border border-base-300 p-4 field-block">
+          <h3 class="font-semibold text-lg">Talentos iniciais</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-3" id="talentos-grid">
+            {% for value, label in form.fields.talentos_iniciais.choices %}
+              <label class="cursor-pointer flex items-center gap-3 border border-base-300 rounded-lg px-3 py-2">
+                <input type="checkbox" name="talentos_iniciais" value="{{ value }}" class="checkbox checkbox-sm talento-checkbox" {% if value in form.talentos_iniciais.value %}checked{% endif %} />
+                <span>{{ label }}</span>
+              </label>
             {% endfor %}
-          </select>
-          {% if form.classe.errors %}<span class="label-text-alt text-error">{{ form.classe.errors|striptags }}</span>{% endif %}
-        </label>
+          </div>
+          <div class="text-sm mt-3" id="talentos-count">0/5 selecionados</div>
+          {% if form.talentos_iniciais.errors %}<div class="text-error text-sm mt-2">{{ form.talentos_iniciais.errors|striptags }}</div>{% endif %}
+        </div>
 
-        <label class="form-control">
-          <span class="label-text mb-1">Guilda</span>
-          <select name="guilda" class="select select-bordered">
-            {% for value, label in form.fields.guilda.choices %}
-              <option value="{{ value }}" {% if form.guilda.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-          {% if form.guilda.errors %}<span class="label-text-alt text-error">{{ form.guilda.errors|striptags }}</span>{% endif %}
+        <label class="cursor-pointer flex items-start gap-3 field-block">
+          <input type="checkbox" name="ciencia_concordancia" class="checkbox mt-1" {% if form.ciencia_concordancia.value %}checked{% endif %} required />
+          <span>Confirmo que os dados do personagem estao corretos para cadastro.</span>
         </label>
+        {% if form.ciencia_concordancia.errors %}<div class="text-error text-sm">{{ form.ciencia_concordancia.errors|striptags }}</div>{% endif %}
 
-        <label class="form-control md:col-span-2">
-          <span class="label-text mb-1">Historia</span>
-          <textarea name="historia" class="textarea textarea-bordered" rows="4">{{ form.historia.value|default:'' }}</textarea>
-          {% if form.historia.errors %}<span class="label-text-alt text-error">{{ form.historia.errors|striptags }}</span>{% endif %}
-        </label>
-
-        <label class="form-control md:col-span-2">
-          <span class="label-text mb-1">Aparencia</span>
-          <textarea name="aparencia" class="textarea textarea-bordered" rows="3">{{ form.aparencia.value|default:'' }}</textarea>
-          {% if form.aparencia.errors %}<span class="label-text-alt text-error">{{ form.aparencia.errors|striptags }}</span>{% endif %}
-        </label>
-
-        <label class="form-control md:col-span-2">
-          <span class="label-text mb-1">Objetivos</span>
-          <textarea name="objetivos" class="textarea textarea-bordered" rows="3">{{ form.objetivos.value|default:'' }}</textarea>
-          {% if form.objetivos.errors %}<span class="label-text-alt text-error">{{ form.objetivos.errors|striptags }}</span>{% endif %}
-        </label>
-
-        <label class="form-control md:col-span-2">
-          <span class="label-text mb-1">Personalidade</span>
-          <textarea name="personalidade" class="textarea textarea-bordered" rows="3">{{ form.personalidade.value|default:'' }}</textarea>
-          {% if form.personalidade.errors %}<span class="label-text-alt text-error">{{ form.personalidade.errors|striptags }}</span>{% endif %}
-        </label>
-
-        <div class="md:col-span-2 flex justify-end gap-2 mt-2">
-          <a href="{% url 'meus_personagens' %}" class="btn btn-ghost">Cancelar</a>
-          <button type="submit" class="btn btn-primary">Criar personagem</button>
+        <div class="flex items-center justify-between pt-2 border-t border-base-300">
+          {% if popup_mode %}
+            <button type="button" class="btn btn-ghost" onclick="window.close()">Fechar janela</button>
+          {% else %}
+            <a href="{% url 'meus_personagens' %}" class="btn btn-ghost">Cancelar</a>
+          {% endif %}
+          <button type="submit" class="btn btn-primary">Salvar personagem</button>
         </div>
       </form>
     </div>
   </div>
 </section>
+
+{{ magias_por_classe|json_script:"magias-por-classe-data" }}
+{{ magias_selecionadas|json_script:"magias-selecionadas-data" }}
+
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    const classeSelect = document.getElementById('classe-select');
+    const magiasFixasInfo = document.getElementById('magias-fixas-info');
+    const magiasOpcoes = document.getElementById('magias-opcoes');
+    const magiasPorClasseNode = document.getElementById('magias-por-classe-data');
+    const magiasSelecionadasNode = document.getElementById('magias-selecionadas-data');
+    const magiasPorClasse = magiasPorClasseNode ? JSON.parse(magiasPorClasseNode.textContent) : {};
+    const magiasSelecionadasIniciais = magiasSelecionadasNode ? JSON.parse(magiasSelecionadasNode.textContent || '[]') : [];
+
+    function classeSelecionada() {
+      if (!classeSelect) { return null; }
+      return classeSelect.options[classeSelect.selectedIndex] || null;
+    }
+    function shouldShowMagiasStep() {
+      const selected = classeSelecionada();
+      return selected && selected.dataset.conjuradora === '1';
+    }
+    function classeComMagiasFixas() {
+      const selected = classeSelecionada();
+      return selected && selected.dataset.fixa === '1';
+    }
+    function updateTalentosCounter() {
+      const talentos = document.querySelectorAll('.talento-checkbox:checked').length;
+      const target = document.getElementById('talentos-count');
+      if (target) { target.textContent = talentos + '/5 selecionados'; }
+    }
+    function renderMagias() {
+      const fixed = classeComMagiasFixas();
+      const visible = shouldShowMagiasStep();
+      const wrapper = document.getElementById('magias-wrapper');
+      const classeId = classeSelect ? classeSelect.value : '';
+      const magiasDaClasse = magiasPorClasse[classeId] || [];
+      const selecionadasAtuais = Array.from(document.querySelectorAll('.magia-checkbox:checked')).map(function (input) {
+        return input.value;
+      });
+      const selecionadasBase = new Set(selecionadasAtuais.length ? selecionadasAtuais : magiasSelecionadasIniciais);
+
+      if (wrapper) {
+        wrapper.classList.toggle('hidden', !visible);
+      }
+      if (magiasFixasInfo) { magiasFixasInfo.classList.toggle('hidden', !fixed); }
+      if (magiasOpcoes) {
+        magiasOpcoes.classList.toggle('hidden', !visible || fixed);
+        if (visible && !fixed) {
+          magiasOpcoes.innerHTML = '';
+          if (!magiasDaClasse.length) {
+            magiasOpcoes.innerHTML = '<p class="text-sm text-base-content/70">Nao ha magias cadastradas para esta classe.</p>';
+          } else {
+            magiasDaClasse.forEach(function (magia) {
+              const label = document.createElement('label');
+              label.className = 'cursor-pointer flex items-center gap-3 border border-base-300 rounded-lg px-3 py-2';
+
+              const input = document.createElement('input');
+              input.type = 'checkbox';
+              input.name = 'magias_pretendidas';
+              input.value = magia;
+              input.className = 'checkbox checkbox-sm magia-checkbox';
+              input.required = true;
+              input.checked = selecionadasBase.has(magia);
+
+              const span = document.createElement('span');
+              span.textContent = magia;
+
+              label.appendChild(input);
+              label.appendChild(span);
+              magiasOpcoes.appendChild(label);
+            });
+          }
+        } else {
+          magiasOpcoes.querySelectorAll('.magia-checkbox').forEach(function (cb) { cb.required = false; cb.checked = false; });
+        }
+      }
+    }
+
+    if (classeSelect) { classeSelect.addEventListener('change', renderMagias); }
+    document.querySelectorAll('.talento-checkbox').forEach(function (checkbox) {
+      checkbox.addEventListener('change', function () {
+        const selectedCount = document.querySelectorAll('.talento-checkbox:checked').length;
+        if (selectedCount > 5) { checkbox.checked = false; alert('Limite de 5 talentos atingido.'); }
+        updateTalentosCounter();
+      });
+    });
+
+    updateTalentosCounter();
+    renderMagias();
+
+    if (window.location.search.includes('created=') && window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: 'personagem-criado' }, '*');
+    }
+  });
+</script>
 {% endblock content %}

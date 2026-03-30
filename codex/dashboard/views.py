@@ -6,8 +6,10 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.urls import reverse
 from django.shortcuts import redirect, render
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 
-from core.models import HomeDynamicSection, HomePageConfig, Profile, SiteLayoutConfig
+from core.models import HomeDynamicSection, HomePageConfig, LarpEvento, Profile, SiteLayoutConfig
 from personagens.consts import (
     CLASSES_CHOICES,
     GUILDAS_CHOICES,
@@ -265,6 +267,55 @@ def admin_dashboard(request):
         messages.success(request, 'Personagens atualizados.')
         return redirect(f"{reverse('admin_dashboard')}?open_personagens_modal=1")
 
+    if request.method == 'POST' and request.POST.get('action') == 'create_larp_event':
+        titulo = request.POST.get('larp_titulo', '').strip()
+        local = request.POST.get('larp_local', '').strip()
+        historia = request.POST.get('larp_historia', '').strip()
+        data_evento_raw = request.POST.get('larp_data_evento', '').strip()
+        visivel_publicamente = request.POST.get('larp_visivel_publicamente') == 'on'
+
+        data_evento = parse_datetime(data_evento_raw) if data_evento_raw else None
+        if data_evento and timezone.is_naive(data_evento):
+            data_evento = timezone.make_aware(data_evento, timezone.get_current_timezone())
+
+        if not titulo or not local or not historia or not data_evento:
+            messages.error(request, 'Preencha titulo, local, historia e data para criar o LARP.')
+            return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
+
+        LarpEvento.objects.create(
+            titulo=titulo,
+            local=local,
+            historia=historia,
+            data_evento=data_evento,
+            visivel_publicamente=visivel_publicamente,
+            criado_por=request.user,
+        )
+
+        messages.success(request, 'LARP criado com sucesso.')
+        return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
+
+    if request.method == 'POST' and request.POST.get('action') == 'bulk_update_larp_visibility':
+        evento_ids = request.POST.getlist('larp_ids')
+        updated_count = 0
+
+        for evento_id in evento_ids:
+            evento = LarpEvento.objects.filter(id=evento_id).first()
+            if not evento:
+                continue
+
+            nova_visibilidade = request.POST.get(f'larp_visivel_{evento_id}') == 'on'
+            if evento.visivel_publicamente != nova_visibilidade:
+                evento.visivel_publicamente = nova_visibilidade
+                evento.save(update_fields=['visivel_publicamente'])
+                updated_count += 1
+
+        if updated_count:
+            messages.success(request, 'Visibilidade dos LARPs atualizada.')
+        else:
+            messages.info(request, 'Nenhuma alteracao de visibilidade foi feita.')
+
+        return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
+
     q_value = request.GET.get('q', '').strip()
     role_filter = request.GET.get('role_filter', 'ALL')
     open_users_modal = request.GET.get('open_users_modal') == '1'
@@ -274,6 +325,7 @@ def admin_dashboard(request):
     character_approval_filter = request.GET.get('character_approval_filter', 'ALL')
     open_personagens_modal = request.GET.get('open_personagens_modal') == '1'
     open_home_components_modal = request.GET.get('open_home_components_modal') == '1'
+    open_larps_modal = request.GET.get('open_larps_modal') == '1'
 
     users = User.objects.all().order_by('username')
     if q_value:
@@ -362,6 +414,27 @@ def admin_dashboard(request):
         for personagem in personagens_queryset
     ]
 
+    larp_events_queryset = LarpEvento.objects.prefetch_related('inscricoes').order_by('-data_evento')
+    larp_events_data = []
+    for evento in larp_events_queryset:
+        inscricao_path = reverse(
+            'inscricao_larp',
+            kwargs={'slug': evento.slug, 'token': evento.inscricao_token},
+        )
+        inscricao_url = request.build_absolute_uri(inscricao_path)
+        larp_events_data.append(
+            {
+                'id': evento.id,
+                'titulo': evento.titulo,
+                'local': evento.local,
+                'data_evento': evento.data_evento,
+                'visivel_publicamente': evento.visivel_publicamente,
+                'inscricao_path': inscricao_path,
+                'inscricao_url': inscricao_url,
+                'inscricoes_count': evento.inscricoes.count(),
+            }
+        )
+
     context = {
         'users_with_role': users_with_role,
         'role_choices': Profile.UserRole.choices,
@@ -387,6 +460,8 @@ def admin_dashboard(request):
         'layout_config': layout_config,
         'dynamic_sections': HomeDynamicSection.objects.all(),
         'open_home_components_modal': open_home_components_modal,
+        'larp_events_data': larp_events_data,
+        'open_larps_modal': open_larps_modal,
     }
     return render(request, 'dashboard/admin_dashboard.html', context)
 

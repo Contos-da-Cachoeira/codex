@@ -66,6 +66,7 @@
           <p class="text-sm text-base-content/75">Entre direto nas areas mais usadas do sistema.</p>
         </div>
         <div class="join join-vertical sm:join-horizontal">
+          <a href="{% url 'listar_larps' %}" class="btn btn-accent join-item">LARPs</a>
           <a href="{% url 'listar_guildas' %}" class="btn btn-primary join-item">Guildas</a>
           {% if user.is_authenticated %}
             <a href="{% url 'meus_personagens' %}" class="btn btn-secondary join-item">Personagens</a>

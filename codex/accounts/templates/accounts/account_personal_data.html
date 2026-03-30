@@ -27,28 +27,6 @@
         <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
           {% csrf_token %}
 
-          <label class="form-control">
-            <span class="label-text mb-1">Nome</span>
-            <input
-              type="text"
-              name="first_name"
-              value="{{ form.first_name.value|default:'' }}"
-              class="input input-bordered"
-            />
-            {% if form.first_name.errors %}<span class="label-text-alt text-error">{{ form.first_name.errors|striptags }}</span>{% endif %}
-          </label>
-
-          <label class="form-control">
-            <span class="label-text mb-1">Sobrenome</span>
-            <input
-              type="text"
-              name="last_name"
-              value="{{ form.last_name.value|default:'' }}"
-              class="input input-bordered"
-            />
-            {% if form.last_name.errors %}<span class="label-text-alt text-error">{{ form.last_name.errors|striptags }}</span>{% endif %}
-          </label>
-
           <label class="form-control md:col-span-2">
             <span class="label-text mb-1">Usuario</span>
             <input
@@ -71,6 +49,62 @@
               required
             />
             {% if form.email.errors %}<span class="label-text-alt text-error">{{ form.email.errors|striptags }}</span>{% endif %}
+          </label>
+
+          <div class="md:col-span-2 divider my-1">Informacoes do Jogador</div>
+
+          <label class="form-control md:col-span-2">
+            <span class="label-text mb-1">Nome completo do jogador</span>
+            <input
+              type="text"
+              name="nome_completo_jogador"
+              value="{{ form.nome_completo_jogador.value|default:'' }}"
+              class="input input-bordered"
+            />
+            {% if form.nome_completo_jogador.errors %}<span class="label-text-alt text-error">{{ form.nome_completo_jogador.errors|striptags }}</span>{% endif %}
+          </label>
+
+          <label class="form-control md:col-span-2">
+            <span class="label-text mb-1">Apelido no cla</span>
+            <input
+              type="text"
+              name="apelido_cla"
+              value="{{ form.apelido_cla.value|default:'' }}"
+              class="input input-bordered"
+            />
+            {% if form.apelido_cla.errors %}<span class="label-text-alt text-error">{{ form.apelido_cla.errors|striptags }}</span>{% endif %}
+          </label>
+
+          <label class="form-control">
+            <span class="label-text mb-1">Telefone</span>
+            <input
+              type="text"
+              name="telefone"
+              value="{{ form.telefone.value|default:'' }}"
+              class="input input-bordered"
+            />
+            {% if form.telefone.errors %}<span class="label-text-alt text-error">{{ form.telefone.errors|striptags }}</span>{% endif %}
+          </label>
+
+          <label class="form-control">
+            <span class="label-text mb-1">CPF</span>
+            <input
+              type="text"
+              name="cpf"
+              value="{{ form.cpf.value|default:'' }}"
+              class="input input-bordered"
+            />
+            {% if form.cpf.errors %}<span class="label-text-alt text-error">{{ form.cpf.errors|striptags }}</span>{% endif %}
+          </label>
+
+          <label class="form-control md:col-span-2">
+            <span class="label-text mb-1">Fobia ou gatilho psicologico</span>
+            <textarea
+              name="fobia_gatilho"
+              rows="4"
+              class="textarea textarea-bordered"
+            >{{ form.fobia_gatilho.value|default:'' }}</textarea>
+            {% if form.fobia_gatilho.errors %}<span class="label-text-alt text-error">{{ form.fobia_gatilho.errors|striptags }}</span>{% endif %}
           </label>
 
           <div class="md:col-span-2 flex flex-wrap gap-3 justify-end mt-2">

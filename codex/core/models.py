@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
+from django.utils.text import slugify
+import secrets
 
 
 class Profile(models.Model):
@@ -9,6 +12,11 @@ class Profile(models.Model):
 
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
 	role = models.CharField(max_length=10, choices=UserRole.choices, default=UserRole.COMMON)
+	nome_completo_jogador = models.CharField(max_length=180, blank=True)
+	apelido_cla = models.CharField(max_length=120, blank=True)
+	telefone = models.CharField(max_length=30, blank=True)
+	cpf = models.CharField(max_length=14, blank=True)
+	fobia_gatilho = models.TextField(blank=True)
 
 	def __str__(self):
 		return f'{self.user.username} ({self.get_role_display()})'
@@ -106,3 +114,64 @@ class HomeDynamicSection(models.Model):
 
 	def __str__(self):
 		return f'#{self.display_order} - {self.title}'
+
+
+class LarpEvento(models.Model):
+	titulo = models.CharField(max_length=180)
+	slug = models.SlugField(max_length=220, unique=True, blank=True)
+	historia = models.TextField()
+	local = models.CharField(max_length=180)
+	data_evento = models.DateTimeField()
+	visivel_publicamente = models.BooleanField(default=False)
+	inscricao_token = models.CharField(max_length=32, unique=True, editable=False)
+	criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='eventos_larp_criados')
+	data_criacao = models.DateTimeField(auto_now_add=True)
+	data_atualizacao = models.DateTimeField(auto_now=True)
+
+	class Meta:
+		ordering = ('-data_evento', '-id')
+		verbose_name = 'Evento LARP'
+		verbose_name_plural = 'Eventos LARP'
+
+	def save(self, *args, **kwargs):
+		if not self.slug:
+			base_slug = slugify(self.titulo) or f'larp-{timezone.now().strftime("%Y%m%d")}'
+			candidate = base_slug
+			index = 1
+			while LarpEvento.objects.filter(slug=candidate).exclude(pk=self.pk).exists():
+				candidate = f'{base_slug}-{index}'
+				index += 1
+			self.slug = candidate
+
+		if not self.inscricao_token:
+			self.inscricao_token = secrets.token_hex(16)
+
+		super().save(*args, **kwargs)
+
+	def __str__(self):
+		return f'{self.titulo} ({self.data_evento:%d/%m/%Y})'
+
+
+class LarpInscricao(models.Model):
+	evento = models.ForeignKey(LarpEvento, on_delete=models.CASCADE, related_name='inscricoes')
+	usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inscricoes_larp')
+	personagem = models.ForeignKey('personagens.Personagem', on_delete=models.PROTECT, related_name='inscricoes_larp')
+	taxa_paga = models.BooleanField(default=False)
+	nome_completo_jogador = models.CharField(max_length=180)
+	apelido_cla = models.CharField(max_length=120, blank=True)
+	telefone = models.CharField(max_length=30)
+	cpf = models.CharField(max_length=14)
+	fobia_gatilho = models.TextField(blank=True)
+	confirmacao_final = models.BooleanField(default=False)
+	data_inscricao = models.DateTimeField(auto_now_add=True)
+
+	class Meta:
+		ordering = ('-data_inscricao', '-id')
+		verbose_name = 'Inscricao LARP'
+		verbose_name_plural = 'Inscricoes LARP'
+		constraints = [
+			models.UniqueConstraint(fields=('evento', 'usuario'), name='unique_inscricao_por_evento_usuario'),
+		]
+
+	def __str__(self):
+		return f'{self.usuario.username} - {self.evento.titulo}'

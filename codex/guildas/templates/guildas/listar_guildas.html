@@ -1,4 +1,5 @@
 {% extends "core/base.html" %}
+{% load static %}
 
 {% block title %}Guildas{% endblock %}
 
@@ -23,10 +24,20 @@
     {% if guildas_info %}
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {% for item in guildas_info %}
-                <article class="card {{ item.estilo.card }} shadow-lg border border-base-300">
+                <article class="card {{ item.estilo.card }} shadow-lg border border-base-300 overflow-hidden">
+                    {% if item.publica.imagem %}
+                        <div class="w-full h-48 bg-base-200/60 flex items-center justify-center p-4 border-b border-base-300">
+                            <img 
+                                src="{% static item.publica.imagem %}" 
+                                alt="Brasao de {{ item.publica.nome }}"
+                                class="max-w-full max-h-full object-contain"
+                                loading="lazy"
+                            >
+                        </div>
+                    {% endif %}
                     <div class="card-body">
                         <div class="flex items-start justify-between gap-3">
-                            <h2 class="card-title text-xl leading-tight">{{ item.estilo.icone }} {{ item.publica.nome }}</h2>
+                            <h2 class="card-title text-xl leading-tight">{{ item.publica.nome }}</h2>
                             {% if item.eh_membro %}
                                 <span class="badge {{ item.estilo.badge }}">Membro</span>
                             {% else %}
@@ -46,20 +57,12 @@
 
                         <div class="divider my-1"></div>
 
-                        {% if item.eh_membro %}
-                            <div class="stats stats-vertical shadow bg-base-200 w-full">
+                        {% if item.pode_ver_privado %}
+                            <div class="stats shadow bg-base-200 w-full">
                                 <div class="stat py-3">
-                                    <div class="stat-title">Membros</div>
-                                    <div class="stat-value text-2xl">{{ item.db.total_membros }}</div>
-                                </div>
-                                <div class="stat py-3">
-                                    <div class="stat-title">Personagens</div>
+                                    <div class="stat-title">Personagens ativos</div>
                                     <div class="stat-value text-2xl">{{ item.db.total_personagens }}</div>
                                 </div>
-                            </div>
-                        {% else %}
-                            <div role="alert" class="alert alert-soft alert-warning">
-                                <span>Contadores e relatorios sao privados para membros desta guilda.</span>
                             </div>
                         {% endif %}
 

@@ -30,6 +30,8 @@ class Personagem(models.Model):
 	)
 	guilda = models.PositiveSmallIntegerField(choices=GUILDAS_CHOICES, null=True, blank=True)
 	classe = models.PositiveSmallIntegerField(choices=CLASSES_CHOICES, null=True, blank=True)
+	magias_pretendidas = models.JSONField(default=list, blank=True)
+	talentos_iniciais = models.JSONField(default=list, blank=True)
 	xp_atual = models.PositiveIntegerField(default=0)
 	ouro = models.PositiveIntegerField(default=0)
 	data_criacao = models.DateTimeField(auto_now_add=True)

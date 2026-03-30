@@ -11,6 +11,7 @@
       <button class="btn btn-accent" onclick="home_components_modal.showModal()">Editar componentes da Home</button>
       <button class="btn btn-primary" onclick="user_roles_modal.showModal()">Alterar tipo de usuario</button>
       <button class="btn btn-secondary" onclick="character_modal.showModal()">Ler e editar personagens</button>
+      <button class="btn btn-info" onclick="larp_modal.showModal()">Gerenciar LARPs</button>
     </div>
   </div>
 
@@ -463,6 +464,112 @@
       <button>close</button>
     </form>
   </dialog>
+
+  <dialog id="larp_modal" class="modal">
+    <div class="modal-box max-w-6xl">
+      <h3 class="font-bold text-xl">Eventos de LARP</h3>
+      <p class="text-sm text-base-content/70 mt-1 mb-4">Crie eventos, controle visibilidade e copie o link de inscricao de cada LARP.</p>
+
+      <div class="space-y-5">
+        <form method="post" class="bg-base-200 rounded-box p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="create_larp_event" />
+
+          <label class="form-control md:col-span-2">
+            <span class="label-text text-xs">Titulo</span>
+            <input type="text" name="larp_titulo" class="input input-bordered" maxlength="180" required />
+          </label>
+
+          <label class="form-control">
+            <span class="label-text text-xs">Local</span>
+            <input type="text" name="larp_local" class="input input-bordered" maxlength="180" required />
+          </label>
+
+          <label class="form-control">
+            <span class="label-text text-xs">Data e horario</span>
+            <input type="datetime-local" name="larp_data_evento" class="input input-bordered" required />
+          </label>
+
+          <label class="form-control md:col-span-2">
+            <span class="label-text text-xs">Historia</span>
+            <textarea name="larp_historia" class="textarea textarea-bordered" rows="3" required></textarea>
+          </label>
+
+          <label class="label cursor-pointer justify-start gap-3 md:col-span-2">
+            <input type="checkbox" name="larp_visivel_publicamente" class="checkbox checkbox-sm" checked />
+            <span class="label-text">Visivel para usuarios comuns</span>
+          </label>
+
+          <div class="md:col-span-2 flex justify-end">
+            <button type="submit" class="btn btn-primary btn-sm">Criar LARP</button>
+          </div>
+        </form>
+
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="bulk_update_larp_visibility" />
+
+          <div class="overflow-x-auto rounded-box border border-base-300 max-h-[50vh]">
+            <table class="table table-zebra table-pin-rows">
+              <thead>
+                <tr>
+                  <th>Titulo</th>
+                  <th>Local</th>
+                  <th>Data</th>
+                  <th>Inscricoes</th>
+                  <th>Visivel</th>
+                  <th>Link de inscricao</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for larp in larp_events_data %}
+                  <tr>
+                    <td>
+                      <div class="font-semibold">{{ larp.titulo }}</div>
+                    </td>
+                    <td>{{ larp.local }}</td>
+                    <td>{{ larp.data_evento|date:'d/m/Y H:i' }}</td>
+                    <td>{{ larp.inscricoes_count }}</td>
+                    <td>
+                      <input type="hidden" name="larp_ids" value="{{ larp.id }}" />
+                      <input
+                        type="checkbox"
+                        name="larp_visivel_{{ larp.id }}"
+                        class="checkbox checkbox-sm"
+                        {% if larp.visivel_publicamente %}checked{% endif %}
+                      />
+                    </td>
+                    <td>
+                      <div class="flex items-center gap-2">
+                        <a href="{{ larp.inscricao_url }}" class="link link-primary text-xs break-all" target="_blank">{{ larp.inscricao_url }}</a>
+                        <button
+                          type="button"
+                          class="btn btn-xs btn-outline"
+                          data-copy-link="{{ larp.inscricao_url }}"
+                        >Copiar</button>
+                      </div>
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr>
+                    <td colspan="6" class="text-center text-base-content/70">Nenhum LARP criado ainda.</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="modal-action">
+            <button type="submit" class="btn btn-primary">Salvar visibilidade</button>
+            <button type="button" class="btn" onclick="larp_modal.close()">Fechar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </dialog>
 </section>
 
 {% if open_users_modal %}
@@ -497,4 +604,33 @@
     });
   </script>
 {% endif %}
+
+{% if open_larps_modal %}
+  <script>
+    window.addEventListener('DOMContentLoaded', function () {
+      const modal = document.getElementById('larp_modal');
+      if (modal) {
+        modal.showModal();
+      }
+    });
+  </script>
+{% endif %}
+
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-copy-link]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        const url = button.dataset.copyLink || '';
+        if (!url || !navigator.clipboard) {
+          return;
+        }
+        navigator.clipboard.writeText(url);
+        button.textContent = 'Copiado';
+        window.setTimeout(function () {
+          button.textContent = 'Copiar';
+        }, 1100);
+      });
+    });
+  });
+</script>
 {% endblock content %}

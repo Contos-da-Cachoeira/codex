@@ -23,8 +23,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('dashboard.urls')),
     path('', include('accounts.urls')),
+    path('larps/', include('core.urls')),
     path('personagens/', include('personagens.urls')),
     path('guildas/', include('guildas.urls')),
+    path('wiki/', include('wiki.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import HomeDynamicSection, HomePageConfig, Profile, SiteLayoutConfig
+from .models import HomeDynamicSection, HomePageConfig, LarpEvento, LarpInscricao, Profile, SiteLayoutConfig
 
 
 @admin.register(Profile)
@@ -65,3 +65,24 @@ class HomeDynamicSectionAdmin(admin.ModelAdmin):
 	list_filter = ('is_visible',)
 	search_fields = ('title', 'content')
 	ordering = ('display_order', 'id')
+
+
+@admin.register(LarpEvento)
+class LarpEventoAdmin(admin.ModelAdmin):
+	list_display = ('titulo', 'local', 'data_evento', 'visivel_publicamente')
+	list_filter = ('visivel_publicamente', 'data_evento')
+	search_fields = ('titulo', 'local', 'historia')
+	readonly_fields = ('inscricao_token',)
+	prepopulated_fields = {'slug': ('titulo',)}
+
+
+@admin.register(LarpInscricao)
+class LarpInscricaoAdmin(admin.ModelAdmin):
+	list_display = ('evento', 'usuario', 'personagem', 'taxa_paga', 'data_inscricao')
+	list_filter = ('evento', 'taxa_paga', 'data_inscricao')
+	search_fields = (
+		'evento__titulo',
+		'usuario__username',
+		'nome_completo_jogador',
+		'personagem__nome',
+	)

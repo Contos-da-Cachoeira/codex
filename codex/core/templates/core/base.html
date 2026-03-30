@@ -101,6 +101,7 @@
       }
     }
   </style>
+  {% block head_extra %}{% endblock %}
 </head>
 <body class="min-h-screen text-base-content">
   <div class="site-shell">
@@ -115,7 +116,9 @@
             </div>
             <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-20 mt-2 w-52 p-2 shadow border border-base-300">
               <li><a href="{% url 'home' %}">Home</a></li>
+              <li><a href="{% url 'listar_larps' %}">LARPs</a></li>
               <li><a href="{% url 'listar_guildas' %}">Guildas</a></li>
+              <li><a href="{% url 'wiki_home' %}">Wiki</a></li>
               <li>
                 {% if user.is_authenticated %}
                   <a href="{% url 'meus_personagens' %}">Personagens</a>
@@ -130,7 +133,9 @@
         <div class="navbar-center hidden md:flex">
           <ul class="menu menu-horizontal gap-1 px-1 bg-base-100/60 rounded-box border border-base-300">
             <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="{% url 'listar_larps' %}">LARPs</a></li>
             <li><a href="{% url 'listar_guildas' %}">Guildas</a></li>
+            <li><a href="{% url 'wiki_home' %}">Wiki</a></li>
             <li>
               {% if user.is_authenticated %}
                 <a href="{% url 'meus_personagens' %}">Personagens</a>

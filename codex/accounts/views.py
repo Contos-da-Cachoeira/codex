@@ -40,14 +40,14 @@ def register_view(request):
 
 @login_required
 def account_personal_data(request):
-    form = AccountPersonalDataForm(request.POST or None, instance=request.user)
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    form = AccountPersonalDataForm(request.POST or None, instance=request.user, profile=profile)
 
     if request.method == 'POST' and form.is_valid():
         form.save()
         messages.success(request, 'Dados pessoais atualizados com sucesso!')
         return redirect('account_personal_data')
 
-    profile, _ = Profile.objects.get_or_create(user=request.user)
     context = {
         'form': form,
         'profile': profile,

@@ -1,3 +1,5 @@
+from wiki.constants.magias import MAGIAS_WIKI
+
 
 # ==========================================
 # 🛡️ GUILDAS
@@ -64,6 +66,39 @@ CLASSES_CHOICES = (
     (CLASSES.MAGO, "Mago"),
     (CLASSES.PALADINO, "Paladino"),
 )
+
+
+def _build_magias_por_classe():
+    classe_id_por_nome = {nome: classe_id for classe_id, nome in CLASSES_CHOICES}
+    mapping = {}
+
+    for magia in MAGIAS_WIKI.values():
+        nome_magia = magia.get('nome', '').strip()
+        if not nome_magia:
+            continue
+
+        for nome_classe in magia.get('quem_usa', []):
+            classe_id = classe_id_por_nome.get(nome_classe)
+            if classe_id is None:
+                continue
+            mapping.setdefault(classe_id, []).append(nome_magia)
+
+    for classe_id, magias in mapping.items():
+        mapping[classe_id] = sorted(set(magias))
+
+    return mapping
+
+
+MAGIAS_POR_CLASSE = _build_magias_por_classe()
+
+
+CLASSES_CONJURADORAS_FIXAS = {
+    CLASSES.DRUIDA,
+    CLASSES.PALADINO,
+}
+
+
+CLASSES_CONJURADORAS = set(MAGIAS_POR_CLASSE.keys())
 
 
 # ==========================================

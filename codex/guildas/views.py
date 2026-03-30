@@ -4,7 +4,7 @@ from django.template.loader import select_template
 
 from core.constants.guildas import GUILDAS
 from personagens.models import Personagem
-from personagens.consts import STATUS_APROVACAO
+from personagens.consts import STATUS_APROVACAO, STATUS_PERSONAGEM
 from .models import Guilda, GuildaMembro, GuildaNoticia
 
 
@@ -51,6 +51,9 @@ def listar_guildas(request):
     """
     guildas_db = Guilda.objects.filter(ativa=True)
     
+    # Verificar se usuário é admin
+    eh_admin = request.user.is_staff if request.user.is_authenticated else False
+    
     # Preparar dados com informações públicas + privadas
     guildas_info = []
     for guilda in guildas_db:
@@ -58,6 +61,7 @@ def listar_guildas(request):
             'db': guilda,
             'publica': _get_info_publica(guilda.guilda_id),
             'eh_membro': False,
+            'pode_ver_privado': eh_admin,
             'estilo': GUILDA_ESTILO_BY_ID.get(guilda.guilda_id, GUILDA_ESTILO_BY_ID[1]),
         }
         
@@ -68,6 +72,7 @@ def listar_guildas(request):
                 usuario=request.user
             ).exists()
             info['eh_membro'] = eh_membro
+            info['pode_ver_privado'] = eh_membro or eh_admin
         
         guildas_info.append(info)
     
@@ -86,26 +91,32 @@ def detalhe_guilda(request, slug):
     - Quantidade de membros
     - Quantidade de personagens
     
-    Apenas para membros:
+    Apenas para membros e admins:
     - Descrição interna
     - Notícias da guilda
+    - Contadores
     """
     guilda = get_object_or_404(Guilda, slug=slug, ativa=True)
     
     # Informações públicas
     info_publica = _get_info_publica(guilda.guilda_id)
     
-    # Verificar se é membro
+    # Verificar se é membro ou admin
     eh_membro = False
+    eh_admin = request.user.is_staff if request.user.is_authenticated else False
+    
     if request.user.is_authenticated:
         eh_membro = GuildaMembro.objects.filter(
             guilda=guilda,
             usuario=request.user
         ).exists()
     
-    # Informações que podem ser vistas por membros
+    # Admin ou membro pode ver informações privadas
+    pode_ver_privado = eh_membro or eh_admin
+    
+    # Informações que podem ser vistas por membros e admins
     noticias = []
-    if eh_membro:
+    if pode_ver_privado:
         noticias = GuildaNoticia.objects.filter(
             guilda=guilda,
             publicado=True
@@ -114,13 +125,16 @@ def detalhe_guilda(request, slug):
     # Obtém lista de personagens na guilda para contagem
     personagens_guilda = Personagem.objects.filter(
         guilda=guilda.guilda_id,
-        status_aprovacao=STATUS_APROVACAO.APROVADO
+        status_aprovacao=STATUS_APROVACAO.APROVADO,
+        status=STATUS_PERSONAGEM.ATIVO,
     )
     
     context = {
         'guilda': guilda,
         'info_publica': info_publica,
         'eh_membro': eh_membro,
+        'eh_admin': eh_admin,
+        'pode_ver_privado': pode_ver_privado,
         'noticias': noticias,
         'estilo': GUILDA_ESTILO_BY_ID.get(guilda.guilda_id, GUILDA_ESTILO_BY_ID[1]),
         'total_membros': guilda.total_membros,

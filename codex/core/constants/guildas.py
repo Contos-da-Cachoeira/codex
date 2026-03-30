@@ -1,6 +1,7 @@
 GUILDAS = {
     "CIRCULO_DO_FOGO": {
         "nome": "Círculo do Fogo",
+        "imagem": "core/img/guildas/circulo-do-fogo.png",
         "divindade": "Grande Corvo Ancestral ou Wukong",
         "lideranca": "Jondor, o Grande",
         "terra_natal": "Ravenlok",
@@ -12,6 +13,7 @@ GUILDAS = {
 
     "IRMANDADE_DAS_TAVERNAS": {
         "nome": "Irmandade das Tavernas",
+        "imagem": "core/img/guildas/irmandade-das-tavernas.png",
         "divindade": "Wukong, a Artista ou Luna",
         "lideranca": "Desconhecida (Grão-Mestre secreto)",
         "terra_natal": "Gaeleanna",
@@ -23,6 +25,7 @@ GUILDAS = {
 
     "FLORESTA_DO_SOL": {
         "nome": "Floresta do Sol",
+        "imagem": "core/img/guildas/floresta-do-sol.png",
         "divindade": "Solaris e Mãe Natureza",
         "lideranca": "Conclave Selvagem",
         "terra_natal": "Antigas terras de Ufter",
@@ -34,6 +37,7 @@ GUILDAS = {
 
     "SOCIEDADE_ZAORI": {
         "nome": "Sociedade Zaori",
+        "imagem": "core/img/guildas/sociedade-zaori.png",
         "divindade": "Espírito da Memória ou Wukong",
         "lideranca": "O Arquiprofeta",
         "terra_natal": "Palácio dos Videntes",
@@ -45,6 +49,7 @@ GUILDAS = {
 
     "RASGA_MORTALHAS": {
         "nome": "Os Rasga-Mortalhas",
+        "imagem": "core/img/guildas/os-rasga-mortalhas.png",
         "divindade": "Rainha da Morte ou Jhunni",
         "lideranca": "As Três Matriarcas",
         "terra_natal": "Pucklândia",
@@ -57,6 +62,7 @@ GUILDAS = {
     # 🔧 NÃO TEM INFO COMPLETA NO PDF — PODEMOS COMPLETAR DEPOIS
     "ARTISTAS_DA_REVOLUCAO": {
         "nome": "Artistas da Revolução",
+        "imagem": "core/img/guildas/artistas-da-revolucao.png",
         "divindade": "Espírito da Memória e a Artista",
         "lideranca": "Oberon dos 7 sonhos e paixões",
         "terra_natal": "Grã-Academia de Titânia",
@@ -68,6 +74,7 @@ GUILDAS = {
 
     "MERCENARIOS_INDEPENDENTES": {
         "nome": "Mercenários Independentes",
+        "imagem": "core/img/guildas/mercenarios-independentes.png",
         "divindade": None,
         "lideranca": None,
         "terra_natal": None,

@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Wiki | Regras{% endblock title %}
+
+{% block content %}
+  <section class="mb-8">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-4xl font-black tracking-tight">Wiki de Regras</h1>
+        <p class="mt-2 text-base-content/70 max-w-3xl">
+          Regras oficiais do jogo em formato de Wiki. Este conteudo e estatico e pode ser alterado
+          facilmente em arquivos de constantes.
+        </p>
+      </div>
+      <div class="flex gap-2">
+        <a href="{% url 'wiki_classes_lista' %}" class="btn btn-outline btn-sm">Ver Classes</a>
+        <a href="{% url 'wiki_magias_lista' %}" class="btn btn-outline btn-sm">Ver Magias</a>
+        <a href="{% url 'wiki_itens_lista' %}" class="btn btn-outline btn-sm">Ver Itens</a>
+        <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-outline btn-sm">Ver Talentos</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+    {% for regra in regras %}
+      <article class="card bg-base-100 border border-base-300">
+        <div class="card-body">
+          <div class="flex items-center justify-between gap-2">
+            <h2 class="card-title text-lg">{{ regra.titulo }}</h2>
+            <span class="badge badge-outline">{{ regra.categoria }}</span>
+          </div>
+          <p class="text-sm text-base-content/70">{{ regra.resumo }}</p>
+          <div class="card-actions justify-end mt-2">
+            <a href="{% url 'wiki_regra_detalhe' regra.slug %}" class="btn btn-primary btn-sm">Ler regra</a>
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <div class="alert alert-info">
+        <span>Nenhuma regra cadastrada ainda.</span>
+      </div>
+    {% endfor %}
+  </section>
+{% endblock content %}

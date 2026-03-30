@@ -1,0 +1,75 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Wiki | {{ talento.nome }}{% endblock title %}
+
+{% block content %}
+  <nav class="breadcrumbs text-sm mb-6">
+    <ul>
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li><a href="{% url 'wiki_talentos_lista' %}">Talentos</a></li>
+      <li>{{ talento.nome }}</li>
+    </ul>
+  </nav>
+
+  <article class="card bg-base-100 border border-base-300">
+    <div class="card-body gap-5">
+      <header>
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h1 class="text-3xl font-black tracking-tight">{{ talento.nome }}</h1>
+          <span class="badge badge-primary">{{ talento.custo_xp }} XP</span>
+        </div>
+      </header>
+
+      <section class="rounded-xl border border-base-300 p-4 bg-base-200/50">
+        <h2 class="font-bold">Descricao</h2>
+        <p class="mt-2 text-base-content/85">{{ talento.descricao }}</p>
+      </section>
+
+      <section class="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div class="rounded-xl border border-base-300 p-4 bg-base-200/50">
+          <h2 class="font-bold">Acumulacao</h2>
+          <p class="mt-1 text-base-content/80">
+            {% if talento.stackavel %}
+              Este talento e stackavel.
+            {% else %}
+              Este talento nao e stackavel.
+            {% endif %}
+          </p>
+        </div>
+
+        {% if talento.requisito %}
+          <div class="rounded-xl border border-base-300 p-4 bg-base-200/50">
+            <h2 class="font-bold">Requisito</h2>
+            <p class="mt-1 text-base-content/80">{{ talento.requisito }}</p>
+          </div>
+        {% endif %}
+
+        {% if talento.restricao %}
+          <div class="rounded-xl border border-base-300 p-4 bg-base-200/50">
+            <h2 class="font-bold">Restricao</h2>
+            <p class="mt-1 text-base-content/80">{{ talento.restricao }}</p>
+          </div>
+        {% endif %}
+
+        {% if talento.extra %}
+          <div class="rounded-xl border border-base-300 p-4 bg-base-200/50">
+            <h2 class="font-bold">Extra</h2>
+            <p class="mt-1 text-base-content/80">{{ talento.extra }}</p>
+          </div>
+        {% endif %}
+      </section>
+
+      <section class="alert alert-warning">
+        <span>
+          Talentos comprados ficam no personagem para sessoes futuras; nao migram para outro personagem.
+          Maximo de 5 talentos ativos ao mesmo tempo, com possibilidade de troca entre talentos.
+        </span>
+      </section>
+
+      <div class="card-actions justify-between mt-2">
+        <a href="{% url 'wiki_regras_lista' %}" class="btn btn-ghost btn-sm">Ver Regras</a>
+        <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-primary btn-sm">Voltar para Talentos</a>
+      </div>
+    </div>
+  </article>
+{% endblock content %}

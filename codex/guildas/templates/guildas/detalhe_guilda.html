@@ -1,4 +1,11 @@
 {% extends "core/base.html" %}
+{% load static %}
+
+{% block head_extra %}
+  {% if info_publica.imagem %}
+    <link rel="icon" type="image/png" href="{% static info_publica.imagem %}">
+  {% endif %}
+{% endblock %}
 
 {% block title %}{{ info_publica.nome|default:guilda }}{% endblock %}
 
@@ -7,7 +14,17 @@
     <div class="hero rounded-box border border-base-300 bg-base-100">
         <div class="hero-content text-center py-10">
             <div class="max-w-3xl space-y-3">
-                <h1 class="text-4xl md:text-5xl font-bold">{% block guilda_icone %}🛡{% endblock %} {{ info_publica.nome }}</h1>
+                {% if info_publica.imagem %}
+                    <div class="mx-auto w-36 h-36 md:w-44 md:h-44 rounded-box bg-base-200/60 border border-base-300 p-3 flex items-center justify-center">
+                        <img
+                            src="{% static info_publica.imagem %}"
+                            alt="Brasao da guilda {{ info_publica.nome }}"
+                            class="max-w-full max-h-full object-contain"
+                            loading="lazy"
+                        >
+                    </div>
+                {% endif %}
+                <h1 class="text-4xl md:text-5xl font-bold">{{ info_publica.nome }}</h1>
                 <p class="text-base-content/70">{% block guilda_subtitulo %}Informacoes publicas para todos e area restrita para membros da guilda.{% endblock %}</p>
                 {% if eh_membro %}
                     <span class="badge badge-success badge-lg">Acesso de membro ativo</span>
@@ -65,20 +82,12 @@
         </article>
 
         <aside class="space-y-5">
-            {% if eh_membro %}
+            {% if pode_ver_privado %}
                 <div class="stats stats-vertical shadow w-full bg-base-100 border border-base-300">
                     <div class="stat">
-                        <div class="stat-title">Membros ativos</div>
-                        <div class="stat-value text-3xl">{{ total_membros }}</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-title">Personagens da guilda</div>
+                        <div class="stat-title">Personagens ativos</div>
                         <div class="stat-value text-3xl">{{ total_personagens }}</div>
                     </div>
-                </div>
-            {% else %}
-                <div role="alert" class="alert alert-warning alert-soft">
-                    <span>Dados de membros e quantidade de personagens sao privados para nao membros.</span>
                 </div>
             {% endif %}
 
@@ -91,7 +100,7 @@
         </aside>
     </div>
 
-    {% if eh_membro and guilda.descricao_interna %}
+    {% if pode_ver_privado and guilda.descricao_interna %}
         <article class="card bg-base-100 border border-warning shadow-md">
             <div class="card-body">
                 <h2 class="card-title">Canal interno da guilda</h2>
@@ -100,7 +109,7 @@
         </article>
     {% endif %}
 
-    {% if eh_membro %}
+    {% if pode_ver_privado %}
         <article class="card bg-base-100 border border-base-300 shadow-md">
             <div class="card-body">
                 <h2 class="card-title">Noticias internas</h2>
@@ -126,7 +135,7 @@
     <article class="card bg-base-100 border border-base-300 shadow-md">
         <div class="card-body">
             <h2 class="card-title">Personagens aprovados</h2>
-            {% if eh_membro %}
+            {% if pode_ver_privado %}
                 {% if personagens_guilda %}
                     <div class="overflow-x-auto">
                         <table class="table table-zebra">
@@ -157,10 +166,6 @@
                 {% else %}
                     <p class="text-sm opacity-70">Nenhum personagem aprovado nesta guilda.</p>
                 {% endif %}
-            {% else %}
-                <div role="alert" class="alert alert-info alert-soft">
-                    <span>A lista de personagens da guilda e restrita para membros.</span>
-                </div>
             {% endif %}
         </div>
     </article>
