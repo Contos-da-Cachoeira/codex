@@ -1,11 +1,13 @@
 {% extends "core/base.html" %}
 {% load static %}
 
-{% block head_extra %}
+{% block favicon %}
   {% if info_publica.imagem %}
-    <link rel="icon" type="image/png" href="{% static info_publica.imagem %}">
+        <link rel="icon" type="image/png" href="{% static info_publica.imagem %}">
+    {% else %}
+        {{ block.super }}
   {% endif %}
-{% endblock %}
+{% endblock favicon %}
 
 {% block title %}{{ info_publica.nome|default:guilda }}{% endblock %}
 

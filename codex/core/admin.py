@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import HomeDynamicSection, HomePageConfig, LarpEvento, LarpInscricao, Profile, SiteLayoutConfig
+from .models import HomeDynamicSection, HomePageConfig, LarpEvento, LarpInscricao, Profile, RotativeBanner, SiteLayoutConfig
 
 
 @admin.register(Profile)
@@ -40,6 +40,7 @@ class HomePageConfigAdmin(SingletonAdminMixin, admin.ModelAdmin):
 		('Banner (longo horizontal)', {
 			'fields': (
 				'banner_visible',
+				'banner_type',
 				'banner_badge_text',
 				'banner_title',
 				'banner_subtitle',
@@ -69,8 +70,8 @@ class HomeDynamicSectionAdmin(admin.ModelAdmin):
 
 @admin.register(LarpEvento)
 class LarpEventoAdmin(admin.ModelAdmin):
-	list_display = ('titulo', 'local', 'data_evento', 'visivel_publicamente')
-	list_filter = ('visivel_publicamente', 'data_evento')
+	list_display = ('titulo', 'local', 'data_evento', 'inscricao_ate', 'visivel_publicamente')
+	list_filter = ('visivel_publicamente', 'data_evento', 'inscricao_ate')
 	search_fields = ('titulo', 'local', 'historia')
 	readonly_fields = ('inscricao_token',)
 	prepopulated_fields = {'slug': ('titulo',)}
@@ -86,3 +87,12 @@ class LarpInscricaoAdmin(admin.ModelAdmin):
 		'nome_completo_jogador',
 		'personagem__nome',
 	)
+
+
+@admin.register(RotativeBanner)
+class RotativeBannerAdmin(admin.ModelAdmin):
+	list_display = ('ordem_exibicao', 'ativo', 'url_redirecionamento', 'data_criacao')
+	list_filter = ('ativo', 'data_criacao')
+	search_fields = ('url_redirecionamento', 'texto_alternativo')
+	ordering = ('ordem_exibicao', 'id')
+	list_editable = ('ativo',)

@@ -5,78 +5,187 @@
 {% block content %}
 <div class="space-y-8">
   {% if home_config.banner_visible %}
-    <section class="hero rounded-box bg-base-100 shadow-xl overflow-hidden">
-      {% if home_config.banner_image %}
-        <figure class="w-full max-h-72 overflow-hidden border-b border-base-300">
-          <img
-            src="{{ home_config.banner_image.url }}"
-            alt="Banner da Home"
-            class="w-full h-full object-cover"
-          />
-        </figure>
-      {% endif %}
+    {% if home_config.banner_type == 'EDITORIAL' %}
+      <!-- Banner Editorial -->
+      <section class="hero rounded-box bg-base-100 shadow-xl overflow-hidden">
+        {% if home_config.banner_image %}
+          <figure class="w-full max-h-72 overflow-hidden border-b border-base-300">
+            <img
+              src="{{ home_config.banner_image.url }}"
+              alt="Banner da Home"
+              class="w-full h-full object-cover"
+            />
+          </figure>
+        {% endif %}
 
-      <div class="hero-content text-center py-12">
-        <div class="max-w-3xl">
-          {% if home_config.banner_badge_text %}
-            <p class="badge badge-secondary badge-lg mb-4">{{ home_config.banner_badge_text }}</p>
-          {% endif %}
-          <h1 class="text-4xl md:text-6xl font-bold leading-tight">{{ home_config.banner_title }}</h1>
-          <p class="py-6 text-base-content/80">{{ home_config.banner_subtitle }}</p>
-
-          <div class="stats stats-vertical md:stats-horizontal shadow w-full bg-base-200 mb-8">
-            <div class="stat">
-              <div class="stat-title">Status</div>
-              <div class="stat-value text-primary">{% if user.is_authenticated %}Online{% else %}Offline{% endif %}</div>
-              <div class="stat-desc">Sessao atual</div>
-            </div>
-            <div class="stat">
-              <div class="stat-title">Papel</div>
-              <div class="stat-value text-secondary text-3xl">{{ role_label }}</div>
-              <div class="stat-desc">Perfil de acesso</div>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap justify-center gap-3">
-            {% if user.is_authenticated %}
-              {% if is_admin %}
-                <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">Area Admin</a>
-              {% else %}
-                <a href="{% url 'user_dashboard' %}" class="btn btn-primary">Area do Usuario</a>
-              {% endif %}
-              <form method="post" action="{% url 'logout' %}" class="inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline">Sair</button>
-              </form>
-            {% else %}
-              <a href="{% url 'login' %}" class="btn btn-primary">Entrar</a>
-              <a href="{% url 'register' %}" class="btn btn-secondary">Criar conta</a>
+        <div class="hero-content text-center py-12">
+          <div class="max-w-3xl">
+            {% if home_config.banner_badge_text %}
+              <p class="badge badge-secondary badge-lg mb-4">{{ home_config.banner_badge_text }}</p>
             {% endif %}
+            <h1 class="text-4xl md:text-6xl font-bold leading-tight">{{ home_config.banner_title }}</h1>
+            <p class="py-6 text-base-content/80">{{ home_config.banner_subtitle }}</p>
+
+            <div class="stats stats-vertical md:stats-horizontal shadow w-full bg-base-200 mb-8">
+              <div class="stat">
+                <div class="stat-title">Status</div>
+                <div class="stat-value text-primary">{% if user.is_authenticated %}Online{% else %}Offline{% endif %}</div>
+                <div class="stat-desc">Sessao atual</div>
+              </div>
+              <div class="stat">
+                <div class="stat-title">Papel</div>
+                <div class="stat-value text-secondary text-3xl">{{ role_label }}</div>
+                <div class="stat-desc">Perfil de acesso</div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3">
+              {% if user.is_authenticated %}
+                {% if is_admin %}
+                  <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">Area Admin</a>
+                {% else %}
+                  <a href="{% url 'user_dashboard' %}" class="btn btn-primary">Area do Usuario</a>
+                {% endif %}
+                <form method="post" action="{% url 'logout' %}" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-outline">Sair</button>
+                </form>
+              {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary">Entrar</a>
+                <a href="{% url 'register' %}" class="btn btn-secondary">Criar conta</a>
+              {% endif %}
+            </div>
           </div>
         </div>
+      </section>
+    {% elif home_config.banner_type == 'ROTATIVO' %}
+      <!-- Banner Rotativo -->
+      <div class="relative w-full h-auto rounded-box overflow-hidden shadow-xl bg-base-100">
+        <!-- Carousel Container -->
+        <div id="rotative_banner_carousel" class="relative w-full" style="aspect-ratio: 2000/542;">
+          {% for banner in rotative_banners %}
+            <a href="{{ banner.url_redirecionamento }}" 
+               class="rotative-banner-slide absolute inset-0 transition-opacity duration-1000 opacity-0"
+               style="{% if forloop.first %}opacity: 1;{% endif %}"
+               target="_blank" 
+               rel="noopener noreferrer">
+              <img src="{{ banner.imagem.url }}" 
+                   alt="{{ banner.texto_alternativo }}" 
+                   class="w-full h-full object-cover"
+                   loading="lazy" />
+            </a>
+          {% empty %}
+            <div class="w-full h-full flex items-center justify-center bg-base-200">
+              <p class="text-base-content/50">Nenhum banner rotativo ativo</p>
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Navigation Dots (apenas se houver mais de 1 banner) -->
+        {% if rotative_banners|length > 1 %}
+          <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+            {% for banner in rotative_banners %}
+              <button class="rotative-banner-dot w-2 h-2 rounded-full bg-base-100 transition-all duration-300 cursor-pointer {% if forloop.first %}scale-125 bg-opacity-100{% else %}bg-opacity-50 hover:bg-opacity-75{% endif %}"
+                      onclick="goToSlide({{ forloop.counter0 }})"></button>
+            {% endfor %}
+          </div>
+        {% endif %}
       </div>
-    </section>
+
+      <script>
+        // Carousel de Banner Rotativo
+        let currentSlideIndex = 0;
+        let autoRotateInterval = null;
+        const slideDuration = 5000; // 5 segundos por slide
+        const transitionDuration = 1000; // 1 segundo de transição
+
+        function getActiveSlides() {
+          return document.querySelectorAll('.rotative-banner-slide');
+        }
+
+        function getActiveDots() {
+          return document.querySelectorAll('.rotative-banner-dot');
+        }
+
+        function goToSlide(index) {
+          const slides = getActiveSlides();
+          if (slides.length === 0) return;
+
+          currentSlideIndex = index % slides.length;
+          
+          slides.forEach((slide, i) => {
+            slide.style.opacity = i === currentSlideIndex ? '1' : '0';
+            slide.style.pointerEvents = i === currentSlideIndex ? 'auto' : 'none';
+          });
+
+          getActiveDots().forEach((dot, i) => {
+            if (i === currentSlideIndex) {
+              dot.classList.add('scale-125', 'bg-opacity-100');
+              dot.classList.remove('bg-opacity-50', 'hover:bg-opacity-75');
+            } else {
+              dot.classList.remove('scale-125', 'bg-opacity-100');
+              dot.classList.add('bg-opacity-50', 'hover:bg-opacity-75');
+            }
+          });
+        }
+
+        function nextSlide() {
+          const slides = getActiveSlides();
+          if (slides.length > 1) {
+            goToSlide(currentSlideIndex + 1);
+          }
+        }
+
+        function startAutoRotate() {
+          const slides = getActiveSlides();
+          if (slides.length > 1) {
+            autoRotateInterval = setInterval(nextSlide, slideDuration);
+          }
+        }
+
+        function stopAutoRotate() {
+          if (autoRotateInterval) {
+            clearInterval(autoRotateInterval);
+            autoRotateInterval = null;
+          }
+        }
+
+        // Inicializar carousel ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+          startAutoRotate();
+
+          // Pausar ao passar mouse (opcional)
+          const carousel = document.getElementById('rotative_banner_carousel');
+          if (carousel) {
+            carousel.addEventListener('mouseenter', stopAutoRotate);
+            carousel.addEventListener('mouseleave', startAutoRotate);
+          }
+        });
+
+        // Limpar interval ao descarregar
+        window.addEventListener('beforeunload', stopAutoRotate);
+      </script>
+    {% endif %}
   {% endif %}
 
   <section class="card bg-base-100 shadow-md border border-base-300">
-    <div class="card-body">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 class="card-title text-2xl">Acesso rapido</h2>
-          <p class="text-sm text-base-content/75">Entre direto nas areas mais usadas do sistema.</p>
-        </div>
-        <div class="join join-vertical sm:join-horizontal">
-          <a href="{% url 'listar_larps' %}" class="btn btn-accent join-item">LARPs</a>
-          <a href="{% url 'listar_guildas' %}" class="btn btn-primary join-item">Guildas</a>
-          {% if user.is_authenticated %}
-            <a href="{% url 'meus_personagens' %}" class="btn btn-secondary join-item">Personagens</a>
-          {% else %}
-            <a href="{% url 'login' %}?next=/personagens/" class="btn btn-secondary join-item">Personagens</a>
-          {% endif %}
-          {% if user.is_authenticated and is_admin %}
-            <a href="{% url 'admin_dashboard' %}" class="btn btn-accent join-item">Admin</a>
-          {% endif %}
-        </div>
+    <div class="card-body gap-5">
+      <div>
+        <h2 class="card-title text-2xl">Acesso rapido</h2>
+        <p class="text-sm text-base-content/75">Entre direto nas areas mais usadas do sistema.</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+        <a href="{% url 'listar_larps' %}" class="btn btn-accent w-full justify-start sm:justify-center px-4">LARPs</a>
+        <a href="{% url 'listar_guildas' %}" class="btn btn-primary w-full justify-start sm:justify-center px-4">Guildas</a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'meus_personagens' %}" class="btn btn-secondary w-full justify-start sm:justify-center px-4">Personagens</a>
+        {% else %}
+          <a href="{% url 'login' %}?next=/personagens/" class="btn btn-secondary w-full justify-start sm:justify-center px-4">Personagens</a>
+        {% endif %}
+        {% if user.is_authenticated and is_admin %}
+          <a href="{% url 'admin_dashboard' %}" class="btn btn-accent w-full justify-start sm:justify-center px-4">Admin</a>
+        {% endif %}
       </div>
     </div>
   </section>

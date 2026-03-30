@@ -8,7 +8,6 @@
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
         <h1 class="text-3xl font-bold">{{ personagem.nome }}</h1>
-        <p class="mt-2 text-base-content/80">Slug: {{ personagem.slug }}</p>
       </div>
       <div class="flex gap-2">
         <a href="{% url 'editar_personagem' personagem.slug %}" class="btn btn-secondary">Editar</a>

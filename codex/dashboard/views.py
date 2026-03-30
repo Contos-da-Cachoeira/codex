@@ -5,11 +5,11 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.urls import reverse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
-from core.models import HomeDynamicSection, HomePageConfig, LarpEvento, Profile, SiteLayoutConfig
+from core.models import HomeDynamicSection, HomePageConfig, LarpEvento, Profile, RotativeBanner, SiteLayoutConfig
 from personagens.consts import (
     CLASSES_CHOICES,
     GUILDAS_CHOICES,
@@ -51,6 +51,7 @@ def home(request):
         'home_config': home_config,
         'layout_config': layout_config,
         'dynamic_sections': HomeDynamicSection.objects.filter(is_visible=True),
+        'rotative_banners': RotativeBanner.objects.filter(ativo=True).order_by('ordem_exibicao'),
     }
 
     return render(request, 'dashboard/home.html', context)
@@ -72,6 +73,7 @@ def admin_dashboard(request):
 
     if request.method == 'POST' and request.POST.get('action') == 'update_home_components':
         home_config.banner_visible = request.POST.get('banner_visible') == 'on'
+        home_config.banner_type = request.POST.get('banner_type', 'EDITORIAL').strip()
         home_config.banner_badge_text = request.POST.get('banner_badge_text', '').strip()
         home_config.banner_title = request.POST.get('banner_title', '').strip()
         home_config.banner_subtitle = request.POST.get('banner_subtitle', '').strip()
@@ -82,6 +84,62 @@ def admin_dashboard(request):
             home_config.banner_image = None
         elif request.FILES.get('banner_image'):
             home_config.banner_image = request.FILES['banner_image']
+
+        # Processar banners rotativos
+        rotative_banner_ids = request.POST.getlist('rotative_banner_ids')
+        for banner_id in rotative_banner_ids:
+            banner = RotativeBanner.objects.filter(id=banner_id).first()
+            if not banner:
+                continue
+
+            banner.url_redirecionamento = request.POST.get(f'rotative_url_{banner_id}', '').strip() or banner.url_redirecionamento
+            banner.texto_alternativo = request.POST.get(f'rotative_alt_{banner_id}', '').strip()
+            
+            order_raw = request.POST.get(f'rotative_order_{banner_id}', banner.ordem_exibicao)
+            try:
+                banner.ordem_exibicao = max(1, int(order_raw))
+            except (TypeError, ValueError):
+                pass
+
+            banner.ativo = request.POST.get(f'rotative_ativo_{banner_id}') == 'on'
+
+            if request.FILES.get(f'rotative_imagem_{banner_id}'):
+                if banner.imagem:
+                    banner.imagem.delete(save=False)
+                banner.imagem = request.FILES[f'rotative_imagem_{banner_id}']
+
+            banner.save()
+
+        # Deletar banners rotativos
+        delete_rotative_ids = request.POST.getlist('delete_rotative_ids')
+        if delete_rotative_ids:
+            for rotative_id in delete_rotative_ids:
+                try:
+                    banner = RotativeBanner.objects.get(id=rotative_id)
+                    if banner.imagem:
+                        banner.imagem.delete(save=False)
+                    banner.delete()
+                except RotativeBanner.DoesNotExist:
+                    pass
+
+        # Criar novo banner rotativo
+        new_rotative_imagem = request.FILES.get('new_rotative_imagem')
+        new_rotative_url = request.POST.get('new_rotative_url', '').strip()
+        if new_rotative_imagem and new_rotative_url:
+            new_rotative_alt = request.POST.get('new_rotative_alt', '').strip()
+            new_rotative_order = request.POST.get('new_rotative_order', '1').strip()
+            try:
+                new_order = max(1, int(new_rotative_order))
+            except (TypeError, ValueError):
+                new_order = 1
+
+            RotativeBanner.objects.create(
+                imagem=new_rotative_imagem,
+                url_redirecionamento=new_rotative_url,
+                texto_alternativo=new_rotative_alt,
+                ordem_exibicao=new_order,
+                ativo=request.POST.get('new_rotative_ativo') == 'on',
+            )
 
         home_config.menu_section_visible = request.POST.get('menu_section_visible') == 'on'
         home_config.menu_section_title = request.POST.get('menu_section_title', '').strip()
@@ -272,14 +330,23 @@ def admin_dashboard(request):
         local = request.POST.get('larp_local', '').strip()
         historia = request.POST.get('larp_historia', '').strip()
         data_evento_raw = request.POST.get('larp_data_evento', '').strip()
+        inscricao_ate_raw = request.POST.get('larp_inscricao_ate', '').strip()
         visivel_publicamente = request.POST.get('larp_visivel_publicamente') == 'on'
 
         data_evento = parse_datetime(data_evento_raw) if data_evento_raw else None
         if data_evento and timezone.is_naive(data_evento):
             data_evento = timezone.make_aware(data_evento, timezone.get_current_timezone())
 
+        inscricao_ate = parse_datetime(inscricao_ate_raw) if inscricao_ate_raw else None
+        if inscricao_ate and timezone.is_naive(inscricao_ate):
+            inscricao_ate = timezone.make_aware(inscricao_ate, timezone.get_current_timezone())
+
         if not titulo or not local or not historia or not data_evento:
             messages.error(request, 'Preencha titulo, local, historia e data para criar o LARP.')
+            return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
+
+        if inscricao_ate and inscricao_ate > data_evento:
+            messages.error(request, 'O prazo de inscricao nao pode ser depois da data do LARP.')
             return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
 
         LarpEvento.objects.create(
@@ -287,11 +354,25 @@ def admin_dashboard(request):
             local=local,
             historia=historia,
             data_evento=data_evento,
+            inscricao_ate=inscricao_ate,
             visivel_publicamente=visivel_publicamente,
             criado_por=request.user,
         )
 
         messages.success(request, 'LARP criado com sucesso.')
+        return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
+
+    if request.method == 'POST' and request.POST.get('action') == 'delete_larp_event':
+        delete_larp_id = request.POST.get('delete_larp_id', '').strip()
+        evento = LarpEvento.objects.filter(id=delete_larp_id).first()
+
+        if not evento:
+            messages.error(request, 'LARP nao encontrado para exclusao.')
+            return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
+
+        titulo_evento = evento.titulo
+        evento.delete()
+        messages.success(request, f'LARP "{titulo_evento}" excluido com sucesso.')
         return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
 
     if request.method == 'POST' and request.POST.get('action') == 'bulk_update_larp_visibility':
@@ -421,14 +502,26 @@ def admin_dashboard(request):
             'inscricao_larp',
             kwargs={'slug': evento.slug, 'token': evento.inscricao_token},
         )
+        personagens_path = reverse(
+            'personagens_larp',
+            kwargs={'slug': evento.slug},
+        )
+        detalhe_path = reverse(
+            'detalhe_larp',
+            kwargs={'slug': evento.slug},
+        )
         inscricao_url = request.build_absolute_uri(inscricao_path)
         larp_events_data.append(
             {
                 'id': evento.id,
                 'titulo': evento.titulo,
+                'slug': evento.slug,
                 'local': evento.local,
                 'data_evento': evento.data_evento,
+                'inscricao_ate': evento.inscricao_ate,
                 'visivel_publicamente': evento.visivel_publicamente,
+                'detalhe_path': detalhe_path,
+                'personagens_path': personagens_path,
                 'inscricao_path': inscricao_path,
                 'inscricao_url': inscricao_url,
                 'inscricoes_count': evento.inscricoes.count(),
@@ -459,11 +552,65 @@ def admin_dashboard(request):
         'home_config': home_config,
         'layout_config': layout_config,
         'dynamic_sections': HomeDynamicSection.objects.all(),
+        'rotative_banners': RotativeBanner.objects.all(),
+        'banner_type_choices': HomePageConfig.BannerType.choices,
         'open_home_components_modal': open_home_components_modal,
         'larp_events_data': larp_events_data,
         'open_larps_modal': open_larps_modal,
     }
     return render(request, 'dashboard/admin_dashboard.html', context)
+
+
+@login_required
+@user_passes_test(_is_admin, login_url='home')
+def edit_larp_event(request, evento_id):
+    evento = get_object_or_404(LarpEvento, id=evento_id)
+    inscricoes = list(
+        evento.inscricoes.select_related('usuario', 'personagem').order_by('nome_completo_jogador', 'id')
+    )
+    total_inscricoes = len(inscricoes)
+    total_pagos = sum(1 for inscricao in inscricoes if inscricao.taxa_paga)
+
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo', '').strip()
+        local = request.POST.get('local', '').strip()
+        historia = request.POST.get('historia', '').strip()
+        data_evento_raw = request.POST.get('data_evento', '').strip()
+        inscricao_ate_raw = request.POST.get('inscricao_ate', '').strip()
+        visivel_publicamente = request.POST.get('visivel_publicamente') == 'on'
+
+        data_evento = parse_datetime(data_evento_raw) if data_evento_raw else None
+        if data_evento and timezone.is_naive(data_evento):
+            data_evento = timezone.make_aware(data_evento, timezone.get_current_timezone())
+
+        inscricao_ate = parse_datetime(inscricao_ate_raw) if inscricao_ate_raw else None
+        if inscricao_ate and timezone.is_naive(inscricao_ate):
+            inscricao_ate = timezone.make_aware(inscricao_ate, timezone.get_current_timezone())
+
+        if not titulo or not local or not historia or not data_evento:
+            messages.error(request, 'Preencha titulo, local, historia e data do evento.')
+        elif inscricao_ate and inscricao_ate > data_evento:
+            messages.error(request, 'O prazo de inscricao nao pode ser depois da data do LARP.')
+        else:
+            evento.titulo = titulo
+            evento.local = local
+            evento.historia = historia
+            evento.data_evento = data_evento
+            evento.inscricao_ate = inscricao_ate
+            evento.visivel_publicamente = visivel_publicamente
+            evento.save()
+
+            messages.success(request, 'LARP atualizado com sucesso.')
+            return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
+
+    context = {
+        'evento': evento,
+        'inscricoes': inscricoes,
+        'total_inscricoes': total_inscricoes,
+        'total_pagos': total_pagos,
+        'total_pendentes': total_inscricoes - total_pagos,
+    }
+    return render(request, 'dashboard/edit_larp_event.html', context)
 
 
 @login_required

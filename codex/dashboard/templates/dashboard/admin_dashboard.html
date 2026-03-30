@@ -11,7 +11,7 @@
       <button class="btn btn-accent" onclick="home_components_modal.showModal()">Editar componentes da Home</button>
       <button class="btn btn-primary" onclick="user_roles_modal.showModal()">Alterar tipo de usuario</button>
       <button class="btn btn-secondary" onclick="character_modal.showModal()">Ler e editar personagens</button>
-      <button class="btn btn-info" onclick="larp_modal.showModal()">Gerenciar LARPs</button>
+      <button class="btn btn-info" onclick="larp_modal.showModal()">Gerenciar LARP</button>
     </div>
   </div>
 
@@ -142,11 +142,24 @@
         <input type="hidden" name="action" value="update_home_components" />
 
         <div class="bg-base-200 rounded-box p-4 space-y-4">
-          <h4 class="font-semibold">Banner (longo horizontal)</h4>
+          <h4 class="font-semibold">Banner (opcoes)</h4>
           <label class="label cursor-pointer justify-start gap-3">
             <input type="checkbox" name="banner_visible" class="checkbox checkbox-sm" {% if home_config.banner_visible %}checked{% endif %} />
             <span class="label-text">Mostrar banner</span>
           </label>
+
+          <label class="form-control">
+            <span class="label-text text-xs">Tipo de banner</span>
+            <select name="banner_type" class="select select-bordered">
+              {% for value, label in banner_type_choices %}
+                <option value="{{ value }}" {% if home_config.banner_type == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+
+        <div class="bg-base-200 rounded-box p-4 space-y-4" id="banner_editorial_section">
+          <h4 class="font-semibold">Banner Editorial (com texto)</h4>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <label class="form-control">
@@ -179,6 +192,107 @@
             {% endif %}
           </div>
         </div>
+
+        <div class="bg-base-200 rounded-box p-4 space-y-4" id="banner_rotativo_section">
+          <h4 class="font-semibold">Banners Rotativos (solo imagem 2000x542)</h4>
+          <p class="text-xs text-base-content/70">Crie multiplos banners com imagens que redirecionam quando clicados. Eles aparecem alternadamente na Home.</p>
+
+          {% if rotative_banners %}
+            <div class="overflow-x-auto rounded-box border border-base-300 bg-base-100">
+              <table class="table table-zebra table-sm">
+                <thead>
+                  <tr>
+                    <th>Ativo</th>
+                    <th>Ordem</th>
+                    <th>URL</th>
+                    <th>Alt text</th>
+                    <th>Imagem</th>
+                    <th>Remover</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for banner in rotative_banners %}
+                    <tr>
+                      <td>
+                        <input type="hidden" name="rotative_banner_ids" value="{{ banner.id }}" />
+                        <input type="checkbox" name="rotative_ativo_{{ banner.id }}" class="checkbox checkbox-sm" {% if banner.ativo %}checked{% endif %} />
+                      </td>
+                      <td>
+                        <input type="number" min="1" name="rotative_order_{{ banner.id }}" value="{{ banner.ordem_exibicao }}" class="input input-bordered input-sm w-20" />
+                      </td>
+                      <td>
+                        <input type="url" name="rotative_url_{{ banner.id }}" value="{{ banner.url_redirecionamento }}" class="input input-bordered input-sm min-w-48" maxlength="500" />
+                      </td>
+                      <td>
+                        <input type="text" name="rotative_alt_{{ banner.id }}" value="{{ banner.texto_alternativo }}" class="input input-bordered input-sm min-w-40" maxlength="200" />
+                      </td>
+                      <td>
+                        <div class="space-y-1">
+                          <input type="file" name="rotative_imagem_{{ banner.id }}" accept="image/*" class="file-input file-input-bordered file-input-sm w-full max-w-xs" />
+                          {% if banner.imagem %}
+                            <img src="{{ banner.imagem.url }}" alt="{{ banner.texto_alternativo }}" class="max-h-16 rounded" />
+                          {% endif %}
+                        </div>
+                      </td>
+                      <td>
+                        <input type="checkbox" name="delete_rotative_ids" value="{{ banner.id }}" class="checkbox checkbox-error checkbox-sm" />
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="alert alert-info">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <span>Nenhum banner rotativo criado ainda.</span>
+            </div>
+          {% endif %}
+
+          <div class="divider my-2">Adicionar novo banner rotativo</div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3 items-start">
+            <label class="form-control md:col-span-1">
+              <span class="label-text text-xs">URL de redirecionamento</span>
+              <input type="url" name="new_rotative_url" class="input input-bordered" placeholder="https://exemplo.com" maxlength="500" />
+            </label>
+            <label class="form-control md:col-span-1">
+              <span class="label-text text-xs">Texto alternativo (alt)</span>
+              <input type="text" name="new_rotative_alt" class="input input-bordered" placeholder="Descricao da imagem" maxlength="200" />
+            </label>
+            <label class="form-control md:col-span-1">
+              <span class="label-text text-xs">Ordem de exibicao</span>
+              <input type="number" min="1" name="new_rotative_order" value="1" class="input input-bordered" />
+            </label>
+            <label class="label cursor-pointer justify-start gap-3">
+              <input type="checkbox" name="new_rotative_ativo" class="checkbox checkbox-sm" checked />
+              <span class="label-text">Ativo ao criar</span>
+            </label>
+            <label class="form-control md:col-span-2">
+              <span class="label-text text-xs">Imagem (2000x542 px)</span>
+              <input type="file" name="new_rotative_imagem" accept="image/*" class="file-input file-input-bordered" />
+            </label>
+          </div>
+        </div>
+
+        <script>
+          function updateBannerSections() {
+            const bannerType = document.querySelector('select[name="banner_type"]').value;
+            const editorialSection = document.getElementById('banner_editorial_section');
+            const rotativoSection = document.getElementById('banner_rotativo_section');
+            
+            if (bannerType === 'EDITORIAL') {
+              editorialSection.style.display = 'block';
+              rotativoSection.style.display = 'none';
+            } else if (bannerType === 'ROTATIVO') {
+              editorialSection.style.display = 'none';
+              rotativoSection.style.display = 'block';
+            }
+          }
+
+          document.addEventListener('DOMContentLoaded', updateBannerSections);
+          document.querySelector('select[name="banner_type"]').addEventListener('change', updateBannerSections);
+        </script>
 
         <div class="bg-base-200 rounded-box p-4 space-y-4">
           <h4 class="font-semibold">Menu da Home</h4>
@@ -471,39 +585,49 @@
       <p class="text-sm text-base-content/70 mt-1 mb-4">Crie eventos, controle visibilidade e copie o link de inscricao de cada LARP.</p>
 
       <div class="space-y-5">
-        <form method="post" class="bg-base-200 rounded-box p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
-          {% csrf_token %}
-          <input type="hidden" name="action" value="create_larp_event" />
+        <details class="collapse collapse-arrow bg-base-200 border border-base-300">
+          <summary class="collapse-title font-semibold">Criar novo LARP</summary>
+          <div class="collapse-content">
+            <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="create_larp_event" />
 
-          <label class="form-control md:col-span-2">
-            <span class="label-text text-xs">Titulo</span>
-            <input type="text" name="larp_titulo" class="input input-bordered" maxlength="180" required />
-          </label>
+              <label class="form-control md:col-span-2">
+                <span class="label-text text-xs">Titulo</span>
+                <input type="text" name="larp_titulo" class="input input-bordered" maxlength="180" required />
+              </label>
 
-          <label class="form-control">
-            <span class="label-text text-xs">Local</span>
-            <input type="text" name="larp_local" class="input input-bordered" maxlength="180" required />
-          </label>
+              <label class="form-control">
+                <span class="label-text text-xs">Local</span>
+                <input type="text" name="larp_local" class="input input-bordered" maxlength="180" required />
+              </label>
 
-          <label class="form-control">
-            <span class="label-text text-xs">Data e horario</span>
-            <input type="datetime-local" name="larp_data_evento" class="input input-bordered" required />
-          </label>
+              <label class="form-control">
+                <span class="label-text text-xs">Data e horario</span>
+                <input type="datetime-local" name="larp_data_evento" class="input input-bordered" required />
+              </label>
 
-          <label class="form-control md:col-span-2">
-            <span class="label-text text-xs">Historia</span>
-            <textarea name="larp_historia" class="textarea textarea-bordered" rows="3" required></textarea>
-          </label>
+              <label class="form-control">
+                <span class="label-text text-xs">Inscricoes ate</span>
+                <input type="datetime-local" name="larp_inscricao_ate" class="input input-bordered" />
+              </label>
 
-          <label class="label cursor-pointer justify-start gap-3 md:col-span-2">
-            <input type="checkbox" name="larp_visivel_publicamente" class="checkbox checkbox-sm" checked />
-            <span class="label-text">Visivel para usuarios comuns</span>
-          </label>
+              <label class="form-control md:col-span-2">
+                <span class="label-text text-xs">Historia</span>
+                <textarea name="larp_historia" class="textarea textarea-bordered" rows="3" required></textarea>
+              </label>
 
-          <div class="md:col-span-2 flex justify-end">
-            <button type="submit" class="btn btn-primary btn-sm">Criar LARP</button>
+              <label class="label cursor-pointer justify-start gap-3 md:col-span-2">
+                <input type="checkbox" name="larp_visivel_publicamente" class="checkbox checkbox-sm" checked />
+                <span class="label-text">Visivel para usuarios comuns</span>
+              </label>
+
+              <div class="md:col-span-2 flex justify-end">
+                <button type="submit" class="btn btn-primary btn-sm">Criar LARP</button>
+              </div>
+            </form>
           </div>
-        </form>
+        </details>
 
         <form method="post">
           {% csrf_token %}
@@ -516,7 +640,9 @@
                   <th>Titulo</th>
                   <th>Local</th>
                   <th>Data</th>
+                  <th>Inscricoes ate</th>
                   <th>Inscricoes</th>
+                  <th>Acoes</th>
                   <th>Visivel</th>
                   <th>Link de inscricao</th>
                 </tr>
@@ -529,7 +655,26 @@
                     </td>
                     <td>{{ larp.local }}</td>
                     <td>{{ larp.data_evento|date:'d/m/Y H:i' }}</td>
+                    <td>
+                      {% if larp.inscricao_ate %}
+                        {{ larp.inscricao_ate|date:'d/m/Y H:i' }}
+                      {% else %}
+                        Sem prazo
+                      {% endif %}
+                    </td>
                     <td>{{ larp.inscricoes_count }}</td>
+                    <td>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <a href="{{ larp.personagens_path }}" class="btn btn-xs btn-primary">Abrir</a>
+                        <a href="{% url 'edit_larp_event' larp.id %}" class="btn btn-xs btn-warning">Editar</a>
+                        <button
+                          type="button"
+                          class="btn btn-xs btn-error"
+                          data-delete-larp-id="{{ larp.id }}"
+                          data-delete-larp-title="{{ larp.titulo }}"
+                        >Excluir</button>
+                      </div>
+                    </td>
                     <td>
                       <input type="hidden" name="larp_ids" value="{{ larp.id }}" />
                       <input
@@ -552,7 +697,7 @@
                   </tr>
                 {% empty %}
                   <tr>
-                    <td colspan="6" class="text-center text-base-content/70">Nenhum LARP criado ainda.</td>
+                    <td colspan="8" class="text-center text-base-content/70">Nenhum LARP criado ainda.</td>
                   </tr>
                 {% endfor %}
               </tbody>
@@ -563,6 +708,12 @@
             <button type="submit" class="btn btn-primary">Salvar visibilidade</button>
             <button type="button" class="btn" onclick="larp_modal.close()">Fechar</button>
           </div>
+        </form>
+
+        <form id="delete_larp_form" method="post" class="hidden">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="delete_larp_event" />
+          <input type="hidden" name="delete_larp_id" id="delete_larp_id" />
         </form>
       </div>
     </div>
@@ -629,6 +780,26 @@
         window.setTimeout(function () {
           button.textContent = 'Copiar';
         }, 1100);
+      });
+    });
+
+    const deleteForm = document.getElementById('delete_larp_form');
+    const deleteInput = document.getElementById('delete_larp_id');
+    document.querySelectorAll('[data-delete-larp-id]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        if (!deleteForm || !deleteInput) {
+          return;
+        }
+
+        const larpId = button.dataset.deleteLarpId || '';
+        const larpTitle = button.dataset.deleteLarpTitle || 'este LARP';
+        const confirmed = window.confirm('Tem certeza que deseja excluir "' + larpTitle + '"? Esta acao nao pode ser desfeita.');
+        if (!confirmed) {
+          return;
+        }
+
+        deleteInput.value = larpId;
+        deleteForm.submit();
       });
     });
   });

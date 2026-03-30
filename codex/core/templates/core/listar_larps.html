@@ -26,6 +26,17 @@
             <strong>Local:</strong> {{ evento.local }}
             <br>
             <strong>Data:</strong> {{ evento.data_evento|date:'d/m/Y H:i' }}
+            <br>
+            <strong>Inscricoes ate:</strong>
+            {% if evento.inscricao_ate %}
+              {{ evento.inscricao_ate|date:'d/m/Y H:i' }}
+            {% else %}
+              Sem prazo
+            {% endif %}
+            {% if evento.inscricao_encerrada %}
+              <br>
+              <span class="badge badge-error badge-sm mt-1">Inscricoes encerradas</span>
+            {% endif %}
             {% if is_admin %}
               <br>
               <strong>Inscritos:</strong> {{ evento.inscricoes_total }}
@@ -42,11 +53,17 @@
                 <span class="text-xs text-base-content/70 self-center">
                   Personagem inscrito: <strong>{{ evento.personagem_inscrito_usuario }}</strong>
                 </span>
+              {% elif not is_admin and evento.inscricao_encerrada %}
+                <button type="button" class="btn btn-error btn-sm btn-disabled">Inscricoes encerradas</button>
               {% elif not is_admin %}
                 <a href="{% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Inscrever-se</a>
               {% endif %}
             {% else %}
-              <a href="{% url 'login' %}?next={% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Entrar para se inscrever</a>
+              {% if evento.inscricao_encerrada %}
+                <button type="button" class="btn btn-error btn-sm btn-disabled">Inscricoes encerradas</button>
+              {% else %}
+                <a href="{% url 'login' %}?next={% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Entrar para se inscrever</a>
+              {% endif %}
             {% endif %}
           </div>
         </div>

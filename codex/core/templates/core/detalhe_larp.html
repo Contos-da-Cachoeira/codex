@@ -12,6 +12,17 @@
         <br>
         <strong>Data:</strong> {{ evento.data_evento|date:'d/m/Y H:i' }}
         <br>
+        <strong>Inscricoes ate:</strong>
+        {% if evento.inscricao_ate %}
+          {{ evento.inscricao_ate|date:'d/m/Y H:i' }}
+        {% else %}
+          Sem prazo
+        {% endif %}
+        {% if inscricao_encerrada %}
+          <br>
+          <span class="badge badge-error badge-sm mt-1">Inscricoes encerradas</span>
+        {% endif %}
+        <br>
         <strong>Status:</strong>
         {% if evento.visivel_publicamente %}
           Visivel
@@ -28,11 +39,17 @@
       {% if user.is_authenticated %}
         {% if not is_admin and inscricao_usuario %}
           <button type="button" class="btn btn-success btn-sm btn-disabled">Voce ja esta inscrito</button>
+        {% elif not is_admin and inscricao_encerrada %}
+          <button type="button" class="btn btn-error btn-sm btn-disabled">Inscricoes encerradas</button>
         {% elif not is_admin %}
           <a href="{% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Inscrever-se neste LARP</a>
         {% endif %}
       {% else %}
-        <a href="{% url 'login' %}?next={% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Entrar para se inscrever</a>
+        {% if inscricao_encerrada %}
+          <button type="button" class="btn btn-error btn-sm btn-disabled">Inscricoes encerradas</button>
+        {% else %}
+          <a href="{% url 'login' %}?next={% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Entrar para se inscrever</a>
+        {% endif %}
       {% endif %}
     </div>
   </div>
@@ -114,4 +131,13 @@
     {% endif %}
   </aside>
 </section>
+
+{% if is_admin %}
+  <section class="mt-6">
+    <div class="bg-base-100 rounded-box p-4 shadow-lg border border-base-300">
+      <p class="text-sm text-base-content/70 mb-3">Edicao detalhada de resultados dos jogadores neste evento.</p>
+      <a href="{% url 'personagens_larp' evento.slug %}" class="btn btn-secondary">Abrir tabela de personagens no LARP</a>
+    </div>
+  </section>
+{% endif %}
 {% endblock content %}

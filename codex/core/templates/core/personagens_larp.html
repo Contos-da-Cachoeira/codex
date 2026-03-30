@@ -1,0 +1,121 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Tabela de Personagens | {{ evento.titulo }}{% endblock title %}
+
+{% block content %}
+<section class="space-y-6">
+  <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold">Tabela de Personagens no LARP</h1>
+        <p class="text-sm text-base-content/70 mt-1">Evento: {{ evento.titulo }}</p>
+        <p class="text-sm text-base-content/70">Data: {{ evento.data_evento|date:'d/m/Y H:i' }}</p>
+      </div>
+      <div class="flex gap-2">
+        <a href="{% url 'detalhe_larp' evento.slug %}" class="btn btn-ghost btn-sm">Voltar ao LARP</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-base-100 rounded-box p-4 shadow-lg border border-base-300">
+    {% if inscricoes %}
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+
+        <div class="overflow-x-auto rounded-box border border-base-300">
+          <table class="table table-zebra table-sm">
+            <thead>
+              <tr>
+                <th>Jogador</th>
+                <th>Personagem</th>
+                <th>Dinheiro no banco</th>
+                <th>Dinheiro pego</th>
+                <th>Dinheiro no final</th>
+                <th>XP ganho</th>
+                <th>Morreu</th>
+                <th>Faltou</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for inscricao in inscricoes %}
+                <tr>
+                  <td>
+                    <div class="font-semibold">{{ inscricao.apelido_cla|default:inscricao.nome_completo_jogador|default:inscricao.usuario.username }}</div>
+                    <div class="text-xs text-base-content/70">{{ inscricao.usuario.username }}</div>
+                  </td>
+                  <td>{{ inscricao.personagem.nome }}</td>
+                  <td>
+                    <span class="badge badge-outline">
+                      {{ inscricao.personagem.ouro }}
+                    </span>
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      name="dinheiro_pego_larp_{{ inscricao.id }}"
+                      value="{{ inscricao.dinheiro_pego_larp }}"
+                      class="input input-bordered input-sm w-28"
+                      {% if inscricao.confirmacao_final %}disabled{% endif %}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      name="dinheiro_final_larp_{{ inscricao.id }}"
+                      value="{{ inscricao.dinheiro_final_larp|default:'' }}"
+                      class="input input-bordered input-sm w-28"
+                      {% if inscricao.confirmacao_final %}disabled{% endif %}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      name="xp_ganho_{{ inscricao.id }}"
+                      value="{{ inscricao.xp_ganho }}"
+                      class="input input-bordered input-sm w-24"
+                      {% if inscricao.confirmacao_final %}disabled{% endif %}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      name="morreu_no_larp_{{ inscricao.id }}"
+                      class="checkbox checkbox-error checkbox-sm"
+                      {% if inscricao.morreu_no_larp %}checked{% endif %}
+                      {% if inscricao.confirmacao_final %}disabled{% endif %}
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      name="faltou_no_larp_{{ inscricao.id }}"
+                      class="checkbox checkbox-warning checkbox-sm"
+                      {% if inscricao.faltou_no_larp %}checked{% endif %}
+                      {% if inscricao.confirmacao_final %}disabled{% endif %}
+                    />
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        {% if tabela_encerrada %}
+          <div class="alert alert-success">
+            <span>Tabela encerrada. As informacoes estao bloqueadas para edicao.</span>
+          </div>
+        {% else %}
+          <div class="flex flex-wrap justify-end gap-2">
+            <button type="submit" name="action" value="save_draft" class="btn btn-primary">Salvar esboco</button>
+            <button type="submit" name="action" value="close_table" class="btn btn-error">Encerrar tabela</button>
+          </div>
+        {% endif %}
+      </form>
+    {% else %}
+      <div class="alert alert-info">
+        <span>Nao ha jogadores inscritos neste LARP ainda.</span>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock content %}

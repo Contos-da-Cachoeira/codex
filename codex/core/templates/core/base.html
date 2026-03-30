@@ -1,9 +1,13 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="pt-br" data-theme="bumblebee">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Codex{% endblock title %}</title>
+  {% block favicon %}
+    <link rel="icon" type="image/png" href="{% static 'core/img/favicon.png' %}" />
+  {% endblock favicon %}
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
@@ -84,6 +88,22 @@
     .theme-toggle-btn {
       justify-content: flex-start;
       width: 100%;
+    }
+
+    .site-footer {
+      background:
+        linear-gradient(140deg, color-mix(in oklab, var(--color-base-100) 92%, transparent), color-mix(in oklab, var(--color-base-200) 76%, transparent));
+      border-top: 1px solid color-mix(in oklab, var(--color-base-content) 16%, transparent);
+      box-shadow: 0 -14px 30px -24px color-mix(in oklab, var(--color-neutral) 34%, transparent);
+    }
+
+    .site-footer .menu a {
+      font-weight: 600;
+      opacity: 0.84;
+    }
+
+    .site-footer .menu a:hover {
+      opacity: 1;
     }
 
     [data-animate-up] {
@@ -213,12 +233,29 @@
     </main>
 
     {% if layout_config.footer_visible %}
-      <footer class="footer footer-horizontal footer-center bg-base-100/80 text-base-content rounded p-8 border-t border-base-300 backdrop-blur">
-        <aside>
-          <p class="font-semibold">{{ layout_config.footer_title }}</p>
-          <p class="text-sm text-base-content/70">{{ layout_config.footer_description }}</p>
-          <p class="text-xs text-base-content/60">{{ layout_config.footer_copyright }}</p>
-        </aside>
+      <footer class="site-footer mt-10 px-6 py-10 md:px-10 md:py-12">
+        <div class="mx-auto grid max-w-6xl gap-8 md:grid-cols-3">
+          <aside class="space-y-2">
+            <p class="text-lg font-black tracking-wide">{{ layout_config.footer_title }}</p>
+            <p class="text-sm text-base-content/75">{{ layout_config.footer_description }}</p>
+          </aside>
+
+          <nav aria-label="Links rapidos" class="md:justify-self-center">
+            <p class="mb-2 text-xs font-bold uppercase tracking-[0.18em] text-base-content/60">Navegacao</p>
+            <ul class="menu menu-vertical p-0">
+              <li><a href="{% url 'home' %}">Home</a></li>
+              <li><a href="{% url 'listar_larps' %}">LARPs</a></li>
+              <li><a href="{% url 'listar_guildas' %}">Guildas</a></li>
+              <li><a href="{% url 'wiki_home' %}">Wiki</a></li>
+            </ul>
+          </nav>
+
+          <section class="space-y-2 md:justify-self-end md:text-right">
+            <p class="text-xs font-bold uppercase tracking-[0.18em] text-base-content/60">Comunidade</p>
+            <p class="text-sm text-base-content/75">Jogue, registre e acompanhe sua jornada no mundo do LARP.</p>
+            <p class="text-xs text-base-content/65">{{ layout_config.footer_copyright }}</p>
+          </section>
+        </div>
       </footer>
     {% endif %}
   </div>

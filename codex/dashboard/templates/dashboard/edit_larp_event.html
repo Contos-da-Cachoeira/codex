@@ -1,0 +1,102 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Editar LARP | {{ evento.titulo }}{% endblock title %}
+
+{% block content %}
+<section class="space-y-6">
+  <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
+    <h1 class="text-3xl font-bold">Editar LARP</h1>
+    <p class="mt-2 text-base-content/80">Atualize as informacoes do evento e salve as alteracoes.</p>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+    <div class="xl:col-span-2 bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
+      <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% csrf_token %}
+
+        <label class="form-control md:col-span-2">
+          <span class="label-text text-xs">Titulo</span>
+          <input type="text" name="titulo" class="input input-bordered" maxlength="180" required value="{{ evento.titulo }}" />
+        </label>
+
+        <label class="form-control">
+          <span class="label-text text-xs">Local</span>
+          <input type="text" name="local" class="input input-bordered" maxlength="180" required value="{{ evento.local }}" />
+        </label>
+
+        <label class="form-control">
+          <span class="label-text text-xs">Data e horario do LARP</span>
+          <input type="datetime-local" name="data_evento" class="input input-bordered" required value="{{ evento.data_evento|date:'Y-m-d\\TH:i' }}" />
+        </label>
+
+        <label class="form-control">
+          <span class="label-text text-xs">Inscricoes ate</span>
+          <input type="datetime-local" name="inscricao_ate" class="input input-bordered" value="{% if evento.inscricao_ate %}{{ evento.inscricao_ate|date:'Y-m-d\\TH:i' }}{% endif %}" />
+        </label>
+
+        <label class="label cursor-pointer justify-start gap-3 md:col-span-2">
+          <input
+            type="checkbox"
+            name="visivel_publicamente"
+            class="checkbox checkbox-sm"
+            {% if evento.visivel_publicamente %}checked{% endif %}
+          />
+          <span class="label-text">Visivel para usuarios comuns</span>
+        </label>
+
+        <label class="form-control md:col-span-2">
+          <span class="label-text text-xs">Historia</span>
+          <textarea name="historia" class="textarea textarea-bordered" rows="6" required>{{ evento.historia }}</textarea>
+        </label>
+
+        <div class="md:col-span-2 flex flex-wrap justify-end gap-2">
+          <a href="{% url 'admin_dashboard' %}?open_larps_modal=1" class="btn btn-ghost">Cancelar</a>
+          <a href="{% url 'personagens_larp' evento.slug %}" class="btn btn-secondary">Tabela de personagens</a>
+          <button type="submit" class="btn btn-primary">Salvar alteracoes</button>
+        </div>
+      </form>
+    </div>
+
+    <aside class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300 space-y-4">
+      <h2 class="text-xl font-semibold">Resumo do LARP</h2>
+      <div class="grid grid-cols-3 gap-2 text-sm">
+        <div class="rounded-lg border border-base-300 p-3">
+          <strong>Inscritos:</strong> {{ total_inscricoes }}
+        </div>
+        <div class="rounded-lg border border-base-300 p-3">
+          <strong>Pagos:</strong> {{ total_pagos }}
+        </div>
+        <div class="rounded-lg border border-base-300 p-3">
+          <strong>Pendentes:</strong> {{ total_pendentes }}
+        </div>
+      </div>
+
+      <div class="divider my-1"></div>
+
+      <h3 class="font-semibold">Pessoas inscritas</h3>
+      {% if inscricoes %}
+        <div class="space-y-2 max-h-[55vh] overflow-y-auto pr-1">
+          {% for inscricao in inscricoes %}
+            <div class="rounded-lg border border-base-300 p-3 text-sm">
+              <div class="font-semibold">{{ inscricao.apelido_cla|default:inscricao.nome_completo_jogador|default:inscricao.usuario.username }}</div>
+              <div class="text-base-content/70">Usuario: {{ inscricao.usuario.username }}</div>
+              <div class="text-base-content/70">Personagem: {{ inscricao.personagem.nome }}</div>
+              <div class="mt-1">
+                {% if inscricao.taxa_paga %}
+                  <span class="badge badge-success badge-sm">Taxa paga</span>
+                {% else %}
+                  <span class="badge badge-warning badge-sm">Taxa pendente</span>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="alert alert-info">
+          <span>Nenhuma pessoa inscrita neste LARP.</span>
+        </div>
+      {% endif %}
+    </aside>
+  </div>
+</section>
+{% endblock content %}
