@@ -1,178 +1,149 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
-{% block title %}Home | Codex{% endblock title %}
+{% block title %}Codex da Cachoeira{% endblock title %}
+
+{% block head_extra %}
+  <style>
+    .home-world { width: calc(100% + 2rem); margin: -3rem -1rem -3rem; overflow: hidden; background: var(--site-background); color: var(--site-text); }
+    .home-panel { position: relative; isolation: isolate; overflow: hidden; background-position: center; background-repeat: no-repeat; background-size: cover; }
+    .home-panel::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgb(3 14 28 / 0.7), rgb(3 14 28 / 0.94)); }
+    .home-content { position: relative; z-index: 1; width: min(100% - 2rem, 78rem); margin: 0 auto; }
+    .home-lightning { position: relative; z-index: 2; height: 5.25rem; margin-top: -2.6rem; margin-bottom: -2.6rem; pointer-events: none; }
+    .home-lightning svg { display: block; width: 100%; height: 100%; overflow: visible; }
+    .home-lightning path { fill: none; stroke: var(--site-accent); stroke-width: 1.2; vector-effect: non-scaling-stroke; opacity: 0.9; }
+    .home-hero { min-height: min(51rem, calc(100vh - 5.5rem)); display: flex; align-items: center; padding: 8rem 1rem 10rem; background-image: url("{% static 'core/img/background/ruinas.png' %}"); background-position: center top; }
+    .home-hero::before { background: linear-gradient(90deg, rgb(2 12 27 / 0.96), rgb(2 12 27 / 0.64) 48%, rgb(2 12 27 / 0.26)), linear-gradient(0deg, rgb(2 12 27 / 0.8), transparent 55%); }
+    .home-hero-copy { max-width: 48rem; }
+    .home-eyebrow, .home-kicker { color: var(--site-accent); font-size: 0.68rem; font-weight: 900; letter-spacing: 0.3em; text-transform: uppercase; }
+    .home-title { max-width: 58rem; margin-top: 1rem; color: var(--site-text); font-size: clamp(3.4rem, 9vw, 8rem); font-weight: 950; letter-spacing: -0.07em; line-height: 0.84; text-wrap: balance; }
+    .home-lead { max-width: 40rem; margin-top: 1.8rem; color: rgb(242 247 255 / 0.76); font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.75; }
+    .home-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.25rem; }
+    .home-button { min-height: 3rem; border: 1px solid var(--site-accent); border-radius: 0; background: var(--site-accent); color: var(--site-accent-content); font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+    .home-button:hover, .home-button:focus-visible { border-color: var(--site-text); background: var(--site-text); color: var(--site-background); }
+    .home-button-ghost { min-height: 3rem; border-color: rgb(242 247 255 / 0.5); border-radius: 0; color: var(--site-text); font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+    .home-button-ghost:hover, .home-button-ghost:focus-visible { border-color: var(--site-accent); background: rgb(79 215 255 / 0.12); color: var(--site-accent); }
+    .home-overview { padding: 10rem 1rem 13rem; background-color: var(--site-background); background-image: url("{% static 'core/img/background/placas.jpg' %}"); background-position: center; }
+    .home-overview::before { background: linear-gradient(180deg, rgb(5 20 39 / 0.96), rgb(5 20 39 / 0.82)); }
+    .home-overview-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(15rem, 0.65fr); gap: 5rem; align-items: end; }
+    .home-section-heading { max-width: 48rem; }
+    .home-section-heading h2 { margin-top: 0.9rem; color: var(--site-text); font-size: clamp(2.25rem, 5vw, 5.25rem); font-weight: 950; letter-spacing: -0.065em; line-height: 0.92; text-wrap: balance; }
+    .home-section-heading > p:last-child { max-width: 42rem; margin-top: 1.4rem; color: var(--site-muted); font-size: 1.05rem; line-height: 1.8; }
+    .home-overview-stats { border-left: 1px solid rgb(79 215 255 / 0.5); }
+    .home-overview-stat { padding: 1.2rem 1.5rem; border-bottom: 1px solid rgb(169 193 216 / 0.2); }
+    .home-overview-stat strong { display: block; color: var(--site-accent); font-size: 2.6rem; font-weight: 950; line-height: 1; }
+    .home-overview-stat span { display: block; margin-top: 0.45rem; color: var(--site-muted); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; }
+    .home-features { min-height: 38rem; display: flex; align-items: center; margin-top: -5rem; margin-bottom: -5rem; padding: 12rem 1rem; background-image: url("{% static 'core/img/background/placas.jpg' %}"); background-position: center; clip-path: polygon(0 10%, 100% 0, 100% 90%, 0 100%); }
+    .home-features::before { background: linear-gradient(180deg, rgb(4 18 39 / 0.72), rgb(4 18 39 / 0.57)); }
+    .home-feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin-top: 3rem; border-top: 1px solid rgb(79 215 255 / 0.55); border-bottom: 1px solid rgb(79 215 255 / 0.35); background: rgb(79 215 255 / 0.35); }
+    .home-feature { min-height: 18rem; padding: 2rem; background: rgb(5 22 43 / 0.85); backdrop-filter: blur(0.35rem); }
+    .home-feature-number { color: var(--site-accent); font-size: 2.1rem; font-weight: 950; letter-spacing: -0.06em; }
+    .home-feature h3 { margin-top: 3.5rem; color: var(--site-text); font-size: 1.15rem; font-weight: 900; letter-spacing: 0.03em; text-transform: uppercase; }
+    .home-feature p:last-child { margin-top: 0.7rem; color: var(--site-muted); line-height: 1.65; }
+    .home-guildas { padding: 11rem 1rem 12rem; background-color: var(--site-background); background-image: linear-gradient(180deg, rgb(3 15 31 / 0.86), rgb(3 15 31 / 0.96)), url("{% static 'core/img/background/ruinas.png' %}"); background-position: center; }
+    .home-guildas-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; margin-top: 3rem; }
+    .home-guilda-card { position: relative; display: flex; min-height: 25rem; flex-direction: column; overflow: hidden; border: 1px solid rgb(169 193 216 / 0.25); background: linear-gradient(180deg, rgb(12 44 75 / 0.22), rgb(2 11 24 / 0.92)); color: var(--site-text); transition: transform 180ms ease, border-color 180ms ease, background 180ms ease; }
+    .home-guilda-card::after { content: ""; position: absolute; right: -35%; bottom: 28%; left: -35%; height: 1px; background: var(--site-accent); opacity: 0.45; transform: rotate(-12deg); }
+    .home-guilda-card:hover, .home-guilda-card:focus-visible { border-color: var(--site-accent); background: linear-gradient(180deg, rgb(16 64 104 / 0.55), rgb(2 11 24 / 0.94)); transform: translateY(-0.45rem); }
+    .home-guilda-image { display: flex; min-height: 16rem; align-items: center; justify-content: center; padding: 1.25rem; background: radial-gradient(circle, rgb(79 215 255 / 0.18), transparent 68%); }
+    .home-guilda-image img { width: 100%; height: 15rem; object-fit: contain; filter: drop-shadow(0 1rem 1rem rgb(0 0 0 / 0.55)); }
+    .home-guilda-copy { display: flex; flex: 1; flex-direction: column; padding: 0 1.25rem 1.4rem; }
+    .home-guilda-copy h3 { color: var(--site-text); font-size: 0.95rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; }
+    .home-guilda-copy p { margin-top: 0.55rem; color: var(--site-muted); font-size: 0.85rem; line-height: 1.55; }
+    .home-final { min-height: 43rem; display: flex; align-items: center; padding: 10rem 1rem; background-image: url("{% static 'core/img/background/ruina-navio.jpg' %}"); background-position: center; }
+    .home-final::before { background: linear-gradient(90deg, rgb(2 12 27 / 0.94), rgb(2 12 27 / 0.52), rgb(2 12 27 / 0.75)); }
+    @media (max-width: 900px) { .home-world { width: calc(100% + 2rem); margin-left: -1rem; margin-right: -1rem; } .home-overview-grid { grid-template-columns: 1fr; gap: 3rem; } .home-guildas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 768px) { .home-world { margin-top: -2rem; margin-bottom: -2rem; } .home-hero { min-height: 42rem; padding-top: 6rem; } .home-features { margin-top: -3rem; margin-bottom: -3rem; padding-top: 9rem; padding-bottom: 9rem; } .home-feature-grid { grid-template-columns: 1fr; } .home-feature { min-height: auto; } }
+    @media (max-width: 520px) { .home-guildas-grid { grid-template-columns: 1fr; } .home-title { font-size: 3.5rem; } }
+  </style>
+{% endblock head_extra %}
 
 {% block content %}
-<div class="space-y-8">
-  {% if home_config.banner_visible %}
-    <section class="hero rounded-box bg-base-100 shadow-xl overflow-hidden">
-      {% if home_config.banner_image %}
-        <figure class="w-full max-h-72 overflow-hidden border-b border-base-300">
-          <img
-            src="{{ home_config.banner_image.url }}"
-            alt="Banner da Home"
-            class="w-full h-full object-cover"
-          />
-        </figure>
-      {% endif %}
-
-      <div class="hero-content text-center py-12">
-        <div class="max-w-3xl">
-          {% if home_config.banner_badge_text %}
-            <p class="badge badge-secondary badge-lg mb-4">{{ home_config.banner_badge_text }}</p>
-          {% endif %}
-          <h1 class="text-4xl md:text-6xl font-bold leading-tight">{{ home_config.banner_title }}</h1>
-          <p class="py-6 text-base-content/80">{{ home_config.banner_subtitle }}</p>
-
-          <div class="stats stats-vertical md:stats-horizontal shadow w-full bg-base-200 mb-8">
-            <div class="stat">
-              <div class="stat-title">Status</div>
-              <div class="stat-value text-primary">{% if user.is_authenticated %}Online{% else %}Offline{% endif %}</div>
-              <div class="stat-desc">Sessao atual</div>
-            </div>
-            <div class="stat">
-              <div class="stat-title">Papel</div>
-              <div class="stat-value text-secondary text-3xl">{{ role_label }}</div>
-              <div class="stat-desc">Perfil de acesso</div>
-            </div>
-          </div>
-
-          <div class="flex flex-wrap justify-center gap-3">
-            {% if user.is_authenticated %}
-              {% if is_admin %}
-                <a href="{% url 'admin_dashboard' %}" class="btn btn-primary">Area Admin</a>
-              {% else %}
-                <a href="{% url 'user_dashboard' %}" class="btn btn-primary">Area do Usuario</a>
-              {% endif %}
-              <form method="post" action="{% url 'logout' %}" class="inline">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-outline">Sair</button>
-              </form>
-            {% else %}
-              <a href="{% url 'login' %}" class="btn btn-primary">Entrar</a>
-              <a href="{% url 'register' %}" class="btn btn-secondary">Criar conta</a>
-            {% endif %}
+  <div class="home-world">
+    <section class="home-panel home-hero">
+      <div class="home-content">
+        <div class="home-hero-copy">
+          <p class="home-eyebrow">Codex apresenta</p>
+          <h1 class="home-title">A aventura vive em você.</h1>
+          <p class="home-lead">Entre na Cachoeira, crie seu personagem e escolha a guilda que vai acompanhar cada capítulo da sua jornada.</p>
+          <div class="home-actions">
+            {% if user.is_authenticated %}<a href="{% url 'meus_personagens' %}" class="btn home-button">Ver personagens</a>{% else %}<a href="{% url 'register' %}" class="btn home-button">Criar conta</a>{% endif %}
+            <a href="{% url 'wiki_home' %}" class="btn btn-outline home-button-ghost">Explorar a Wiki</a>
           </div>
         </div>
       </div>
     </section>
-  {% endif %}
 
-  <section class="card bg-base-100 shadow-md border border-base-300">
-    <div class="card-body">
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 class="card-title text-2xl">Acesso rapido</h2>
-          <p class="text-sm text-base-content/75">Entre direto nas areas mais usadas do sistema.</p>
-        </div>
-        <div class="join join-vertical sm:join-horizontal">
-          <a href="{% url 'listar_larps' %}" class="btn btn-accent join-item">LARPs</a>
-          <a href="{% url 'listar_guildas' %}" class="btn btn-primary join-item">Guildas</a>
-          {% if user.is_authenticated %}
-            <a href="{% url 'meus_personagens' %}" class="btn btn-secondary join-item">Personagens</a>
-          {% else %}
-            <a href="{% url 'login' %}?next=/personagens/" class="btn btn-secondary join-item">Personagens</a>
-          {% endif %}
-          {% if user.is_authenticated and is_admin %}
-            <a href="{% url 'admin_dashboard' %}" class="btn btn-accent join-item">Admin</a>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </section>
+    <div class="home-lightning" aria-hidden="true"><svg viewBox="0 0 1440 196" preserveAspectRatio="none"><path d="M-867 -37.1006L339.5 135.399L322 36.3994L2429 334.899"></path><path d="M-859 -45.1006L347.5 127.399L330 28.3994L2437 326.899"></path></svg></div>
 
-  {% if home_config.menu_section_visible %}
-    {% if user.is_authenticated and is_admin %}
-      <section>
-        <h2 class="text-2xl font-bold mb-4">{{ home_config.menu_section_title }} Admin</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="card bg-base-100 shadow-md border border-base-300">
-            <div class="card-body">
-              <h3 class="card-title">Gerenciar Usuarios</h3>
-              <p>Crie, edite e ajuste permissoes dos usuarios do sistema.</p>
-              <div class="card-actions justify-end">
-                <a href="{% url 'admin_dashboard' %}" class="btn btn-sm btn-primary">Abrir</a>
-              </div>
-            </div>
-          </div>
-          <div class="card bg-base-100 shadow-md border border-base-300">
-            <div class="card-body">
-              <h3 class="card-title">Perfis e Papeis</h3>
-              <p>Gerencie os perfis de acesso Admin e Usuario comum.</p>
-              <div class="card-actions justify-end">
-                <a href="/admin/core/profile/" class="btn btn-sm btn-secondary">Abrir</a>
-              </div>
-            </div>
-          </div>
-          <div class="card bg-base-100 shadow-md border border-base-300">
-            <div class="card-body">
-              <h3 class="card-title">Painel Geral</h3>
-              <p>Acesse o painel administrativo completo do Django.</p>
-              <div class="card-actions justify-end">
-                <a href="/admin/" class="btn btn-sm btn-accent">Abrir</a>
-              </div>
-            </div>
-          </div>
+    <section class="home-panel home-overview">
+      <div class="home-content home-overview-grid">
+        <div class="home-section-heading">
+          <p class="home-kicker">Uma historia em movimento</p>
+          <h2>Um mundo para jogar, criar e deixar sua marca.</h2>
+          <p>O Codex reune as regras, os eventos e as historias do nosso LARP em um so lugar. Prepare sua ficha, conheca as forcas do cenario e acompanhe tudo o que acontece dentro e fora da mesa.</p>
         </div>
-      </section>
-    {% elif user.is_authenticated %}
-      <section>
-        <h2 class="text-2xl font-bold mb-4">{{ home_config.menu_section_title }} do Usuario</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="card bg-base-100 shadow-md border border-base-300">
-            <div class="card-body">
-              <h3 class="card-title">Minha Conta</h3>
-              <p>Visualize seus dados e mantenha seu cadastro atualizado.</p>
-              <div class="card-actions justify-end">
-                <a href="{% url 'account_personal_data' %}" class="btn btn-sm btn-primary">Ver conta</a>
-              </div>
-            </div>
-          </div>
-          <div class="card bg-base-100 shadow-md border border-base-300">
-            <div class="card-body">
-              <h3 class="card-title">Acesso Rapido</h3>
-              <p>Navegue rapidamente pelos recursos liberados para seu perfil.</p>
-              <div class="card-actions justify-end">
-                <a href="{% url 'meus_personagens' %}" class="btn btn-sm btn-secondary">Personagens</a>
-              </div>
-            </div>
-          </div>
-          <div class="card bg-base-100 shadow-md border border-base-300">
-            <div class="card-body">
-              <h3 class="card-title">Suporte</h3>
-              <p>Precisa de ajuda? Entre em contato com o administrador.</p>
-              <div class="card-actions justify-end">
-                <a href="{% url 'home' %}" class="btn btn-sm btn-accent">Contato</a>
-              </div>
-            </div>
-          </div>
+        <div class="home-overview-stats" aria-label="Recursos do Codex">
+          <div class="home-overview-stat"><strong>01</strong><span>Personagem</span></div>
+          <div class="home-overview-stat"><strong>02</strong><span>Guildas</span></div>
+          <div class="home-overview-stat"><strong>03</strong><span>Eventos LARP</span></div>
         </div>
-      </section>
-    {% else %}
-      <section>
-        <div class="alert alert-info">
-          <span>Entre ou crie uma conta para visualizar menus personalizados por papel.</span>
-        </div>
-      </section>
-    {% endif %}
-  {% endif %}
-
-  {% if home_config.text_section_visible %}
-    <section class="card bg-base-100 shadow-md border border-base-300">
-      <div class="card-body">
-        <h2 class="card-title text-2xl">{{ home_config.text_section_title }}</h2>
-        <p class="text-base-content/80 whitespace-pre-line">{{ home_config.text_section_content }}</p>
       </div>
     </section>
-  {% endif %}
 
-  {% for section in dynamic_sections %}
-    <section class="card bg-base-100 shadow-md border border-base-300">
-      <div class="card-body">
-        <h2 class="card-title text-2xl">{{ section.title }}</h2>
-        <p class="text-base-content/80 whitespace-pre-line">{{ section.content }}</p>
+    <div class="home-lightning" aria-hidden="true"><svg viewBox="0 0 1440 196" preserveAspectRatio="none"><path d="M-867 -37.1006L339.5 135.399L322 36.3994L2429 334.899"></path><path d="M-859 -45.1006L347.5 127.399L330 28.3994L2437 326.899"></path></svg></div>
+
+    <section class="home-panel home-features">
+      <div class="home-content">
+        <div class="home-section-heading"><p class="home-kicker">Recursos de jogabilidade</p><h2>Seu caminho comeca com uma escolha.</h2></div>
+        <div class="home-feature-grid">
+          <article class="home-feature"><p class="home-feature-number">01</p><h3>Crie seu personagem</h3><p>De forma ao protagonista da sua historia e prepare a proxima cena.</p></article>
+          <article class="home-feature"><p class="home-feature-number">02</p><h3>Encontre sua guilda</h3><p>Descubra aliancas, ideais e companheiros para seguir adiante.</p></article>
+          <article class="home-feature"><p class="home-feature-number">03</p><h3>Viva os eventos</h3><p>Acompanhe os LARPs, participe das inscricoes e deixe seu legado.</p></article>
+        </div>
       </div>
     </section>
-  {% endfor %}
-</div>
+
+    <div class="home-lightning" aria-hidden="true"><svg viewBox="0 0 1440 196" preserveAspectRatio="none"><path d="M-867 -37.1006L339.5 135.399L322 36.3994L2429 334.899"></path><path d="M-859 -45.1006L347.5 127.399L330 28.3994L2437 326.899"></path></svg></div>
+
+    <section class="home-panel home-guildas">
+      <div class="home-content">
+        <div class="home-section-heading"><p class="home-kicker">As guildas</p><h2>Escolha quem caminha ao seu lado.</h2><p>Cada guilda carrega uma visao diferente do mundo. Conheca seus simbolos, seus ideais e encontre o lugar onde sua historia pode crescer.</p></div>
+        <div class="home-guildas-grid">
+          {% for guilda in guildas_home %}
+            <a href="{% url 'listar_guildas' %}" class="home-guilda-card" aria-label="Conhecer {{ guilda.nome }}"><div class="home-guilda-image"><img src="{% static guilda.imagem %}" alt="Emblema da {{ guilda.nome }}" /></div><div class="home-guilda-copy"><h3>{{ guilda.nome }}</h3><p>{{ guilda.lema }}</p></div></a>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <div class="home-lightning" aria-hidden="true"><svg viewBox="0 0 1440 196" preserveAspectRatio="none"><path d="M-867 -37.1006L339.5 135.399L322 36.3994L2429 334.899"></path><path d="M-859 -45.1006L347.5 127.399L330 28.3994L2437 326.899"></path></svg></div>
+
+    <section class="home-panel home-final">
+      <div class="home-content home-section-heading"><p class="home-kicker">O proximo capitulo e seu</p><h2>Prepare-se para atravessar a Cachoeira.</h2><p>A aventura comeca quando voce decide dar o primeiro passo. Consulte as regras, monte seu personagem e venha fazer parte do cenario.</p><div class="home-actions"><a href="{% url 'listar_larps' %}" class="btn home-button">Ver LARPs</a><a href="{% url 'listar_guildas' %}" class="btn btn-outline home-button-ghost">Conhecer guildas</a></div></div>
+    </section>
+  </div>
+
+  {% if show_character_prompt %}
+    <dialog id="character_prompt_modal" class="modal">
+      <div class="modal-box max-w-lg border border-primary/30 bg-base-100 shadow-2xl">
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">Sua jornada comeca aqui</p>
+        <h2 class="mt-3 text-3xl font-black">Voce ainda nao tem um personagem</h2>
+        <p class="mt-3 text-base-content/70">Crie seu personagem para participar das historias, escolher uma guilda e acompanhar os eventos da Cachoeira.</p>
+        <div class="modal-action">
+          <form method="dialog"><button type="submit" class="btn btn-ghost">Agora nao</button></form>
+          <a href="{% url 'criar_personagem' %}" class="btn btn-primary">Criar personagem</a>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop"><button>Fechar</button></form>
+    </dialog>
+    <script>
+      (function () {
+        const promptModal = document.getElementById('character_prompt_modal');
+        if (promptModal && typeof promptModal.showModal === 'function') {
+          promptModal.showModal();
+        }
+      })();
+    </script>
+  {% endif %}
 {% endblock content %}

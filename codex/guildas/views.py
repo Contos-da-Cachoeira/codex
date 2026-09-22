@@ -3,6 +3,7 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import select_template
 
 from core.constants.guildas import GUILDAS
+from core.context_processors import _is_admin
 from personagens.models import Personagem
 from personagens.consts import STATUS_APROVACAO, STATUS_PERSONAGEM
 from .models import Guilda, GuildaMembro, GuildaNoticia
@@ -52,7 +53,7 @@ def listar_guildas(request):
     guildas_db = Guilda.objects.filter(ativa=True)
     
     # Verificar se usuário é admin
-    eh_admin = request.user.is_staff if request.user.is_authenticated else False
+    eh_admin = _is_admin(request.user)
     
     # Preparar dados com informações públicas + privadas
     guildas_info = []
@@ -103,7 +104,7 @@ def detalhe_guilda(request, slug):
     
     # Verificar se é membro ou admin
     eh_membro = False
-    eh_admin = request.user.is_staff if request.user.is_authenticated else False
+    eh_admin = _is_admin(request.user)
     
     if request.user.is_authenticated:
         eh_membro = GuildaMembro.objects.filter(

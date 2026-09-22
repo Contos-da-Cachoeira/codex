@@ -14,6 +14,7 @@ class RegisterForm(UserCreationForm):
 
 
 class AccountPersonalDataForm(forms.ModelForm):
+    avatar = forms.ImageField(required=False)
     nome_completo_jogador = forms.CharField(max_length=180, required=False)
     apelido_cla = forms.CharField(max_length=120, required=False)
     telefone = forms.CharField(max_length=30, required=False)
@@ -30,6 +31,7 @@ class AccountPersonalDataForm(forms.ModelForm):
         self.fields['email'].required = True
 
         if self.profile is not None:
+            self.fields['avatar'].initial = self.profile.avatar
             self.fields['nome_completo_jogador'].initial = self.profile.nome_completo_jogador
             self.fields['apelido_cla'].initial = self.profile.apelido_cla
             self.fields['telefone'].initial = self.profile.telefone
@@ -44,6 +46,8 @@ class AccountPersonalDataForm(forms.ModelForm):
             user.save(update_fields=['username', 'email', 'first_name', 'last_name'])
 
         profile = self.profile or Profile.objects.get_or_create(user=user)[0]
+        if self.cleaned_data.get('avatar'):
+            profile.avatar = self.cleaned_data['avatar']
         profile.nome_completo_jogador = (self.cleaned_data.get('nome_completo_jogador') or '').strip()
         profile.apelido_cla = (self.cleaned_data.get('apelido_cla') or '').strip()
         profile.telefone = (self.cleaned_data.get('telefone') or '').strip()

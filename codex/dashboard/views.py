@@ -3,13 +3,15 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.urls import reverse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
-from core.models import HomeDynamicSection, HomePageConfig, LarpEvento, Profile, SiteLayoutConfig
+from core.constants.guildas import GUILDAS
+from core.models import HomeDynamicSection, HomePageConfig, LarpEvento, LarpInscricao, Profile, SiteLayoutConfig
 from personagens.consts import (
     CLASSES_CHOICES,
     GUILDAS_CHOICES,
@@ -31,29 +33,28 @@ def _is_admin(user):
 
 
 def home(request):
-    role_label = 'Visitante'
-    is_admin = False
-    home_config = HomePageConfig.load()
-    layout_config = SiteLayoutConfig.load()
-
-    if request.user.is_authenticated:
-        if request.user.is_superuser:
-            role_label = 'Admin'
-            is_admin = True
-        else:
-            profile, _ = Profile.objects.get_or_create(user=request.user)
-            role_label = profile.get_role_display()
-            is_admin = profile.role == Profile.UserRole.ADMIN
-
-    context = {
-        'role_label': role_label,
-        'is_admin': is_admin,
-        'home_config': home_config,
-        'layout_config': layout_config,
-        'dynamic_sections': HomeDynamicSection.objects.filter(is_visible=True),
-    }
-
-    return render(request, 'dashboard/home.html', context)
+    guildas_home = [
+        {
+            'nome': info.get('nome', key.replace('_', ' ').title()),
+            'imagem': info.get('imagem', ''),
+            'lema': info.get('lema') or 'Uma história ainda será escrita.',
+        }
+        for key, info in GUILDAS.items()
+        if info.get('imagem')
+    ]
+    show_character_prompt = (
+        request.user.is_authenticated
+        and not _is_admin(request.user)
+        and not Personagem.objects.filter(usuario=request.user).exists()
+    )
+    return render(
+        request,
+        'dashboard/home.html',
+        {
+            'guildas_home': guildas_home,
+            'show_character_prompt': show_character_prompt,
+        },
+    )
 
 
 @login_required
@@ -69,6 +70,48 @@ def admin_dashboard(request):
 
     home_config = HomePageConfig.load()
     layout_config = SiteLayoutConfig.load()
+
+    if request.method == 'POST' and request.POST.get('action') == 'update_theme_config':
+        color_fields = (
+            'primary_color',
+            'primary_content_color',
+            'secondary_color',
+            'secondary_content_color',
+			'site_background_color',
+			'site_surface_color',
+			'site_accent_color',
+			'site_accent_content_color',
+			'site_text_color',
+			'site_muted_text_color',
+        )
+        for field_name in color_fields:
+            value = request.POST.get(field_name, '').strip().upper()
+            if len(value) == 7 and value.startswith('#'):
+                setattr(layout_config, field_name, value)
+        layout_config.full_clean()
+        layout_config.save(update_fields=color_fields)
+        messages.success(request, 'Cores do layout atualizadas para todo o site.')
+        return redirect(f"{reverse('admin_dashboard')}?open_theme_modal=1")
+
+    if request.method == 'POST' and request.POST.get('action') == 'update_social_links':
+        social_fields = (
+            'social_instagram_url',
+            'social_whatsapp_url',
+            'social_x_url',
+            'social_youtube_url',
+        )
+        for field_name in social_fields:
+            setattr(layout_config, field_name, request.POST.get(field_name, '').strip())
+
+        try:
+            layout_config.full_clean()
+        except ValidationError:
+            messages.error(request, 'Confira se todos os links das redes sociais sao URLs validas.')
+            return redirect(f"{reverse('admin_dashboard')}?open_social_modal=1")
+
+        layout_config.save(update_fields=social_fields)
+        messages.success(request, 'Links das redes sociais atualizados com sucesso.')
+        return redirect(f"{reverse('admin_dashboard')}?open_social_modal=1")
 
     if request.method == 'POST' and request.POST.get('action') == 'update_home_components':
         home_config.banner_visible = request.POST.get('banner_visible') == 'on'
@@ -326,6 +369,42 @@ def admin_dashboard(request):
     open_personagens_modal = request.GET.get('open_personagens_modal') == '1'
     open_home_components_modal = request.GET.get('open_home_components_modal') == '1'
     open_larps_modal = request.GET.get('open_larps_modal') == '1'
+    open_theme_modal = request.GET.get('open_theme_modal') == '1'
+    open_social_modal = request.GET.get('open_social_modal') == '1'
+
+    now = timezone.now()
+    total_users = User.objects.count()
+    total_admins = User.objects.filter(
+        Q(is_superuser=True) | Q(profile__role=Profile.UserRole.ADMIN)
+    ).distinct().count()
+    total_characters = Personagem.objects.count()
+    total_larps = LarpEvento.objects.count()
+    total_registrations = LarpInscricao.objects.count()
+
+    dashboard_stats = {
+        'users_total': total_users,
+        'users_admin': total_admins,
+        'users_common': max(0, total_users - total_admins),
+        'characters_total': total_characters,
+        'characters_pending': Personagem.objects.filter(status_aprovacao=STATUS_APROVACAO.PENDENTE).count(),
+        'characters_active': Personagem.objects.filter(status=STATUS_PERSONAGEM_CHOICES[0][0]).count(),
+        'characters_without_guild': Personagem.objects.filter(guilda__isnull=True).count(),
+        'characters_with_guild': Personagem.objects.filter(guilda__isnull=False).count(),
+        'larps_total': total_larps,
+        'larps_public': LarpEvento.objects.filter(visivel_publicamente=True).count(),
+        'larps_private': LarpEvento.objects.filter(visivel_publicamente=False).count(),
+        'larps_upcoming': LarpEvento.objects.filter(data_evento__gte=now).count(),
+        'registrations_total': total_registrations,
+        'guilds_total': len(GUILDAS_CHOICES),
+        'home_sections_visible': HomeDynamicSection.objects.filter(is_visible=True).count(),
+    }
+
+    recent_users = User.objects.order_by('-date_joined', '-id')[:5]
+    recent_characters = Personagem.objects.select_related('usuario').order_by('-data_criacao', '-id')[:5]
+    recent_larps = LarpEvento.objects.order_by('-data_criacao', '-id')[:5]
+    pending_characters = Personagem.objects.select_related('usuario').filter(
+        status_aprovacao=STATUS_APROVACAO.PENDENTE,
+    ).order_by('-data_criacao', '-id')[:5]
 
     users = User.objects.all().order_by('username')
     if q_value:
@@ -460,8 +539,15 @@ def admin_dashboard(request):
         'layout_config': layout_config,
         'dynamic_sections': HomeDynamicSection.objects.all(),
         'open_home_components_modal': open_home_components_modal,
+        'open_theme_modal': open_theme_modal,
+        'open_social_modal': open_social_modal,
         'larp_events_data': larp_events_data,
         'open_larps_modal': open_larps_modal,
+        'dashboard_stats': dashboard_stats,
+        'recent_users': recent_users,
+        'recent_characters': recent_characters,
+        'recent_larps': recent_larps,
+        'pending_characters': pending_characters,
     }
     return render(request, 'dashboard/admin_dashboard.html', context)
 
