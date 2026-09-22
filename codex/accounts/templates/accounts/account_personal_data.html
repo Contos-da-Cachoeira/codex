@@ -24,8 +24,15 @@
     <div class="card bg-base-100 shadow-md border border-base-300 lg:col-span-2">
       <div class="card-body">
         <h2 class="card-title">Editar Dados</h2>
-        <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+        <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
           {% csrf_token %}
+
+          <label class="form-control md:col-span-2">
+            <span class="label-text mb-1">Foto de perfil</span>
+            {% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="Foto de perfil atual" class="mb-2 h-16 w-16 rounded-full border border-base-300 object-cover" />{% endif %}
+            <input type="file" name="avatar" accept="image/*" class="file-input file-input-bordered w-full" />
+            {% if form.avatar.errors %}<span class="label-text-alt text-error">{{ form.avatar.errors|striptags }}</span>{% endif %}
+          </label>
 
           <label class="form-control md:col-span-2">
             <span class="label-text mb-1">Usuario</span>

@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.text import slugify
+from django.core.validators import RegexValidator
 import secrets
 
 
@@ -12,6 +13,7 @@ class Profile(models.Model):
 
 	user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
 	role = models.CharField(max_length=10, choices=UserRole.choices, default=UserRole.COMMON)
+	avatar = models.ImageField(upload_to='profiles/avatars/', blank=True, null=True, verbose_name='Foto de perfil')
 	nome_completo_jogador = models.CharField(max_length=180, blank=True)
 	apelido_cla = models.CharField(max_length=120, blank=True)
 	telefone = models.CharField(max_length=30, blank=True)
@@ -39,8 +41,27 @@ class SingletonBaseModel(models.Model):
 
 
 class SiteLayoutConfig(SingletonBaseModel):
+	color_validator = RegexValidator(
+		regex=r'^#[0-9A-Fa-f]{6}$',
+		message='Use uma cor hexadecimal no formato #RRGGBB.',
+	)
 	header_visible = models.BooleanField(default=True, verbose_name='Mostrar cabecalho')
 	header_title = models.CharField(max_length=120, default='Codex', verbose_name='Titulo do cabecalho')
+	primary_color = models.CharField(max_length=7, default='#111111', validators=[color_validator], verbose_name='Cor principal')
+	primary_content_color = models.CharField(max_length=7, default='#FFFFFF', validators=[color_validator], verbose_name='Conteudo da cor principal')
+	secondary_color = models.CharField(max_length=7, default='#E5E5E5', validators=[color_validator], verbose_name='Cor secundaria')
+	secondary_content_color = models.CharField(max_length=7, default='#111111', validators=[color_validator], verbose_name='Conteudo da cor secundaria')
+	site_background_color = models.CharField(max_length=7, default='#061426', validators=[color_validator], verbose_name='Fundo azul escuro')
+	site_surface_color = models.CharField(max_length=7, default='#0D2845', validators=[color_validator], verbose_name='Superficie azul')
+	site_accent_color = models.CharField(max_length=7, default='#4FD7FF', validators=[color_validator], verbose_name='Azul de destaque')
+	site_accent_content_color = models.CharField(max_length=7, default='#041422', validators=[color_validator], verbose_name='Texto do destaque')
+	site_text_color = models.CharField(max_length=7, default='#F2F7FF', validators=[color_validator], verbose_name='Texto claro')
+	site_muted_text_color = models.CharField(max_length=7, default='#A9C1D8', validators=[color_validator], verbose_name='Texto secundario')
+
+	social_instagram_url = models.URLField(blank=True, default='', verbose_name='URL do Instagram')
+	social_whatsapp_url = models.URLField(blank=True, default='', verbose_name='URL do WhatsApp')
+	social_x_url = models.URLField(blank=True, default='', verbose_name='URL do X/Twitter')
+	social_youtube_url = models.URLField(blank=True, default='', verbose_name='URL do YouTube')
 
 	footer_visible = models.BooleanField(default=True, verbose_name='Mostrar rodape')
 	footer_title = models.CharField(max_length=120, default='Codex da Cachoeira', verbose_name='Titulo do rodape')

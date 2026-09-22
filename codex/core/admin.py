@@ -20,8 +20,25 @@ class SingletonAdminMixin:
 @admin.register(SiteLayoutConfig)
 class SiteLayoutConfigAdmin(SingletonAdminMixin, admin.ModelAdmin):
 	fieldsets = (
+		('Paleta azul escura', {
+			'fields': (
+				'primary_color',
+				'primary_content_color',
+				'secondary_color',
+				'secondary_content_color',
+				'site_background_color',
+				'site_surface_color',
+				'site_accent_color',
+				'site_accent_content_color',
+				'site_text_color',
+				'site_muted_text_color',
+			),
+		}),
 		('Cabecalho padrao', {
 			'fields': ('header_visible', 'header_title'),
+		}),
+		('Redes sociais do cabecalho', {
+			'fields': ('social_instagram_url', 'social_whatsapp_url', 'social_x_url', 'social_youtube_url'),
 		}),
 		('Rodape padrao', {
 			'fields': (

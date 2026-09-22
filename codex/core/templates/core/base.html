@@ -1,27 +1,42 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="pt-br" data-theme="bumblebee">
+<html lang="pt-br" data-guildas="{% if is_guildas %}true{% endif %}" data-theme="night">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Codex{% endblock title %}</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'core/img/tesseract.svg' %}" />
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     :root {
-      --site-glow-1: 255 184 0;
-      --site-glow-2: 37 99 235;
-      --site-glow-3: 220 38 38;
+      --site-background: {{ layout_config.site_background_color|default:'#061426' }};
+      --site-surface: {{ layout_config.site_surface_color|default:'#0D2845' }};
+      --site-accent: {{ layout_config.site_accent_color|default:'#4FD7FF' }};
+      --site-accent-content: {{ layout_config.site_accent_content_color|default:'#041422' }};
+      --site-text: {{ layout_config.site_text_color|default:'#F2F7FF' }};
+      --site-muted: {{ layout_config.site_muted_text_color|default:'#A9C1D8' }};
+      --site-glow-1: 79 215 255;
+      --site-glow-2: 27 116 185;
+      --site-glow-3: 14 46 82;
+      --site-sidebar-width: 16rem;
+      --site-sidebar-half-width: 8rem;
     }
 
-    [data-theme="halloween"] {
-      --site-glow-1: 249 115 22;
-      --site-glow-2: 139 92 246;
-      --site-glow-3: 5 150 105;
+    html {
+      --color-primary: {{ layout_config.primary_color|default:'#111111' }};
+      --color-primary-content: {{ layout_config.primary_content_color|default:'#FFFFFF' }};
+      --color-secondary: {{ layout_config.secondary_color|default:'#E5E5E5' }};
+      --color-secondary-content: {{ layout_config.secondary_content_color|default:'#111111' }};
+      --color-accent: var(--color-primary);
+      --color-accent-content: var(--color-primary-content);
     }
 
     body {
       min-height: 100vh;
+      color: var(--site-text);
+      background-color: var(--site-background);
       background-image:
         radial-gradient(50rem 50rem at -10% -20%, rgb(var(--site-glow-1) / 0.14), transparent 52%),
         radial-gradient(40rem 40rem at 110% 10%, rgb(var(--site-glow-2) / 0.12), transparent 56%),
@@ -34,13 +49,17 @@
       isolation: isolate;
     }
 
+    .site-shell.has-sidebar {
+      padding-left: var(--site-sidebar-width);
+    }
+
     .site-shell::before {
       content: "";
       position: fixed;
       inset: 0;
       z-index: -2;
       pointer-events: none;
-      background: linear-gradient(to bottom, color-mix(in oklab, var(--color-base-200) 70%, transparent), color-mix(in oklab, var(--color-base-100) 92%, transparent));
+      background: linear-gradient(to bottom, rgb(3 19 23 / 0.08), rgb(3 19 23 / 0.36));
     }
 
     .site-shell::after {
@@ -57,9 +76,597 @@
       mask-image: radial-gradient(ellipse at center, black 38%, transparent 88%);
     }
 
-    .site-header {
-      backdrop-filter: blur(10px);
-      background-color: color-mix(in oklab, var(--color-base-100) 86%, transparent);
+    .site-header-frame {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border-bottom: 1px solid rgb(79 215 255 / 0.3);
+      background: linear-gradient(110deg, #04101e 0%, var(--site-surface) 52%, #06182b 100%);
+      box-shadow: 0 1rem 3rem rgb(0 0 0 / 0.28);
+    }
+
+    .site-main-nav {
+      position: relative;
+      z-index: 1;
+      background: transparent;
+      color: var(--site-text);
+    }
+
+    .site-main-nav > .container {
+      position: relative;
+      z-index: 1;
+      min-height: 5.5rem;
+    }
+
+    .site-main-nav a {
+      color: var(--site-text);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .site-main-nav a:hover,
+    .site-main-nav a:focus-visible {
+      color: var(--site-accent);
+    }
+
+    .site-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .site-brand-logo {
+      width: 2.35rem;
+      height: 2.35rem;
+      object-fit: contain;
+      filter: invert(1) brightness(1.7) drop-shadow(0 0 0.6rem rgb(79 215 255 / 0.35));
+    }
+
+    .site-brand-copy {
+      display: inline-flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      line-height: 0.9;
+    }
+
+    .site-brand strong {
+      color: var(--site-text);
+      font-size: 1.25rem;
+      letter-spacing: 0.22em;
+    }
+
+    .site-brand small {
+      color: var(--site-accent);
+      font-size: 0.46rem;
+      font-weight: 800;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+    }
+
+    .site-nav-link {
+      position: relative;
+      padding: 1.9rem 0.1rem;
+      font-size: 0.68rem;
+      font-weight: 800;
+    }
+
+    .site-nav-link::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: 1.25rem;
+      left: 0;
+      height: 2px;
+      background: var(--site-accent);
+      transform: scaleX(0);
+      transform-origin: right;
+      transition: transform 180ms ease;
+    }
+
+    .site-nav-link:hover::after,
+    .site-nav-link:focus-visible::after {
+      transform: scaleX(1);
+      transform-origin: left;
+    }
+
+    .site-social-links {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .site-social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.75rem;
+      height: 1.75rem;
+      color: var(--site-text);
+      line-height: 1;
+    }
+
+    .site-social-link:hover,
+    .site-social-link:focus-visible {
+      color: var(--site-accent);
+      transform: translateY(-1px);
+    }
+
+    .site-account-strip {
+      position: relative;
+      z-index: 30;
+      border-bottom: 1px solid rgb(79 215 255 / 0.16);
+      background: rgb(3 14 28 / 0.92);
+    }
+
+    .site-account-trigger {
+      position: relative;
+      display: inline-flex;
+      width: 2.65rem;
+      height: 2.65rem;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px solid rgb(79 215 255 / 0.65);
+      border-radius: 999px;
+      background: var(--site-surface);
+      color: var(--site-accent);
+      cursor: pointer;
+      box-shadow: 0 0 1.25rem rgb(79 215 255 / 0.14);
+      transition: border-color 160ms ease, transform 160ms ease;
+    }
+
+    .site-account-trigger:hover,
+    .site-account-trigger:focus-visible {
+      border-color: var(--site-text);
+      transform: translateY(-1px);
+    }
+
+    .site-account-trigger img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .site-account-trigger svg {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    .site-footer-frame {
+      position: relative;
+      min-height: 12rem;
+      overflow: hidden;
+      border-top: 1px solid rgb(79 215 255 / 0.3);
+      background: linear-gradient(110deg, #06182b 0%, var(--site-surface) 52%, #04101e 100%);
+      color: var(--site-text);
+    }
+
+    .site-footer-content {
+      position: relative;
+      z-index: 1;
+      min-height: 12rem;
+      padding-top: 3rem;
+      padding-bottom: 2rem;
+    }
+
+    .site-footer-content a {
+      color: var(--site-muted);
+    }
+
+    .site-footer-content a:hover,
+    .site-footer-content a:focus-visible {
+      color: var(--site-accent);
+    }
+
+    .site-footer-mark {
+      color: var(--site-text);
+      font-size: 1.2rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .site-footer-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .site-footer-brand .site-brand-logo {
+      width: 2.8rem;
+      height: 2.8rem;
+    }
+
+    .site-sidebar-toggle,
+    .site-sidebar-overlay {
+      display: none;
+    }
+
+    .site-header-frame {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 50;
+      width: var(--site-sidebar-width);
+      border-right: 1px solid rgb(79 215 255 / 0.28);
+      border-bottom: 0;
+      overflow: visible;
+      background: linear-gradient(180deg, #04101e 0%, var(--site-surface) 55%, #06182b 100%);
+      box-shadow: 1rem 0 3rem rgb(0 0 0 / 0.2);
+    }
+
+    .site-main-nav > .container {
+      min-height: 100vh;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2.25rem;
+      padding: 1.35rem 0.65rem;
+    }
+
+    .site-sidebar-links {
+      display: flex !important;
+      width: 100%;
+      flex: 1;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.35rem;
+    }
+
+    .site-header-frame .site-brand {
+      justify-content: flex-start;
+    }
+
+    .site-sidebar-links .site-nav-link {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 0.7rem;
+      min-height: 3rem;
+      padding: 0.85rem 0.5rem;
+      border-left: 2px solid transparent;
+      color: var(--site-muted);
+      font-size: 0.72rem;
+    }
+
+    .site-sidebar-links .site-nav-link::after {
+      right: auto;
+      bottom: 0;
+      left: -2px;
+      width: 2px;
+      height: 100%;
+      transform: scaleY(0);
+      transform-origin: bottom;
+    }
+
+    .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link::before,
+    .site-shell.sidebar-collapsed .site-account-trigger::after {
+      position: absolute;
+      bottom: 50%;
+      left: calc(100% + 0.65rem);
+      z-index: 100;
+      padding: 0.45rem 0.65rem;
+      border: 1px solid rgb(79 215 255 / 0.34);
+      border-radius: 0.3rem;
+      background: #06182b;
+      box-shadow: 0 0.6rem 1.5rem rgb(0 0 0 / 0.32), 0 0 1rem rgb(79 215 255 / 0.12);
+      color: var(--site-text);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      opacity: 0;
+      pointer-events: none;
+      text-transform: uppercase;
+      transform: translateY(50%) translateX(-0.35rem);
+      transition: opacity 160ms ease, transform 160ms ease;
+      white-space: nowrap;
+    }
+
+    .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link::before {
+      content: attr(title);
+    }
+
+    .site-shell.sidebar-collapsed .site-account-trigger::after {
+      content: 'Perfil';
+    }
+
+    .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link:hover::before,
+    .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link:focus-visible::before,
+    .site-shell.sidebar-collapsed .site-account-trigger:hover::after,
+    .site-shell.sidebar-collapsed .site-account-trigger:focus-visible::after {
+      opacity: 1;
+      transform: translateY(50%) translateX(0);
+    }
+
+    .site-sidebar-links .site-nav-link:hover,
+    .site-sidebar-links .site-nav-link:focus-visible {
+      border-left-color: var(--site-accent);
+      background: rgb(79 215 255 / 0.08);
+      color: var(--site-text);
+    }
+
+    .site-sidebar-links .site-nav-link:hover::after,
+    .site-sidebar-links .site-nav-link:focus-visible::after {
+      transform: scaleY(1);
+      transform-origin: top;
+    }
+
+    .site-sidebar-tools {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+      margin-left: 0;
+    }
+
+    .site-nav-label {
+      display: inline-flex;
+    }
+
+    .site-sidebar-collapse {
+      position: fixed;
+      right: auto;
+      bottom: 1rem;
+      left: calc(var(--site-sidebar-width) + 0.5rem);
+      z-index: 60;
+      display: flex;
+      width: 2.5rem;
+      height: 2.5rem;
+      align-items: center;
+      justify-content: center;
+      align-self: flex-start;
+      padding: 0;
+      border: 1px solid rgb(169 193 216 / 0.18);
+      border-radius: 0.25rem;
+      background: rgb(79 215 255 / 0.06);
+      color: var(--site-muted);
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .site-sidebar-collapse:hover,
+    .site-sidebar-collapse:focus-visible {
+      border-color: var(--site-accent);
+      color: var(--site-accent);
+    }
+
+    .site-sidebar-collapse svg {
+      flex: 0 0 auto;
+      transition: transform 180ms ease;
+    }
+
+    .site-shell.sidebar-collapsed .site-sidebar-collapse::after {
+      position: absolute;
+      bottom: 50%;
+      left: calc(100% + 0.65rem);
+      padding: 0.45rem 0.65rem;
+      border: 1px solid rgb(79 215 255 / 0.34);
+      border-radius: 0.3rem;
+      background: #06182b;
+      box-shadow: 0 0.6rem 1.5rem rgb(0 0 0 / 0.32), 0 0 1rem rgb(79 215 255 / 0.12);
+      color: var(--site-text);
+      content: 'Expandir barra lateral';
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      opacity: 0;
+      pointer-events: none;
+      text-transform: uppercase;
+      transform: translateY(50%) translateX(-0.35rem);
+      transition: opacity 160ms ease, transform 160ms ease;
+      white-space: nowrap;
+    }
+
+    .site-shell.sidebar-collapsed .site-sidebar-collapse:hover::after,
+    .site-shell.sidebar-collapsed .site-sidebar-collapse:focus-visible::after {
+      opacity: 1;
+      transform: translateY(50%) translateX(0);
+    }
+
+    .site-sidebar-tools > .dropdown {
+      align-self: flex-start;
+    }
+
+    .site-account-menu {
+      position: fixed !important;
+      display: none !important;
+      top: auto !important;
+      right: auto !important;
+      bottom: 1rem !important;
+      left: max(0.75rem, min(calc(var(--site-sidebar-width) + 0.75rem), calc(100vw - 14rem - 0.75rem))) !important;
+      margin: 0 !important;
+      z-index: 9999 !important;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+    }
+
+    .site-account-menu.is-open {
+      display: block !important;
+    }
+
+    .site-sidebar-tools .site-social-links {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgb(169 193 216 / 0.2);
+    }
+
+    .site-sidebar-tools .site-social-label {
+      display: block !important;
+    }
+
+    .site-sidebar-tools .site-social-link {
+      color: var(--site-muted);
+    }
+
+    .site-sidebar-tools > .site-mobile-menu {
+      display: none !important;
+    }
+
+    .site-sidebar-tools .items-center {
+      display: flex !important;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.35rem;
+    }
+
+    .site-sidebar-tools .items-center a {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0.65rem 1rem;
+      color: var(--site-muted);
+      font-size: 0.7rem;
+    }
+
+    .site-shell.has-sidebar > main.site-main-with-sidebar {
+      min-height: 100vh;
+      width: 100%;
+      max-width: none;
+      margin-right: 0 !important;
+      margin-left: 0 !important;
+    }
+
+    .site-shell > footer {
+      display: none;
+    }
+
+    .site-shell.sidebar-collapsed {
+      --site-sidebar-width: 5rem;
+      --site-sidebar-half-width: 2.5rem;
+    }
+
+    .site-shell.sidebar-collapsed .site-brand-copy,
+    .site-shell.sidebar-collapsed .site-nav-label,
+    .site-shell.sidebar-collapsed .site-social-label {
+      display: none !important;
+    }
+
+    .site-shell.sidebar-collapsed .site-brand,
+    .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link,
+    .site-shell.sidebar-collapsed .site-sidebar-collapse,
+    .site-shell.sidebar-collapsed .site-sidebar-tools .items-center a {
+      justify-content: flex-start;
+    }
+
+    .site-shell.sidebar-collapsed .site-sidebar-collapse {
+      padding-right: 0.5rem;
+      padding-left: 0.5rem;
+    }
+
+    .site-shell.sidebar-collapsed .site-sidebar-collapse svg {
+      transform: rotate(180deg);
+    }
+
+    .site-shell.sidebar-collapsed .site-sidebar-tools .site-social-links {
+      display: none !important;
+    }
+
+    .site-account-strip {
+      position: fixed;
+      top: 1rem;
+      right: 1.5rem;
+      border: 0;
+      background: transparent;
+    }
+
+    .site-account-strip > div {
+      padding: 0;
+    }
+
+    @media (max-width: 900px) {
+      .site-sidebar-toggle {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 70;
+        display: inline-flex;
+        width: 2.75rem;
+        height: 2.75rem;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgb(79 215 255 / 0.55);
+        border-radius: 0.35rem;
+        background: var(--site-surface);
+        color: var(--site-text);
+      }
+
+      .site-sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 45;
+        display: block;
+        visibility: hidden;
+        background: rgb(0 5 14 / 0.65);
+        opacity: 0;
+        transition: opacity 180ms ease, visibility 180ms ease;
+      }
+
+      .site-header-frame {
+        width: 16rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+        transform: translateX(-100%);
+        transition: transform 200ms ease;
+      }
+
+      .site-header-frame.is-open {
+        transform: translateX(0);
+      }
+
+      .site-sidebar-overlay.is-open {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .site-shell.has-sidebar {
+        padding-left: 0;
+      }
+
+      .site-shell.has-sidebar > main.site-main-with-sidebar {
+        width: 100%;
+        margin-left: 0 !important;
+      }
+
+      .site-shell.sidebar-collapsed {
+        --site-sidebar-width: 16rem;
+        --site-sidebar-half-width: 8rem;
+      }
+
+      .site-sidebar-collapse {
+        display: none;
+      }
+
+      .site-shell.sidebar-collapsed .site-brand-copy,
+      .site-shell.sidebar-collapsed .site-nav-label {
+        display: inline-flex !important;
+      }
+
+      .site-main-nav > .container {
+        align-items: stretch;
+        padding: 2rem 1.25rem;
+      }
+
+      .site-brand-copy,
+      .site-nav-label {
+        display: inline-flex;
+      }
+
+      .site-header-frame .site-brand {
+        justify-content: flex-start;
+      }
+
+      .site-sidebar-links .site-nav-link {
+        justify-content: flex-start;
+        padding: 0.85rem 1rem;
+      }
+
+      .site-account-strip {
+        top: 1rem;
+        right: 1rem;
+      }
     }
 
     .card,
@@ -81,11 +688,6 @@
       transform: translateY(-1px);
     }
 
-    .theme-toggle-btn {
-      justify-content: flex-start;
-      width: 100%;
-    }
-
     [data-animate-up] {
       animation: rise-in 460ms ease-out both;
     }
@@ -104,73 +706,127 @@
   {% block head_extra %}{% endblock %}
 </head>
 <body class="min-h-screen text-base-content">
-  <div class="site-shell">
+  <div class="site-shell{% if layout_config.header_visible %} has-sidebar{% endif %}">
     {% if layout_config.header_visible %}
-      <div class="navbar site-header sticky top-0 z-40 border-b px-4 md:px-8" data-animate-up>
-        <div class="navbar-start">
-          <div class="dropdown md:hidden mr-1">
-            <div tabindex="0" role="button" class="btn btn-sm btn-ghost" aria-label="Abrir menu rapido">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </div>
-            <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-20 mt-2 w-52 p-2 shadow border border-base-300">
-              <li><a href="{% url 'home' %}">Home</a></li>
-              <li><a href="{% url 'listar_larps' %}">LARPs</a></li>
-              <li><a href="{% url 'listar_guildas' %}">Guildas</a></li>
-              <li><a href="{% url 'wiki_home' %}">Wiki</a></li>
-              <li>
-                {% if user.is_authenticated %}
-                  <a href="{% url 'meus_personagens' %}">Personagens</a>
-                {% else %}
-                  <a href="{% url 'login' %}?next=/personagens/">Personagens</a>
-                {% endif %}
-              </li>
-            </ul>
-          </div>
-          <a href="{% url 'home' %}" class="btn btn-ghost text-xl font-black tracking-wide">{{ layout_config.header_title }}</a>
-        </div>
-        <div class="navbar-center hidden md:flex">
-          <ul class="menu menu-horizontal gap-1 px-1 bg-base-100/60 rounded-box border border-base-300">
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="{% url 'listar_larps' %}">LARPs</a></li>
-            <li><a href="{% url 'listar_guildas' %}">Guildas</a></li>
-            <li><a href="{% url 'wiki_home' %}">Wiki</a></li>
-            <li>
+    <button type="button" class="site-sidebar-toggle" data-sidebar-toggle aria-label="Abrir menu">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+    <button type="button" class="site-sidebar-overlay" data-sidebar-close aria-label="Fechar menu"></button>
+      <header class="site-header-frame" data-sidebar>
+        <nav class="site-main-nav" aria-label="Navegação principal">
+          <div class="container mx-auto flex min-h-20 items-center gap-6 px-4 md:px-8">
+            <a href="{% url 'home' %}" aria-label="Ir para a Home" class="site-brand shrink-0">
+              <img src="{% static 'core/img/tesseract.svg' %}" alt="" class="site-brand-logo" />
+              <span class="site-brand-copy">
+                <strong>Codex</strong>
+                <small>Contos da Cachoeira</small>
+              </span>
+            </a>
+
+            <div class="site-sidebar-links hidden min-w-0 flex-1 items-center gap-8 md:flex">
+              <a href="{% url 'listar_larps' %}" class="site-nav-link" aria-label="LARPs" title="LARPs">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 19V5m0 0c4-2 8 2 16 0v14c-8 2-12-2-16 0Z" /></svg>
+                <span class="site-nav-label">LARPs</span>
+              </a>
+              <a href="{% url 'listar_guildas' %}" class="site-nav-link" aria-label="Guildas" title="Guildas">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3 4 7v5c0 4.7 3.3 7.6 8 9 4.7-1.4 8-4.3 8-9V7l-8-4Z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="m9 12 2 2 4-4" /></svg>
+                <span class="site-nav-label">Guildas</span>
+              </a>
+              <a href="{% url 'wiki_home' %}" class="site-nav-link" aria-label="Wiki" title="Wiki">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M5 4.5A2.5 2.5 0 0 1 7.5 2H20v17H7.5A2.5 2.5 0 0 0 5 21.5m0-17v17M5 4.5h12" /></svg>
+                <span class="site-nav-label">Wiki</span>
+              </a>
               {% if user.is_authenticated %}
-                <a href="{% url 'meus_personagens' %}">Personagens</a>
+                <a href="{% url 'meus_personagens' %}" class="site-nav-link" aria-label="Personagens" title="Personagens">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="3" stroke-width="1.7" /><path stroke-linecap="round" stroke-width="1.7" d="M5.5 20a6.5 6.5 0 0 1 13 0" /></svg>
+                  <span class="site-nav-label">Personagens</span>
+                </a>
               {% else %}
-                <a href="{% url 'login' %}?next=/personagens/">Personagens</a>
+                <a href="{% url 'login' %}?next=/personagens/" class="site-nav-link" aria-label="Personagens" title="Personagens">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="8" r="3" stroke-width="1.7" /><path stroke-linecap="round" stroke-width="1.7" d="M5.5 20a6.5 6.5 0 0 1 13 0" /></svg>
+                  <span class="site-nav-label">Personagens</span>
+                </a>
               {% endif %}
-            </li>
-          </ul>
-        </div>
-        <div class="navbar-end gap-2">
-          {% if user.is_authenticated %}
-            <div class="dropdown dropdown-end">
-              <div tabindex="0" role="button" class="btn btn-sm btn-ghost">{{ user.username }}</div>
-              <ul tabindex="0" class="menu dropdown-content bg-base-100 rounded-box z-10 mt-2 w-56 p-2 shadow border border-base-300 gap-1">
-                <li><a href="{% url 'account_personal_data' %}">Minha conta</a></li>
-                <li>
-                  <a href="#" class="theme-toggle-btn" data-theme-toggle data-next-theme="halloween">Tema escuro</a>
-                </li>
-                <li>
-                  <form method="post" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="w-full text-left">Sair</button>
-                  </form>
-                </li>
-              </ul>
+              {% if is_admin %}
+                <a href="{% url 'admin_dashboard' %}" class="site-nav-link" aria-label="Área Admin" title="Área Admin">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 3 4.5 6v5c0 4.7 3 8.3 7.5 10 4.5-1.7 7.5-5.3 7.5-10V6L12 3Z" /><path stroke-linecap="round" stroke-width="1.7" d="M9 12h6m-3-3v6" /></svg>
+                  <span class="site-nav-label">Admin</span>
+                </a>
+              {% endif %}
             </div>
-          {% else %}
-            <a href="{% url 'login' %}" class="btn btn-sm btn-ghost">Login</a>
-            <a href="{% url 'register' %}" class="btn btn-sm btn-primary">Registro</a>
-          {% endif %}
-        </div>
-      </div>
+
+            <div class="site-sidebar-tools ml-auto flex items-center gap-3">
+              {% if user.is_authenticated %}
+                <div class="site-account-dropdown dropdown dropdown-start" data-account-dropdown>
+                  <button type="button" class="site-account-trigger" data-account-trigger aria-expanded="false" aria-label="Abrir menu da conta de {{ user.username }}" title="{{ user.username }}">
+                    {% if account_profile and account_profile.avatar %}
+                      <img src="{{ account_profile.avatar.url }}" alt="Foto de perfil de {{ user.username }}" />
+                    {% else %}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <circle cx="12" cy="8" r="3.25"></circle>
+                        <path stroke-linecap="round" d="M5.5 20a6.5 6.5 0 0 1 13 0"></path>
+                      </svg>
+                    {% endif %}
+                  </button>
+                  <ul tabindex="0" class="site-account-menu menu dropdown-content z-50 mt-3 w-56 rounded-box border border-base-300 bg-base-100 p-2 text-base-content shadow-xl" data-account-menu>
+                    <li class="menu-title"><span>{{ user.username }}</span></li>
+                    <li><a href="{% url 'account_personal_data' %}">Minha conta</a></li>
+                    <li><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit" class="w-full text-left">Sair</button></form></li>
+                  </ul>
+                </div>
+              {% endif %}
+              <div class="site-mobile-menu dropdown dropdown-end md:hidden">
+                <div tabindex="0" role="button" class="btn btn-ghost btn-sm text-white" aria-label="Abrir menu">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </div>
+                <ul tabindex="0" class="menu dropdown-content z-50 mt-3 w-56 rounded-box border border-base-300 bg-base-100 p-2 text-base-content shadow-xl">
+                  <li><a href="{% url 'listar_larps' %}">LARPs</a></li>
+                  <li><a href="{% url 'listar_guildas' %}">Guildas</a></li>
+                  <li><a href="{% url 'wiki_home' %}">Wiki</a></li>
+                  {% if user.is_authenticated %}
+                    <li><a href="{% url 'meus_personagens' %}">Personagens</a></li>
+                    <li><a href="{% url 'account_personal_data' %}">Minha conta</a></li>
+                    <li>
+                      <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="w-full text-left">Sair</button>
+                      </form>
+                    </li>
+                  {% else %}
+                    <li><a href="{% url 'login' %}">Login</a></li>
+                    <li><a href="{% url 'register' %}">Registro</a></li>
+                  {% endif %}
+                </ul>
+              </div>
+
+              {% if not user.is_authenticated %}
+                <div class="hidden items-center gap-3 md:flex">
+                  <a href="{% url 'login' %}" class="text-sm font-bold" aria-label="Login" title="Login">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5m5 5H3" /></svg>
+                    <span class="site-nav-label">Login</span>
+                  </a>
+                  <a href="{% url 'register' %}" class="text-sm font-bold" aria-label="Registro" title="Registro">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><circle cx="9" cy="8" r="3" stroke-width="1.7" /><path stroke-linecap="round" stroke-width="1.7" d="M3 20a6 6 0 0 1 12 0m5-9v6m-3-3h6" /></svg>
+                    <span class="site-nav-label">Registro</span>
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </nav>
+      </header>
+      <button type="button" class="site-sidebar-collapse" data-sidebar-collapse aria-expanded="true" aria-label="Recolher barra lateral" title="Recolher barra lateral">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m15 6-6 6 6 6" />
+        </svg>
+      </button>
     {% endif %}
 
-    <main class="container mx-auto px-4 py-8 md:py-12" data-animate-up>
+    <main class="{% if layout_config.header_visible %}site-main-with-sidebar {% endif %}container mx-auto px-4 py-8 md:py-12" data-animate-up>
       {% if messages %}
         <div class="space-y-2 mb-6">
           {% for message in messages %}
@@ -213,75 +869,58 @@
     </main>
 
     {% if layout_config.footer_visible %}
-      <footer class="footer footer-horizontal footer-center bg-base-100/80 text-base-content rounded p-8 border-t border-base-300 backdrop-blur">
-        <aside>
-          <p class="font-semibold">{{ layout_config.footer_title }}</p>
-          <p class="text-sm text-base-content/70">{{ layout_config.footer_description }}</p>
-          <p class="text-xs text-base-content/60">{{ layout_config.footer_copyright }}</p>
-        </aside>
+      <footer class="site-footer-frame">
+        <div class="site-footer-content container mx-auto flex flex-col items-start justify-between gap-8 px-4 md:flex-row md:items-end">
+          <div>
+            <a href="{% url 'home' %}" class="site-footer-brand" aria-label="Ir para a Home">
+              <img src="{% static 'core/img/tesseract.svg' %}" alt="" class="site-brand-logo" />
+              <span class="site-footer-mark">Codex</span>
+            </a>
+          </div>
+          {% if layout_config.social_instagram_url or layout_config.social_whatsapp_url or layout_config.social_x_url or layout_config.social_youtube_url %}
+            <div class="site-social-links" aria-label="Redes sociais">
+              {% if layout_config.social_instagram_url %}
+                <a href="{{ layout_config.social_instagram_url }}" class="site-social-link" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <rect x="3" y="3" width="18" height="18" rx="5" />
+                    <circle cx="12" cy="12" r="4" />
+                    <circle cx="17.5" cy="6.5" r="0.75" fill="currentColor" stroke="none" />
+                  </svg>
+                </a>
+              {% endif %}
+              {% if layout_config.social_whatsapp_url %}
+                <a href="{{ layout_config.social_whatsapp_url }}" class="site-social-link" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2a10 10 0 0 0-8.66 15L2 22l5.16-1.3A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.13l-.3-.18-2.97.75.8-2.89-.2-.31A8 8 0 1 1 12 20Z" />
+                    <path d="M16.37 13.78c-.24-.12-1.42-.7-1.64-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1-.37-1.9-1.18-.7-.62-1.18-1.38-1.32-1.61-.14-.24-.01-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.1 3.62.57.25 1.02.4 1.37.51.58.18 1.1.15 1.51.09.46-.07 1.42-.58 1.62-1.14.2-.56.2-1.04.14-1.14-.06-.1-.22-.16-.46-.28Z" />
+                  </svg>
+                </a>
+              {% endif %}
+              {% if layout_config.social_x_url %}
+                <a href="{{ layout_config.social_x_url }}" class="site-social-link text-sm font-black" target="_blank" rel="noopener noreferrer" aria-label="X">X</a>
+              {% endif %}
+              {% if layout_config.social_youtube_url %}
+                <a href="{{ layout_config.social_youtube_url }}" class="site-social-link" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.9 4.7 12 4.7 12 4.7s-5.9 0-7.6.5a2.8 2.8 0 0 0-2 2C1.9 8.9 1.9 12 1.9 12s0 3.1.5 4.8a2.8 2.8 0 0 0 2 2c1.7.5 7.6.5 7.6.5s5.9 0 7.6-.5a2.8 2.8 0 0 0 2-2c.5-1.7.5-4.8.5-4.8s0-3.1-.5-4.8ZM10 15.5v-7l6 3.5-6 3.5Z" />
+                  </svg>
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
+          <nav class="flex flex-wrap items-center justify-start gap-x-5 gap-y-2 text-xs font-bold uppercase tracking-[0.12em] md:ml-auto md:justify-end" aria-label="Mapa do site">
+            <span class="mr-1 text-[0.62rem] text-white/45">Mapa do site</span>
+            <a href="{% url 'listar_larps' %}">LARPs</a>
+            <a href="{% url 'listar_guildas' %}">Guildas</a>
+            <a href="{% url 'wiki_home' %}">Wiki</a>
+          </nav>
+        </div>
       </footer>
     {% endif %}
   </div>
 
   <script>
-    window.addEventListener('DOMContentLoaded', function () {
-      const availableThemes = ['bumblebee', 'halloween'];
-      const root = document.documentElement;
-      const body = document.body;
-
-      function safeGetStoredTheme() {
-        try {
-          return window.localStorage.getItem('site-theme');
-        } catch (error) {
-          return null;
-        }
-      }
-
-      function safeSetStoredTheme(themeName) {
-        try {
-          window.localStorage.setItem('site-theme', themeName);
-        } catch (error) {
-          // Ignore storage restrictions and keep runtime theme only.
-        }
-      }
-
-      function updateThemeToggle(activeTheme) {
-        const toggleButton = document.querySelector('[data-theme-toggle]');
-        if (!toggleButton) {
-          return;
-        }
-
-        const nextTheme = activeTheme === 'halloween' ? 'bumblebee' : 'halloween';
-        toggleButton.dataset.nextTheme = nextTheme;
-        toggleButton.textContent = nextTheme === 'halloween' ? 'Tema escuro' : 'Tema claro';
-      }
-
-      function applyTheme(themeName) {
-        const nextTheme = availableThemes.includes(themeName) ? themeName : 'bumblebee';
-        root.setAttribute('data-theme', nextTheme);
-        if (body) {
-          body.setAttribute('data-theme', nextTheme);
-        }
-        root.style.colorScheme = nextTheme === 'halloween' ? 'dark' : 'light';
-        safeSetStoredTheme(nextTheme);
-        updateThemeToggle(nextTheme);
-      }
-
-      const storedTheme = safeGetStoredTheme();
-      if (availableThemes.includes(storedTheme)) {
-        applyTheme(storedTheme);
-      } else {
-        applyTheme('bumblebee');
-      }
-
-      const themeToggleButton = document.querySelector('[data-theme-toggle]');
-      if (themeToggleButton) {
-        themeToggleButton.addEventListener('click', function (event) {
-          event.preventDefault();
-          applyTheme(themeToggleButton.dataset.nextTheme);
-        });
-      }
-
+    (function () {
       function hideMessage(element) {
         if (!element || element.dataset.hidden === '1') {
           return;
@@ -312,7 +951,113 @@
           hideMessage(messageElement);
         }, timeoutMs);
       });
-    });
+
+      const sidebar = document.querySelector('[data-sidebar]');
+      const sidebarToggle = document.querySelector('[data-sidebar-toggle]');
+      const sidebarClose = document.querySelector('[data-sidebar-close]');
+      const sidebarCollapse = document.querySelector('[data-sidebar-collapse]');
+      const shell = document.querySelector('.site-shell');
+
+      function setSidebarCollapsed(collapsed) {
+        if (!shell || !sidebarCollapse) {
+          return;
+        }
+        shell.classList.toggle('sidebar-collapsed', collapsed);
+        document.documentElement.style.setProperty('--site-sidebar-width', collapsed ? '5rem' : '16rem');
+        sidebarCollapse.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        sidebarCollapse.setAttribute('aria-label', collapsed ? 'Expandir barra lateral' : 'Recolher barra lateral');
+        window.localStorage.setItem('codex-sidebar-collapsed', collapsed ? '1' : '0');
+      }
+
+      if (shell && sidebarCollapse && window.innerWidth > 900) {
+        setSidebarCollapsed(window.localStorage.getItem('codex-sidebar-collapsed') === '1');
+        sidebarCollapse.addEventListener('click', function () {
+          setSidebarCollapsed(!shell.classList.contains('sidebar-collapsed'));
+        });
+      }
+
+      function closeSidebar() {
+        if (!sidebar) {
+          return;
+        }
+        sidebar.classList.remove('is-open');
+        if (sidebarClose) {
+          sidebarClose.classList.remove('is-open');
+        }
+      }
+
+      if (sidebarToggle && sidebar) {
+        sidebarToggle.addEventListener('click', function () {
+          sidebar.classList.toggle('is-open');
+          if (sidebarClose) {
+            sidebarClose.classList.toggle('is-open');
+          }
+        });
+      }
+
+      if (sidebarClose) {
+        sidebarClose.addEventListener('click', closeSidebar);
+      }
+
+      if (sidebar) {
+        sidebar.querySelectorAll('a').forEach(function (link) {
+          link.addEventListener('click', closeSidebar);
+        });
+      }
+
+      const accountDropdown = document.querySelector('[data-account-dropdown]');
+      const accountTrigger = document.querySelector('[data-account-trigger]');
+      const accountMenu = document.querySelector('[data-account-menu]');
+
+      if (accountMenu) {
+        document.body.appendChild(accountMenu);
+      }
+
+      function setAccountMenuOpen(open) {
+        if (!accountMenu) {
+          return;
+        }
+        accountMenu.classList.toggle('is-open', open);
+        accountMenu.style.setProperty('display', open ? 'block' : 'none', 'important');
+      }
+
+      function closeAccountMenu() {
+        if (!accountDropdown || !accountTrigger) {
+          return;
+        }
+        accountDropdown.classList.remove('is-open');
+        setAccountMenuOpen(false);
+        accountTrigger.setAttribute('aria-expanded', 'false');
+      }
+
+      if (accountDropdown && accountTrigger) {
+        accountTrigger.addEventListener('click', function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          const isOpen = accountDropdown.classList.toggle('is-open');
+          setAccountMenuOpen(isOpen);
+          accountTrigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        });
+
+        if (accountMenu) {
+          accountMenu.querySelectorAll('a, button').forEach(function (item) {
+            item.addEventListener('click', closeAccountMenu);
+          });
+        }
+
+        document.addEventListener('click', function (event) {
+          if (!accountDropdown.contains(event.target) && (!accountMenu || !accountMenu.contains(event.target))) {
+            closeAccountMenu();
+          }
+        });
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape') {
+            closeAccountMenu();
+          }
+        });
+      }
+    })();
   </script>
 </body>
 </html>

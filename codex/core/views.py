@@ -11,7 +11,7 @@ from .models import LarpEvento, LarpInscricao, Profile
 def _is_admin(user):
     if not user.is_authenticated:
         return False
-    if user.is_superuser:
+    if user.is_superuser or user.is_staff:
         return True
     if not hasattr(user, 'profile'):
         return False

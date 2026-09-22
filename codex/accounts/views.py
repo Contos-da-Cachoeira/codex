@@ -41,7 +41,7 @@ def register_view(request):
 @login_required
 def account_personal_data(request):
     profile, _ = Profile.objects.get_or_create(user=request.user)
-    form = AccountPersonalDataForm(request.POST or None, instance=request.user, profile=profile)
+    form = AccountPersonalDataForm(request.POST or None, request.FILES or None, instance=request.user, profile=profile)
 
     if request.method == 'POST' and form.is_valid():
         form.save()
