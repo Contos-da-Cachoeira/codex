@@ -160,3 +160,11 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "DJANGO_CSRF_TRUSTED_ORIGINS", ""
+    ).split(",")
+    if origin.strip()
+]
