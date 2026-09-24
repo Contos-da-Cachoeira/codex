@@ -27,6 +27,18 @@ python manage.py runserver
 
 Abra http://127.0.0.1:8000/ no navegador.
 
+### Tunel SSH local para o banco
+
+Para usar o PostgreSQL remoto por meio do alias SSH `servidor`, configure no `.env` local:
+
+```dotenv
+AUTO_SSH_DB_TUNNEL=True
+POSTGRES_HOST=127.0.0.1
+POSTGRES_PORT=5433
+```
+
+Com essa opção ativada, `python manage.py runserver` verifica a porta `5433`, abre o túnel SSH somente quando necessário e o encerra apenas se ele tiver sido criado por aquela execução. Com `AUTO_SSH_DB_TUNNEL=False` ou ausente, o `runserver` mantém o comportamento padrão do Django.
+
 Caso o PowerShell bloqueie a ativação do ambiente virtual, execute uma vez:
 
 ```powershell

@@ -1,7 +1,7 @@
 from urllib.parse import urlencode
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Q
@@ -25,7 +25,7 @@ from personagens.models import Personagem
 def _is_admin(user):
     if not user.is_authenticated:
         return False
-    if user.is_superuser:
+    if user.is_superuser or user.is_staff:
         return True
     if not hasattr(user, 'profile'):
         return False
@@ -57,9 +57,11 @@ def home(request):
     )
 
 
-@login_required
-@user_passes_test(_is_admin, login_url='home')
+@login_required(login_url='login')
 def admin_dashboard(request):
+    if not _is_admin(request.user):
+        return redirect('home')
+
     def _redirect_admin_with_filters(q_value, role_value):
         params = {'open_users_modal': '1'}
         if q_value:

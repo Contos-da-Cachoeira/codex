@@ -11,6 +11,7 @@
 
       <form method="post" class="space-y-4">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
 
         {% if form.non_field_errors %}
           <div role="alert" class="alert alert-error">
