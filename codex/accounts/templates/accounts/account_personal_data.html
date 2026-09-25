@@ -2,125 +2,202 @@
 
 {% block title %}Minha Conta | Codex{% endblock title %}
 
+{% block head_extra %}
+  <style>
+    .account-page { max-width: 72rem; margin: 0 auto; }
+    .account-page-header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; padding-bottom: 1.75rem; border-bottom: 1px solid var(--codex-border-soft); }
+    .account-page-kicker { color: var(--codex-accent-hover); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; }
+    .account-page-header h1 { margin-top: 0.45rem; color: var(--codex-text); font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 600; letter-spacing: -0.04em; }
+    .account-page-header p:last-child { max-width: 38rem; margin-top: 0.55rem; color: var(--codex-muted); line-height: 1.55; }
+    .account-layout { display: grid; grid-template-columns: minmax(14rem, 0.72fr) minmax(0, 1.8fr); gap: 1rem; align-items: start; margin-top: 1.5rem; }
+    .account-profile-panel { padding: 1.5rem; border: 1px solid var(--codex-border-soft); border-radius: 0.75rem; background: var(--codex-surface); }
+    .account-avatar { display: flex; width: 7rem; height: 7rem; align-items: center; justify-content: center; margin-bottom: 1.25rem; overflow: hidden; border: 1px solid var(--codex-border); border-radius: 1rem; background: var(--codex-elevated); color: var(--codex-muted); font-size: 2rem; font-weight: 600; }
+    .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .account-profile-panel h2 { color: var(--codex-text); font-size: 1.15rem; font-weight: 600; overflow-wrap: anywhere; }
+    .account-profile-email { margin-top: 0.3rem; color: var(--codex-muted); font-size: 0.85rem; overflow-wrap: anywhere; }
+    .account-meta { display: grid; gap: 0.65rem; margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--codex-border-soft); }
+    .account-meta-row { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; font-size: 0.85rem; }
+    .account-meta-row span { color: var(--codex-muted); }
+    .account-meta-row strong { color: var(--codex-text); font-weight: 500; text-align: right; overflow-wrap: anywhere; }
+    .account-form-card { min-width: 0; }
+    .account-form-card .card-body { padding: clamp(1.25rem, 3vw, 2rem); }
+    .account-form-heading { padding-bottom: 1rem; border-bottom: 1px solid var(--codex-border-soft); }
+    .account-form-heading h2 { color: var(--codex-text); font-size: 1.2rem; font-weight: 600; }
+    .account-form-heading p { margin-top: 0.35rem; color: var(--codex-muted); font-size: 0.88rem; }
+    .account-form { gap: 1.15rem; }
+    .account-form .form-control { min-width: 0; gap: 0.35rem; }
+    .account-form .label-text { color: var(--codex-muted); font-size: 0.82rem; font-weight: 500; }
+    .account-avatar-upload { display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--codex-border-soft); border-radius: 0.7rem; background: var(--codex-elevated); }
+    .account-avatar-upload .account-avatar { flex: 0 0 auto; width: 4rem; height: 4rem; margin: 0; border-radius: 0.7rem; font-size: 1.25rem; }
+    .account-upload-copy { min-width: 0; }
+    .account-upload-copy strong { display: block; color: var(--codex-text); font-size: 0.9rem; font-weight: 500; }
+    .account-upload-copy p { margin-top: 0.25rem; color: var(--codex-muted); font-size: 0.78rem; line-height: 1.45; }
+    .account-upload-copy .file-input { margin-top: 0.65rem; width: 100%; min-height: 2.35rem; font-size: 0.78rem; }
+    .account-section-label { grid-column: 1 / -1; margin-top: 0.3rem; padding-bottom: 0.45rem; border-bottom: 1px solid var(--codex-border-soft); color: var(--codex-text); font-size: 0.9rem; font-weight: 600; }
+    .account-fobia-block { display: grid; grid-column: 1 / -1; gap: 0.75rem; }
+    .account-fobia-question { padding: 1rem; border: 1px solid var(--codex-border-soft); border-radius: 0.7rem; background: var(--codex-elevated); }
+    .account-fobia-question p { color: var(--codex-text); font-size: 0.9rem; font-weight: 500; }
+    .account-fobia-options { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 0.7rem; }
+    .account-fobia-options label { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--codex-muted); font-size: 0.85rem; cursor: pointer; }
+    .account-fobia-detail { display: grid; gap: 0.35rem; }
+    .account-fobia-detail[hidden] { display: none; }
+    .account-form-actions { display: flex; grid-column: 1 / -1; justify-content: flex-end; gap: 0.65rem; margin-top: 0.25rem; padding-top: 1rem; border-top: 1px solid var(--codex-border-soft); }
+    @media (max-width: 760px) { .account-page-header { align-items: start; flex-direction: column; } .account-layout { grid-template-columns: 1fr; } .account-profile-panel { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 1rem; align-items: center; } .account-avatar { grid-row: span 2; margin: 0; } .account-meta { grid-column: 1 / -1; } }
+    @media (max-width: 480px) { .account-avatar-upload { align-items: flex-start; flex-direction: column; } .account-form-actions { flex-direction: column-reverse; } .account-form-actions .btn { width: 100%; } }
+  </style>
+{% endblock head_extra %}
+
 {% block content %}
-<section class="space-y-6">
-  <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
-    <h1 class="text-3xl font-bold">Dados Pessoais</h1>
-    <p class="mt-2 text-base-content/80">Visualize e atualize os dados da sua propria conta.</p>
-  </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-    <div class="card bg-base-100 shadow-md border border-base-300 lg:col-span-1">
-      <div class="card-body">
-        <h2 class="card-title">Resumo da Conta</h2>
-        <ul class="list bg-base-200 rounded-box">
-          <li class="list-row"><span>Usuario:</span><strong>{{ request.user.username }}</strong></li>
-          <li class="list-row"><span>Email:</span><strong>{{ request.user.email|default:'Nao informado' }}</strong></li>
-          <li class="list-row"><span>Papel:</span><strong>{{ profile.get_role_display }}</strong></li>
-        </ul>
-      </div>
+<section class="account-page">
+  <header class="account-page-header">
+    <div>
+      <p class="account-page-kicker">Conta</p>
+      <h1>Dados pessoais</h1>
     </div>
+    <a href="{% url 'user_dashboard' %}" class="btn btn-ghost">Voltar</a>
+  </header>
 
-    <div class="card bg-base-100 shadow-md border border-base-300 lg:col-span-2">
+  <div class="account-layout">
+    <aside class="account-profile-panel" aria-label="Resumo da conta">
+      <div class="account-avatar" data-account-avatar>
+        {% if profile.avatar %}
+          <img src="{{ profile.avatar.url }}" alt="Foto de perfil de {{ request.user.username }}" />
+        {% else %}
+          <span aria-hidden="true">{{ request.user.username|slice:':1'|upper }}</span>
+        {% endif %}
+      </div>
+      <div>
+        <h2>{{ request.user.username }}</h2>
+        <p class="account-profile-email">{{ request.user.email|default:'E-mail não informado' }}</p>
+      </div>
+      <div class="account-meta">
+        <div class="account-meta-row"><span>Papel</span><strong>{{ profile.get_role_display }}</strong></div>
+        <div class="account-meta-row"><span>Usuário</span><strong>{{ request.user.username }}</strong></div>
+      </div>
+    </aside>
+
+    <div class="account-form-card card border border-base-300 bg-base-100">
       <div class="card-body">
-        <h2 class="card-title">Editar Dados</h2>
-        <form method="post" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+        <div class="account-form-heading">
+          <h2>Editar dados</h2>
+          <p>As alterações serão aplicadas ao seu perfil.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data" class="account-form grid grid-cols-1 md:grid-cols-2">
           {% csrf_token %}
 
-          <label class="form-control md:col-span-2">
-            <span class="label-text mb-1">Foto de perfil</span>
-            {% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="Foto de perfil atual" class="mb-2 h-16 w-16 rounded-full border border-base-300 object-cover" />{% endif %}
-            <input type="file" name="avatar" accept="image/*" class="file-input file-input-bordered w-full" />
-            {% if form.avatar.errors %}<span class="label-text-alt text-error">{{ form.avatar.errors|striptags }}</span>{% endif %}
+          <label class="account-avatar-upload md:col-span-2">
+            <span class="account-avatar" data-account-avatar>
+              {% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="Foto de perfil atual" />{% else %}<span aria-hidden="true">{{ request.user.username|slice:':1'|upper }}</span>{% endif %}
+            </span>
+            <span class="account-upload-copy">
+              <strong>Foto de perfil</strong>
+              <p>Escolha uma imagem quadrada para representar sua conta.</p>
+              <input id="account-avatar-input" type="file" name="avatar" accept="image/*" class="file-input file-input-bordered" />
+              {% if form.avatar.errors %}<span class="label-text-alt text-error">{{ form.avatar.errors|striptags }}</span>{% endif %}
+            </span>
           </label>
 
-          <label class="form-control md:col-span-2">
-            <span class="label-text mb-1">Usuario</span>
-            <input
-              type="text"
-              name="username"
-              value="{{ form.username.value|default:'' }}"
-              class="input input-bordered"
-              required
-            />
+          <label class="form-control">
+            <span class="label-text">Usuário</span>
+            <input type="text" name="username" value="{{ form.username.value|default:'' }}" class="input input-bordered w-full" required />
             {% if form.username.errors %}<span class="label-text-alt text-error">{{ form.username.errors|striptags }}</span>{% endif %}
           </label>
 
-          <label class="form-control md:col-span-2">
-            <span class="label-text mb-1">Email</span>
-            <input
-              type="email"
-              name="email"
-              value="{{ form.email.value|default:'' }}"
-              class="input input-bordered"
-              required
-            />
+          <label class="form-control">
+            <span class="label-text">E-mail</span>
+            <input type="email" name="email" value="{{ form.email.value|default:'' }}" class="input input-bordered w-full" required />
             {% if form.email.errors %}<span class="label-text-alt text-error">{{ form.email.errors|striptags }}</span>{% endif %}
           </label>
 
-          <div class="md:col-span-2 divider my-1">Informacoes do Jogador</div>
+          <div class="account-section-label">Informações do jogador</div>
 
-          <label class="form-control md:col-span-2">
-            <span class="label-text mb-1">Nome completo do jogador</span>
-            <input
-              type="text"
-              name="nome_completo_jogador"
-              value="{{ form.nome_completo_jogador.value|default:'' }}"
-              class="input input-bordered"
-            />
+          <label class="form-control">
+            <span class="label-text">Nome completo</span>
+            <input type="text" name="nome_completo_jogador" value="{{ form.nome_completo_jogador.value|default:'' }}" class="input input-bordered w-full" />
             {% if form.nome_completo_jogador.errors %}<span class="label-text-alt text-error">{{ form.nome_completo_jogador.errors|striptags }}</span>{% endif %}
           </label>
 
-          <label class="form-control md:col-span-2">
-            <span class="label-text mb-1">Apelido no cla</span>
-            <input
-              type="text"
-              name="apelido_cla"
-              value="{{ form.apelido_cla.value|default:'' }}"
-              class="input input-bordered"
-            />
+          <label class="form-control">
+            <span class="label-text">Apelido no clã</span>
+            <input type="text" name="apelido_cla" value="{{ form.apelido_cla.value|default:'' }}" class="input input-bordered w-full" />
             {% if form.apelido_cla.errors %}<span class="label-text-alt text-error">{{ form.apelido_cla.errors|striptags }}</span>{% endif %}
           </label>
 
           <label class="form-control">
-            <span class="label-text mb-1">Telefone</span>
-            <input
-              type="text"
-              name="telefone"
-              value="{{ form.telefone.value|default:'' }}"
-              class="input input-bordered"
-            />
+            <span class="label-text">Telefone</span>
+            <input type="text" name="telefone" value="{{ form.telefone.value|default:'' }}" class="input input-bordered w-full" />
             {% if form.telefone.errors %}<span class="label-text-alt text-error">{{ form.telefone.errors|striptags }}</span>{% endif %}
           </label>
 
           <label class="form-control">
-            <span class="label-text mb-1">CPF</span>
-            <input
-              type="text"
-              name="cpf"
-              value="{{ form.cpf.value|default:'' }}"
-              class="input input-bordered"
-            />
+            <span class="label-text">CPF</span>
+            <input type="text" name="cpf" value="{{ form.cpf.value|default:'' }}" class="input input-bordered w-full" />
             {% if form.cpf.errors %}<span class="label-text-alt text-error">{{ form.cpf.errors|striptags }}</span>{% endif %}
           </label>
 
-          <label class="form-control md:col-span-2">
-            <span class="label-text mb-1">Fobia ou gatilho psicologico</span>
-            <textarea
-              name="fobia_gatilho"
-              rows="4"
-              class="textarea textarea-bordered"
-            >{{ form.fobia_gatilho.value|default:'' }}</textarea>
-            {% if form.fobia_gatilho.errors %}<span class="label-text-alt text-error">{{ form.fobia_gatilho.errors|striptags }}</span>{% endif %}
-          </label>
+          <div class="account-fobia-block">
+            <div class="account-fobia-question">
+              <p>Você possui alguma fobia ou gatilho psicológico?</p>
+              <div class="account-fobia-options" role="radiogroup" aria-label="Possui fobia ou gatilho psicológico">
+                <label><input type="radio" name="possui_fobia_gatilho" value="sim" class="radio radio-sm" {% if form.possui_fobia_gatilho.value == 'sim' %}checked{% endif %} required /> <span>Sim</span></label>
+                <label><input type="radio" name="possui_fobia_gatilho" value="nao" class="radio radio-sm" {% if form.possui_fobia_gatilho.value == 'nao' %}checked{% endif %} required /> <span>Não</span></label>
+              </div>
+              {% if form.possui_fobia_gatilho.errors %}<span class="label-text-alt text-error">{{ form.possui_fobia_gatilho.errors|striptags }}</span>{% endif %}
+            </div>
+            <label id="fobia-detail" class="account-fobia-detail {% if form.possui_fobia_gatilho.value != 'sim' %}hidden{% endif %}">
+              <span class="label-text">Descreva a fobia ou o gatilho</span>
+              <textarea id="fobia-field" name="fobia_gatilho" rows="4" class="textarea textarea-bordered w-full">{{ form.fobia_gatilho.value|default:'' }}</textarea>
+              {% if form.fobia_gatilho.errors %}<span class="label-text-alt text-error">{{ form.fobia_gatilho.errors|striptags }}</span>{% endif %}
+            </label>
+          </div>
 
-          <div class="md:col-span-2 flex flex-wrap gap-3 justify-end mt-2">
-            <a href="{% url 'user_dashboard' %}" class="btn btn-ghost">Voltar</a>
-            <button type="submit" class="btn btn-primary">Salvar alteracoes</button>
+          <div class="account-form-actions">
+            <a href="{% url 'user_dashboard' %}" class="btn btn-ghost">Cancelar</a>
+            <button type="submit" class="btn btn-primary">Salvar alterações</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 </section>
+<script>
+  (function () {
+    const fobiaRadios = document.querySelectorAll('input[name="possui_fobia_gatilho"]');
+    const fobiaDetail = document.getElementById('fobia-detail');
+    const fobiaField = document.getElementById('fobia-field');
+    const avatarInput = document.getElementById('account-avatar-input');
+
+    function updateFobiaField() {
+      const selected = document.querySelector('input[name="possui_fobia_gatilho"]:checked');
+      const enabled = selected && selected.value === 'sim';
+      if (fobiaDetail) { fobiaDetail.hidden = !enabled; fobiaDetail.classList.toggle('hidden', !enabled); }
+      if (fobiaField) {
+        fobiaField.disabled = !enabled;
+        fobiaField.required = enabled;
+        if (!enabled) { fobiaField.value = ''; }
+      }
+    }
+
+    fobiaRadios.forEach(function (radio) { radio.addEventListener('change', updateFobiaField); });
+    updateFobiaField();
+
+    if (!avatarInput) { return; }
+
+    let previewUrl = null;
+    avatarInput.addEventListener('change', function () {
+      const file = avatarInput.files && avatarInput.files[0];
+      if (!file || !file.type.startsWith('image/')) { return; }
+
+      if (previewUrl) { URL.revokeObjectURL(previewUrl); }
+      previewUrl = URL.createObjectURL(file);
+      document.querySelectorAll('[data-account-avatar]').forEach(function (target) {
+        const image = document.createElement('img');
+        image.src = previewUrl;
+        image.alt = 'Pré-visualização da foto de perfil';
+        target.replaceChildren(image);
+      });
+    });
+  })();
+</script>
 {% endblock content %}

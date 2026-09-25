@@ -19,6 +19,10 @@ class AccountPersonalDataForm(forms.ModelForm):
     apelido_cla = forms.CharField(max_length=120, required=False)
     telefone = forms.CharField(max_length=30, required=False)
     cpf = forms.CharField(max_length=14, required=False)
+    possui_fobia_gatilho = forms.ChoiceField(
+        choices=(('sim', 'Sim'), ('nao', 'Nao')),
+        required=True,
+    )
     fobia_gatilho = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}), required=False)
 
     class Meta:
@@ -37,6 +41,19 @@ class AccountPersonalDataForm(forms.ModelForm):
             self.fields['telefone'].initial = self.profile.telefone
             self.fields['cpf'].initial = self.profile.cpf
             self.fields['fobia_gatilho'].initial = self.profile.fobia_gatilho
+            self.fields['possui_fobia_gatilho'].initial = 'sim' if self.profile.fobia_gatilho else 'nao'
+
+    def clean(self):
+        cleaned_data = super().clean()
+        possui_fobia = cleaned_data.get('possui_fobia_gatilho')
+        fobia_gatilho = (cleaned_data.get('fobia_gatilho') or '').strip()
+
+        if possui_fobia == 'sim' and not fobia_gatilho:
+            self.add_error('fobia_gatilho', 'Descreva a fobia ou o gatilho psicológico.')
+        elif possui_fobia == 'nao':
+            cleaned_data['fobia_gatilho'] = ''
+
+        return cleaned_data
 
     def save(self, commit=True):
         user = super().save(commit=commit)

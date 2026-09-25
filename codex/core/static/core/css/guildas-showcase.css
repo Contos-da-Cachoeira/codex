@@ -1,0 +1,202 @@
+.guildas-page {
+    width: min(100%, 1680px);
+    margin: 0 auto;
+}
+
+.site-main-guildas {
+    max-width: none !important;
+}
+
+.guildas-showcase-heading {
+    display: grid;
+    justify-items: center;
+    gap: .65rem;
+    margin: 1rem auto 2.25rem;
+    text-align: center;
+}
+
+.guildas-eyebrow {
+    margin: 0;
+    color: var(--accent);
+    font-size: .78rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+}
+
+.guildas-showcase-heading h1 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: clamp(2.25rem, 5vw, 4rem);
+    font-weight: 700;
+    letter-spacing: -.045em;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.guildas-heading-line {
+    display: flex;
+    width: min(100%, 24rem);
+    align-items: center;
+    gap: .6rem;
+    color: var(--accent);
+    opacity: .8;
+}
+
+.guildas-heading-line span {
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, rgba(58, 131, 247, .8));
+}
+
+.guildas-heading-line span:last-child {
+    background: linear-gradient(90deg, rgba(58, 131, 247, .8), transparent);
+}
+
+.guildas-heading-line i {
+    font-size: .75rem;
+    font-style: normal;
+}
+
+.guildas-showcase-heading > p:last-child {
+    max-width: 34rem;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: .95rem;
+}
+
+.guildas-showcase {
+    position: relative;
+    padding: 0 3rem;
+}
+
+.guildas-carousel-track {
+    display: flex;
+    gap: 1.15rem;
+    overflow-x: auto;
+    padding: .15rem .2rem .9rem;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.guildas-carousel-track::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.guilda-showcase-card {
+    display: flex;
+    flex: 0 0 calc((100% - 4.6rem) / 5);
+    min-width: 0;
+    flex-direction: column;
+    overflow: hidden;
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: .2rem;
+    background: var(--surface);
+    text-decoration: none;
+    transition: transform .18s ease, border-color .18s ease, background .18s ease;
+    scroll-snap-align: start;
+}
+
+.guilda-showcase-card:hover,
+.guilda-showcase-card:focus-visible {
+    border-color: var(--accent);
+    background: var(--surface-elevated);
+    outline: none;
+    transform: translateY(-4px);
+}
+
+.guilda-showcase-image {
+    display: flex;
+    height: clamp(22rem, 31vw, 34rem);
+    align-items: center;
+    justify-content: center;
+    padding: .65rem;
+    background: #101010;
+}
+
+.guilda-showcase-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.guilda-showcase-image > span {
+    color: var(--accent);
+    font-size: 3rem;
+}
+
+.guilda-showcase-footer {
+    display: grid;
+    min-height: 5.5rem;
+    align-content: center;
+    gap: .45rem;
+    padding: 1rem .8rem 1.1rem;
+    text-align: center;
+}
+
+.guilda-showcase-footer h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: clamp(.78rem, 1.1vw, 1rem);
+    font-weight: 800;
+    line-height: 1.15;
+    text-transform: uppercase;
+}
+
+.guilda-showcase-footer > span {
+    color: var(--text-muted);
+    font-size: .72rem;
+    font-weight: 600;
+}
+
+.guildas-carousel-button {
+    display: flex;
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    color: var(--text-primary);
+    background: rgba(23, 23, 23, .92);
+    font-size: 1.8rem;
+    line-height: 1;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.guildas-carousel-button:hover {
+    background: var(--surface-elevated);
+}
+
+.guildas-carousel-prev {
+    left: 0;
+}
+
+.guildas-carousel-next {
+    right: 0;
+}
+
+@media (max-width: 1240px) {
+    .guilda-showcase-card {
+        flex: 0 0 clamp(13rem, 27vw, 18rem);
+    }
+}
+
+@media (max-width: 640px) {
+    .guildas-showcase {
+        padding: 0 2.35rem;
+    }
+
+    .guilda-showcase-card {
+        flex-basis: min(72vw, 15rem);
+    }
+}

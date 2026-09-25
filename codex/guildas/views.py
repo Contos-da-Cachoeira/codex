@@ -1,4 +1,7 @@
-from django.shortcuts import get_object_or_404, render
+from types import SimpleNamespace
+
+from django.http import Http404
+from django.shortcuts import render
 from django.template import TemplateDoesNotExist
 from django.template.loader import select_template
 
@@ -18,6 +21,19 @@ GUILDA_PUBLIC_KEY_BY_ID = {
     6: "SOCIEDADE_ZAORI",
     7: "MERCENARIOS_INDEPENDENTES",
 }
+
+# Slugs estaveis para os links publicos. Eles nao dependem dos registros
+# administrativos existirem no banco de dados.
+GUILDA_SLUG_BY_ID = {
+    1: "artistas-da-revolucao",
+    2: "circulo-do-fogo",
+    3: "floresta-do-sol",
+    4: "irmandade-das-tavernas",
+    5: "os-rasga-mortalhas",
+    6: "sociedade-zaori",
+    7: "mercenarios-independentes",
+}
+GUILDA_ID_BY_SLUG = {slug: guilda_id for guilda_id, slug in GUILDA_SLUG_BY_ID.items()}
 
 GUILDA_ESTILO_BY_ID = {
     1: {"icone": "🎭", "badge": "badge-secondary", "card": "bg-base-100"},
@@ -50,24 +66,36 @@ def listar_guildas(request):
     Lista todas as guildas ativas.
     Mostra informações públicas para todos.
     """
-    guildas_db = Guilda.objects.filter(ativa=True)
+    guildas_db = {
+        guilda.guilda_id: guilda
+        for guilda in Guilda.objects.all()
+    }
     
     # Verificar se usuário é admin
     eh_admin = _is_admin(request.user)
     
     # Preparar dados com informações públicas + privadas
     guildas_info = []
-    for guilda in guildas_db:
+    for guilda_id in GUILDA_PUBLIC_KEY_BY_ID:
+        guilda = guildas_db.get(guilda_id)
+
+        # O conteudo publico existe em core.constants.guildas e nao deve
+        # desaparecer da pagina enquanto os dados administrativos ainda nao
+        # foram cadastrados.
+        if guilda is not None and not guilda.ativa:
+            continue
+
         info = {
             'db': guilda,
-            'publica': _get_info_publica(guilda.guilda_id),
+            'slug': GUILDA_SLUG_BY_ID[guilda_id],
+            'publica': _get_info_publica(guilda_id),
             'eh_membro': False,
-            'pode_ver_privado': eh_admin,
-            'estilo': GUILDA_ESTILO_BY_ID.get(guilda.guilda_id, GUILDA_ESTILO_BY_ID[1]),
+            'pode_ver_privado': bool(guilda) and eh_admin,
+            'estilo': GUILDA_ESTILO_BY_ID.get(guilda_id, GUILDA_ESTILO_BY_ID[1]),
         }
         
         # Se usuário está logado, verificar se é membro
-        if request.user.is_authenticated:
+        if guilda is not None and request.user.is_authenticated:
             eh_membro = GuildaMembro.objects.filter(
                 guilda=guilda,
                 usuario=request.user
@@ -79,6 +107,14 @@ def listar_guildas(request):
     
     context = {
         'guildas_info': guildas_info,
+        'guildas_showcase': [
+            {
+                'nome': item['publica'].get('nome', ''),
+                'imagem': item['publica'].get('imagem', ''),
+                'slug': item['slug'],
+            }
+            for item in guildas_info
+        ],
     }
     return render(request, 'guildas/listar_guildas.html', context)
 
@@ -97,7 +133,25 @@ def detalhe_guilda(request, slug):
     - Notícias da guilda
     - Contadores
     """
-    guilda = get_object_or_404(Guilda, slug=slug, ativa=True)
+    guilda_id = GUILDA_ID_BY_SLUG.get(slug)
+    if guilda_id is None:
+        raise Http404
+
+    guilda_registro = Guilda.objects.filter(
+        guilda_id=guilda_id,
+        ativa=True,
+    ).first()
+
+    # As paginas publicas podem ser acessadas mesmo antes do cadastro dos
+    # registros administrativos. Quando o registro existir, todas as areas
+    # privadas e estatisticas continuam funcionando normalmente.
+    guilda = guilda_registro or SimpleNamespace(
+        guilda_id=guilda_id,
+        slug=slug,
+        descricao_interna="",
+        total_membros=0,
+        total_personagens=0,
+    )
     
     # Informações públicas
     info_publica = _get_info_publica(guilda.guilda_id)
@@ -106,20 +160,20 @@ def detalhe_guilda(request, slug):
     eh_membro = False
     eh_admin = _is_admin(request.user)
     
-    if request.user.is_authenticated:
+    if guilda_registro is not None and request.user.is_authenticated:
         eh_membro = GuildaMembro.objects.filter(
             guilda=guilda,
             usuario=request.user
         ).exists()
     
     # Admin ou membro pode ver informações privadas
-    pode_ver_privado = eh_membro or eh_admin
+    pode_ver_privado = guilda_registro is not None and (eh_membro or eh_admin)
     
     # Informações que podem ser vistas por membros e admins
     noticias = []
     if pode_ver_privado:
         noticias = GuildaNoticia.objects.filter(
-            guilda=guilda,
+            guilda=guilda_registro,
             publicado=True
         )
     

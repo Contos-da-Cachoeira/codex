@@ -22,6 +22,17 @@ from personagens.consts import (
 from personagens.models import Personagem
 
 
+GUILDA_SLUG_BY_KEY = {
+    'ARTISTAS_DA_REVOLUCAO': 'artistas-da-revolucao',
+    'CIRCULO_DO_FOGO': 'circulo-do-fogo',
+    'FLORESTA_DO_SOL': 'floresta-do-sol',
+    'IRMANDADE_DAS_TAVERNAS': 'irmandade-das-tavernas',
+    'RASGA_MORTALHAS': 'os-rasga-mortalhas',
+    'SOCIEDADE_ZAORI': 'sociedade-zaori',
+    'MERCENARIOS_INDEPENDENTES': 'mercenarios-independentes',
+}
+
+
 def _is_admin(user):
     if not user.is_authenticated:
         return False
@@ -37,6 +48,7 @@ def home(request):
         {
             'nome': info.get('nome', key.replace('_', ' ').title()),
             'imagem': info.get('imagem', ''),
+            'slug': GUILDA_SLUG_BY_KEY.get(key, ''),
             'lema': info.get('lema') or 'Uma história ainda será escrita.',
         }
         for key, info in GUILDAS.items()
@@ -52,6 +64,7 @@ def home(request):
         'dashboard/home.html',
         {
             'guildas_home': guildas_home,
+            'guildas_showcase': guildas_home,
             'show_character_prompt': show_character_prompt,
         },
     )
@@ -377,7 +390,9 @@ def admin_dashboard(request):
     now = timezone.now()
     total_users = User.objects.count()
     total_admins = User.objects.filter(
-        Q(is_superuser=True) | Q(profile__role=Profile.UserRole.ADMIN)
+        Q(is_superuser=True)
+        | Q(is_staff=True)
+        | Q(profile__role=Profile.UserRole.ADMIN)
     ).distinct().count()
     total_characters = Personagem.objects.count()
     total_larps = LarpEvento.objects.count()
@@ -408,20 +423,23 @@ def admin_dashboard(request):
         status_aprovacao=STATUS_APROVACAO.PENDENTE,
     ).order_by('-data_criacao', '-id')[:5]
 
-    users = User.objects.all().order_by('username')
+    users = User.objects.select_related('profile').all().order_by('username')
     if q_value:
         users = users.filter(Q(username__icontains=q_value) | Q(email__icontains=q_value))
 
     users_with_role = []
     for user in users:
-        if hasattr(user, 'profile'):
-            role_value = user.profile.role
-            role_label = user.profile.get_role_display()
-            role_key = role_value
-        elif user.is_superuser:
+        if user.is_superuser:
             role_value = Profile.UserRole.ADMIN
             role_label = 'Admin (Superusuario)'
             role_key = 'SUPERUSER'
+        elif user.is_staff or (
+            hasattr(user, 'profile')
+            and user.profile.role == Profile.UserRole.ADMIN
+        ):
+            role_value = Profile.UserRole.ADMIN
+            role_label = 'Admin'
+            role_key = Profile.UserRole.ADMIN
         else:
             role_value = Profile.UserRole.COMMON
             role_label = 'Usuario comum'

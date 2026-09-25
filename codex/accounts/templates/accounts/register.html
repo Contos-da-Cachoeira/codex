@@ -1,55 +1,130 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
-{% block title %}Registro | Codex{% endblock title %}
+{% block title %}Criar conta | Codex{% endblock title %}
 
 {% block content %}
-<div class="max-w-xl mx-auto">
-  <div class="card bg-base-100 shadow-2xl">
-    <div class="card-body">
-      <h1 class="card-title text-3xl mb-2">Criar conta</h1>
-      <p class="text-sm text-base-content/70 mb-4">Preencha seus dados para criar sua conta.</p>
-
-      <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {% csrf_token %}
-
-        {% if form.non_field_errors %}
-          <div class="md:col-span-2" role="alert">
-            <div class="alert alert-error">
-              <span>{{ form.non_field_errors|striptags }}</span>
-            </div>
+<div class="auth-page mx-auto w-full max-w-2xl">
+  <div class="auth-card rounded-xl border border-base-300 bg-base-100 p-6 sm:p-8">
+      <section>
+        <div class="mx-auto max-w-xl">
+          <div class="mb-7">
+            <img src="{% static 'core/img/tesseract.svg' %}" alt="Logo Codex" class="auth-logo" />
+            <p class="mt-5 text-sm font-semibold text-base-content/70">Entre para a história</p>
+            <h2 class="mt-1 text-3xl font-semibold tracking-tight text-base-content">Criar conta</h2>
           </div>
-        {% endif %}
 
-        <label class="form-control md:col-span-2">
-          <span class="label-text mb-1">Usuario</span>
-          <input type="text" name="username" class="input input-bordered" value="{{ form.username.value|default:'' }}" required />
-          {% if form.username.errors %}<span class="label-text-alt text-error">{{ form.username.errors|striptags }}</span>{% endif %}
-        </label>
+          <form method="post" class="space-y-5">
+            {% csrf_token %}
 
-        <label class="form-control md:col-span-2">
-          <span class="label-text mb-1">Email</span>
-          <input type="email" name="email" class="input input-bordered" value="{{ form.email.value|default:'' }}" required />
-          {% if form.email.errors %}<span class="label-text-alt text-error">{{ form.email.errors|striptags }}</span>{% endif %}
-        </label>
+            {% if form.non_field_errors %}
+              <div role="alert" class="alert alert-error border border-error/20 text-sm shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path stroke-linecap="round" d="M12 8v4m0 4h.01" /></svg>
+                <span>{{ form.non_field_errors|striptags }}</span>
+              </div>
+            {% endif %}
 
-        <label class="form-control">
-          <span class="label-text mb-1">Senha</span>
-          <input type="password" name="password1" class="input input-bordered" required />
-          {% if form.password1.errors %}<span class="label-text-alt text-error">{{ form.password1.errors|striptags }}</span>{% endif %}
-        </label>
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+              <label class="form-control w-full sm:col-span-2">
+                <span class="label mb-1 p-0">
+                  <span class="label-text text-sm font-bold">Usuario</span>
+                  <span class="label-text-alt font-bold text-error" aria-label="Campo obrigatorio">*</span>
+                </span>
+                <input
+                  type="text"
+                  name="username"
+                  class="input input-bordered h-12 w-full bg-base-200/30 focus:border-primary focus:outline-0 focus:ring-2 focus:ring-primary/20"
+                  value="{{ form.username.value|default:'' }}"
+                  autocomplete="username"
+                  placeholder="Como voce quer ser chamado?"
+                  required
+                />
+                {% if form.username.errors %}<span class="mt-1 text-xs font-medium text-error">{{ form.username.errors|striptags }}</span>{% endif %}
+              </label>
 
-        <label class="form-control">
-          <span class="label-text mb-1">Confirmar senha</span>
-          <input type="password" name="password2" class="input input-bordered" required />
-          {% if form.password2.errors %}<span class="label-text-alt text-error">{{ form.password2.errors|striptags }}</span>{% endif %}
-        </label>
+              <label class="form-control w-full sm:col-span-2">
+                <span class="label mb-1 p-0">
+                  <span class="label-text text-sm font-bold">Email</span>
+                  <span class="label-text-alt font-bold text-error" aria-label="Campo obrigatorio">*</span>
+                </span>
+                <input
+                  type="email"
+                  name="email"
+                  class="input input-bordered h-12 w-full bg-base-200/30 focus:border-primary focus:outline-0 focus:ring-2 focus:ring-primary/20"
+                  value="{{ form.email.value|default:'' }}"
+                  autocomplete="email"
+                  placeholder="voce@exemplo.com"
+                  required
+                />
+                {% if form.email.errors %}<span class="mt-1 text-xs font-medium text-error">{{ form.email.errors|striptags }}</span>{% endif %}
+              </label>
 
-        <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
-          <button type="submit" class="btn btn-primary">Registrar</button>
-          <a href="{% url 'login' %}" class="btn btn-ghost">Ja tenho conta</a>
+              <label class="form-control w-full">
+                <span class="label mb-1 p-0"><span class="label-text text-sm font-bold">Senha</span></span>
+                <div class="relative">
+                  <input
+                    id="register-password1"
+                    type="password"
+                    name="password1"
+                    class="input input-bordered h-12 w-full bg-base-200/30 pr-20 focus:border-primary focus:outline-0 focus:ring-2 focus:ring-primary/20"
+                    autocomplete="new-password"
+                    placeholder="Crie uma senha segura"
+                    required
+                  />
+                  <button type="button" class="btn btn-ghost btn-square btn-sm absolute right-1 top-1/2 -translate-y-1/2 text-base-content/60" data-password-toggle="register-password1" aria-label="Mostrar senha">
+                    <svg data-eye-open xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" /><circle cx="12" cy="12" r="2.5" /></svg>
+                    <svg data-eye-closed xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="m3 3 18 18" /><path stroke-linecap="round" stroke-linejoin="round" d="M10.6 6.2A10.8 10.8 0 0 1 12 6c6 0 9.5 6 9.5 6a16.8 16.8 0 0 1-3.2 3.6M6.2 6.8C3.8 8.4 2.5 12 2.5 12s3.5 6 9.5 6c.9 0 1.8-.1 2.6-.4" /><path stroke-linecap="round" d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
+                  </button>
+                </div>
+                {% if form.password1.errors %}<span class="mt-1 text-xs font-medium text-error">{{ form.password1.errors|striptags }}</span>{% endif %}
+              </label>
+
+              <label class="form-control w-full">
+                <span class="label mb-1 p-0"><span class="label-text text-sm font-bold">Confirmar senha</span></span>
+                <div class="relative">
+                  <input
+                    id="register-password2"
+                    type="password"
+                    name="password2"
+                    class="input input-bordered h-12 w-full bg-base-200/30 pr-20 focus:border-primary focus:outline-0 focus:ring-2 focus:ring-primary/20"
+                    autocomplete="new-password"
+                    placeholder="Repita sua senha"
+                    required
+                  />
+                  <button type="button" class="btn btn-ghost btn-square btn-sm absolute right-1 top-1/2 -translate-y-1/2 text-base-content/60" data-password-toggle="register-password2" aria-label="Mostrar senha">
+                    <svg data-eye-open xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" /><circle cx="12" cy="12" r="2.5" /></svg>
+                    <svg data-eye-closed xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="m3 3 18 18" /><path stroke-linecap="round" stroke-linejoin="round" d="M10.6 6.2A10.8 10.8 0 0 1 12 6c6 0 9.5 6 9.5 6a16.8 16.8 0 0 1-3.2 3.6M6.2 6.8C3.8 8.4 2.5 12 2.5 12s3.5 6 9.5 6c.9 0 1.8-.1 2.6-.4" /><path stroke-linecap="round" d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
+                  </button>
+                </div>
+                {% if form.password2.errors %}<span class="mt-1 text-xs font-medium text-error">{{ form.password2.errors|striptags }}</span>{% endif %}
+              </label>
+            </div>
+
+            <p class="text-xs leading-5 text-base-content/55">Use uma senha com pelo menos 8 caracteres e evite informacoes obvias.</p>
+
+            <div class="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center">
+              <button type="submit" class="btn btn-primary h-12 flex-1 gap-2 text-sm font-extrabold shadow-lg shadow-primary/20">
+                Criar minha conta
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" /></svg>
+              </button>
+              <a href="{% url 'login' %}" class="btn btn-ghost h-12 px-5 text-sm font-bold">Ja tenho conta</a>
+            </div>
+          </form>
+
         </div>
-      </form>
-    </div>
+      </section>
   </div>
 </div>
+<script>
+  document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      const input = document.getElementById(button.dataset.passwordToggle);
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      button.querySelector('[data-eye-open]').classList.toggle('hidden', !showing);
+      button.querySelector('[data-eye-closed]').classList.toggle('hidden', showing);
+      button.setAttribute('aria-label', showing ? 'Mostrar senha' : 'Ocultar senha');
+    });
+  });
+</script>
 {% endblock content %}

@@ -1,0 +1,27 @@
+{% load static %}
+
+<div class="guildas-showcase" data-guildas-carousel>
+    <button type="button" class="guildas-carousel-button guildas-carousel-prev" data-carousel-prev aria-label="Guildas anteriores">&lsaquo;</button>
+
+    <div class="guildas-carousel-track" data-carousel-track tabindex="0" aria-label="Guildas disponíveis">
+        {% for item in guildas_showcase %}
+            <a href="{% url 'detalhe_guilda' item.slug %}" class="guilda-showcase-card" aria-label="Conhecer {{ item.nome }}">
+                <div class="guilda-showcase-image">
+                    {% if item.imagem %}
+                        <img src="{% static item.imagem %}" alt="Símbolo da guilda {{ item.nome }}" loading="lazy">
+                    {% else %}
+                        <span aria-hidden="true">&#10022;</span>
+                    {% endif %}
+                </div>
+                <div class="guilda-showcase-footer">
+                    <h2>{{ item.nome }}</h2>
+                    <span>Conhecer guilda <span aria-hidden="true">&rarr;</span></span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+
+    <button type="button" class="guildas-carousel-button guildas-carousel-next" data-carousel-next aria-label="Próximas guildas">&rsaquo;</button>
+</div>
+
+<script src="{% static 'core/js/guildas-carousel.js' %}" defer></script>

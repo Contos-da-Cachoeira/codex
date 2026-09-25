@@ -1,48 +1,90 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}Login | Codex{% endblock title %}
 
 {% block content %}
-<div class="max-w-md mx-auto">
-  <div class="card bg-base-100 shadow-2xl">
-    <div class="card-body">
-      <h1 class="card-title text-3xl mb-2">Login</h1>
-      <p class="text-sm text-base-content/70 mb-4">Acesse sua conta para continuar.</p>
-
-      <form method="post" class="space-y-4">
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ next }}">
-
-        {% if form.non_field_errors %}
-          <div role="alert" class="alert alert-error">
-            <span>{{ form.non_field_errors|striptags }}</span>
+<div class="auth-page mx-auto w-full max-w-md">
+  <div class="auth-card rounded-xl border border-base-300 bg-base-100 p-6 sm:p-8">
+      <section>
+        <div class="mx-auto max-w-xl">
+          <div class="mb-7">
+            <img src="{% static 'core/img/tesseract.svg' %}" alt="Logo Codex" class="auth-logo" />
+            <p class="mt-5 text-sm font-semibold text-base-content/70">Bem-vindo de volta</p>
+            <h2 class="mt-1 text-3xl font-semibold tracking-tight text-base-content">Entrar</h2>
           </div>
-        {% endif %}
 
-        <label class="form-control w-full">
-          <span class="label-text mb-1">Usuario</span>
-          <input
-            type="text"
-            name="username"
-            class="input input-bordered w-full"
-            value="{{ form.username.value|default:'' }}"
-            required
-          />
-        </label>
+          <form method="post" class="space-y-5">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}" />
 
-        <label class="form-control w-full">
-          <span class="label-text mb-1">Senha</span>
-          <input type="password" name="password" class="input input-bordered w-full" required />
-        </label>
+            {% if form.non_field_errors %}
+              <div role="alert" class="alert alert-error border border-error/20 text-sm shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path stroke-linecap="round" d="M12 8v4m0 4h.01" /></svg>
+                <span>{{ form.non_field_errors|striptags }}</span>
+              </div>
+            {% endif %}
 
-        <button type="submit" class="btn btn-primary w-full">Entrar</button>
-      </form>
+            <label class="form-control w-full">
+              <span class="label mb-1 p-0"><span class="label-text text-sm font-bold">Usuario</span></span>
+              <input
+                type="text"
+                name="username"
+                class="input input-bordered h-12 w-full bg-base-200/30 focus:border-primary focus:outline-0 focus:ring-2 focus:ring-primary/20"
+                value="{{ form.username.value|default:'' }}"
+                autocomplete="username"
+                placeholder="Seu usuario"
+                required
+              />
+              {% if form.username.errors %}<span class="mt-1 text-xs font-medium text-error">{{ form.username.errors|striptags }}</span>{% endif %}
+            </label>
 
-      <p class="text-sm text-center mt-4">
-        Nao tem conta?
-        <a href="{% url 'register' %}" class="link link-primary">Crie agora</a>
-      </p>
-    </div>
+            <label class="form-control w-full">
+              <span class="label mb-1 p-0"><span class="label-text text-sm font-bold">Senha</span></span>
+              <div class="relative">
+                <input
+                  id="login-password"
+                  type="password"
+                  name="password"
+                  class="input input-bordered h-12 w-full bg-base-200/30 pr-20 focus:border-primary focus:outline-0 focus:ring-2 focus:ring-primary/20"
+                  autocomplete="current-password"
+                  placeholder="Sua senha"
+                  required
+                />
+                <button type="button" class="btn btn-ghost btn-square btn-sm absolute right-1 top-1/2 -translate-y-1/2 text-base-content/60" data-password-toggle="login-password" aria-label="Mostrar senha">
+                  <svg data-eye-open xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" /><circle cx="12" cy="12" r="2.5" /></svg>
+                  <svg data-eye-closed xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" d="m3 3 18 18" /><path stroke-linecap="round" stroke-linejoin="round" d="M10.6 6.2A10.8 10.8 0 0 1 12 6c6 0 9.5 6 9.5 6a16.8 16.8 0 0 1-3.2 3.6M6.2 6.8C3.8 8.4 2.5 12 2.5 12s3.5 6 9.5 6c.9 0 1.8-.1 2.6-.4" /><path stroke-linecap="round" d="M9.9 9.9a3 3 0 0 0 4.2 4.2" /></svg>
+                </button>
+              </div>
+              {% if form.password.errors %}<span class="mt-1 text-xs font-medium text-error">{{ form.password.errors|striptags }}</span>{% endif %}
+            </label>
+
+            <div class="pt-3">
+              <button type="submit" class="btn btn-primary h-12 w-full gap-2 text-sm font-extrabold shadow-lg shadow-primary/20">
+                Entrar
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-6-6 6 6-6 6" /></svg>
+              </button>
+            </div>
+          </form>
+
+          <p class="mt-8 text-center text-sm text-base-content/60">
+            Ainda nao tem conta?
+            <a href="{% url 'register' %}" class="font-bold text-primary hover:underline">Criar conta</a>
+          </p>
+        </div>
+      </section>
   </div>
 </div>
+<script>
+  document.querySelectorAll('[data-password-toggle]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      const input = document.getElementById(button.dataset.passwordToggle);
+      const showing = input.type === 'text';
+      input.type = showing ? 'password' : 'text';
+      button.querySelector('[data-eye-open]').classList.toggle('hidden', !showing);
+      button.querySelector('[data-eye-closed]').classList.toggle('hidden', showing);
+      button.setAttribute('aria-label', showing ? 'Mostrar senha' : 'Ocultar senha');
+    });
+  });
+</script>
 {% endblock content %}

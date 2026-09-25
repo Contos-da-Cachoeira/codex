@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="pt-br" data-guildas="{% if is_guildas %}true{% endif %}" data-theme="night">
+<html lang="pt-BR" data-guildas="{% if is_guildas %}true{% endif %}" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,24 +11,24 @@
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     :root {
-      --site-background: {{ layout_config.site_background_color|default:'#061426' }};
-      --site-surface: {{ layout_config.site_surface_color|default:'#0D2845' }};
-      --site-accent: {{ layout_config.site_accent_color|default:'#4FD7FF' }};
-      --site-accent-content: {{ layout_config.site_accent_content_color|default:'#041422' }};
-      --site-text: {{ layout_config.site_text_color|default:'#F2F7FF' }};
-      --site-muted: {{ layout_config.site_muted_text_color|default:'#A9C1D8' }};
+      --site-background: {{ layout_config.site_background_color|default:'#000000' }};
+      --site-surface: {{ layout_config.site_surface_color|default:'#212121' }};
+      --site-accent: {{ layout_config.site_accent_color|default:'#3A83F7' }};
+      --site-accent-content: {{ layout_config.site_accent_content_color|default:'#FFFFFF' }};
+      --site-text: {{ layout_config.site_text_color|default:'#EDEDED' }};
+      --site-muted: {{ layout_config.site_muted_text_color|default:'#AFAFAF' }};
       --site-glow-1: 79 215 255;
       --site-glow-2: 27 116 185;
       --site-glow-3: 14 46 82;
-      --site-sidebar-width: 16rem;
-      --site-sidebar-half-width: 8rem;
+      --site-sidebar-width: 20rem;
+      --site-sidebar-half-width: 10rem;
     }
 
     html {
-      --color-primary: {{ layout_config.primary_color|default:'#111111' }};
+      --color-primary: {{ layout_config.primary_color|default:'#3A83F7' }};
       --color-primary-content: {{ layout_config.primary_content_color|default:'#FFFFFF' }};
-      --color-secondary: {{ layout_config.secondary_color|default:'#E5E5E5' }};
-      --color-secondary-content: {{ layout_config.secondary_content_color|default:'#111111' }};
+      --color-secondary: {{ layout_config.secondary_color|default:'#303030' }};
+      --color-secondary-content: {{ layout_config.secondary_content_color|default:'#EDEDED' }};
       --color-accent: var(--color-primary);
       --color-accent-content: var(--color-primary-content);
     }
@@ -119,7 +119,14 @@
       width: 2.35rem;
       height: 2.35rem;
       object-fit: contain;
-      filter: invert(1) brightness(1.7) drop-shadow(0 0 0.6rem rgb(79 215 255 / 0.35));
+      filter: invert(1) brightness(1.7);
+    }
+
+    .site-home-logo {
+      width: 1.45rem;
+      height: 1.45rem;
+      object-fit: contain;
+      filter: invert(1) brightness(1.7);
     }
 
     .site-brand-copy {
@@ -404,10 +411,9 @@
     }
 
     .site-sidebar-collapse {
-      position: fixed;
-      right: auto;
-      bottom: 1rem;
-      left: calc(var(--site-sidebar-width) + 0.5rem);
+      position: absolute;
+      right: 0.65rem;
+      bottom: 0.7rem;
       z-index: 60;
       display: flex;
       width: 2.5rem;
@@ -435,34 +441,6 @@
     .site-sidebar-collapse svg {
       flex: 0 0 auto;
       transition: transform 180ms ease;
-    }
-
-    .site-shell.sidebar-collapsed .site-sidebar-collapse::after {
-      position: absolute;
-      bottom: 50%;
-      left: calc(100% + 0.65rem);
-      padding: 0.45rem 0.65rem;
-      border: 1px solid rgb(79 215 255 / 0.34);
-      border-radius: 0.3rem;
-      background: #06182b;
-      box-shadow: 0 0.6rem 1.5rem rgb(0 0 0 / 0.32), 0 0 1rem rgb(79 215 255 / 0.12);
-      color: var(--site-text);
-      content: 'Expandir barra lateral';
-      font-size: 0.68rem;
-      font-weight: 800;
-      letter-spacing: 0.08em;
-      opacity: 0;
-      pointer-events: none;
-      text-transform: uppercase;
-      transform: translateY(50%) translateX(-0.35rem);
-      transition: opacity 160ms ease, transform 160ms ease;
-      white-space: nowrap;
-    }
-
-    .site-shell.sidebar-collapsed .site-sidebar-collapse:hover::after,
-    .site-shell.sidebar-collapsed .site-sidebar-collapse:focus-visible::after {
-      opacity: 1;
-      transform: translateY(50%) translateX(0);
     }
 
     .site-sidebar-tools > .dropdown {
@@ -534,8 +512,8 @@
     }
 
     .site-shell.sidebar-collapsed {
-      --site-sidebar-width: 5rem;
-      --site-sidebar-half-width: 2.5rem;
+      --site-sidebar-width: 4rem;
+      --site-sidebar-half-width: 2rem;
     }
 
     .site-shell.sidebar-collapsed .site-brand-copy,
@@ -562,6 +540,159 @@
 
     .site-shell.sidebar-collapsed .site-sidebar-tools .site-social-links {
       display: none !important;
+    }
+
+    @media (min-width: 901px) {
+      .site-header-frame {
+        border-right-color: #2c2c2c;
+        background: #202020;
+        box-shadow: 0.8rem 0 2rem rgb(0 0 0 / 0.18);
+      }
+
+      .site-main-nav > .container {
+        gap: 1.5rem;
+        padding: 0.7rem 0.65rem;
+      }
+
+      .site-home-link {
+        min-height: 2.5rem;
+        padding: 0.5rem 0.65rem;
+        border-radius: 0.8rem;
+        color: #d0d0d0;
+      }
+
+      .site-home-link.is-active,
+      .site-home-link:hover,
+      .site-home-link:focus-visible {
+        background: #353535;
+        color: #ffffff;
+      }
+
+      .site-home-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .site-sidebar-links {
+        gap: 0.65rem;
+      }
+
+      .site-sidebar-links .site-nav-link {
+        min-height: 2.5rem;
+        padding: 0.6rem 0.75rem;
+        border: 0;
+        border-radius: 0.8rem;
+        color: #bdbdbd;
+      }
+
+      .site-sidebar-links .site-nav-link::after {
+        display: none;
+      }
+
+      .site-sidebar-links .site-nav-link:hover,
+      .site-sidebar-links .site-nav-link:focus-visible {
+        border: 0;
+        background: #303030;
+        color: #ffffff;
+      }
+
+      .site-account-trigger {
+        border-color: #4a4a4a;
+        background: #2a2a2a;
+        color: #d0d0d0;
+        box-shadow: none;
+      }
+
+      .site-sidebar-collapse {
+        border-color: #363636;
+        background: #202020;
+        color: #a9a9a9;
+      }
+
+      .site-shell.sidebar-collapsed .site-header-frame {
+        border-right-color: #2c2c2c;
+        background: #202020;
+      }
+
+      .site-shell.sidebar-collapsed .site-main-nav > .container {
+        align-items: center;
+        gap: 1.5rem;
+        padding: 0.7rem 0.5rem;
+      }
+
+      .site-shell.sidebar-collapsed .site-brand,
+      .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link,
+      .site-shell.sidebar-collapsed .site-sidebar-tools .items-center a {
+        justify-content: center;
+      }
+
+      .site-shell.sidebar-collapsed .site-home-link {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 0.8rem;
+        color: #d0d0d0;
+      }
+
+      .site-shell.sidebar-collapsed .site-home-link.is-active,
+      .site-shell.sidebar-collapsed .site-home-link:hover,
+      .site-shell.sidebar-collapsed .site-home-link:focus-visible {
+        background: #353535;
+        color: #ffffff;
+      }
+
+      .site-shell.sidebar-collapsed .site-home-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .site-shell.sidebar-collapsed .site-sidebar-links {
+        align-items: center;
+        gap: 0.65rem;
+      }
+
+      .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link {
+        width: 2.5rem;
+        min-height: 2.5rem;
+        padding: 0.6rem;
+        border: 0;
+        border-radius: 0.8rem;
+        color: #bdbdbd;
+      }
+
+      .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link::after {
+        display: none;
+      }
+
+      .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link:hover,
+      .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link:focus-visible {
+        border: 0;
+        background: #303030;
+        color: #ffffff;
+      }
+
+      .site-shell.sidebar-collapsed .site-sidebar-tools {
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .site-shell.sidebar-collapsed .site-account-trigger {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-color: #4a4a4a;
+        background: #2a2a2a;
+        color: #d0d0d0;
+        box-shadow: none;
+      }
+
+      .site-shell.sidebar-collapsed .site-sidebar-collapse {
+        display: none !important;
+      }
+
+      .site-shell.sidebar-collapsed .site-header-frame {
+        cursor: pointer;
+      }
     }
 
     .site-account-strip {
@@ -702,11 +833,378 @@
         transform: translateY(0);
       }
     }
+
+    /* Codex visual system: dark, quiet and content-first. */
+    :root {
+      --codex-background: #000000;
+      --codex-sidebar: #171717;
+      --codex-surface: #212121;
+      --codex-elevated: #303030;
+      --codex-border: rgb(255 255 255 / 0.14);
+      --codex-border-soft: rgb(255 255 255 / 0.08);
+      --codex-text: #ededed;
+      --codex-muted: #afafaf;
+      --codex-subtle: #8f8f8f;
+      --codex-accent: #3a83f7;
+      --codex-accent-hover: #63a8f8;
+      --font-sans: "OpenAI Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Segoe UI", sans-serif;
+      --font-content: var(--font-sans);
+      --color-base-100: var(--codex-surface);
+      --color-base-200: var(--codex-elevated);
+      --color-base-300: #414141;
+      --color-base-content: var(--codex-text);
+      --color-primary: var(--codex-accent);
+      --color-primary-content: #ffffff;
+      --color-secondary: var(--codex-elevated);
+      --color-secondary-content: var(--codex-text);
+      --color-accent: var(--codex-accent);
+      --color-accent-content: #ffffff;
+      --color-info: var(--codex-accent);
+      --color-success: #40c977;
+      --color-warning: #ffd240;
+      --color-error: #fa423e;
+    }
+
+    html {
+      color-scheme: dark;
+      font-family: var(--font-sans);
+    }
+
+    body,
+    button,
+    input,
+    select,
+    textarea {
+      font-family: var(--font-sans);
+    }
+
+    body {
+      color: var(--codex-text);
+      background: var(--codex-background) !important;
+      background-image: none !important;
+      letter-spacing: normal;
+    }
+
+    .site-shell {
+      background: var(--codex-background);
+    }
+
+    .site-shell::before,
+    .site-shell::after {
+      display: none;
+    }
+
+    .site-header-frame {
+      border-right: 1px solid var(--codex-border) !important;
+      background: var(--codex-sidebar) !important;
+      box-shadow: none !important;
+    }
+
+    .site-main-nav,
+    .site-main-nav > .container {
+      background: transparent;
+    }
+
+    .site-main-nav a {
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .site-brand strong {
+      font-size: 1.05rem;
+      letter-spacing: normal;
+      font-weight: 600;
+    }
+
+    .site-brand small {
+      color: var(--codex-muted);
+      letter-spacing: 0.06em;
+    }
+
+    .site-sidebar-links .site-nav-link {
+      min-height: 2.4rem;
+      border: 0;
+      border-radius: 0.55rem;
+      color: var(--codex-muted);
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    .site-sidebar-links .site-nav-link:hover,
+    .site-sidebar-links .site-nav-link:focus-visible,
+    .site-home-link:hover,
+    .site-home-link:focus-visible {
+      background: var(--codex-elevated) !important;
+      color: var(--codex-text) !important;
+    }
+
+    .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link::before,
+    .site-shell.sidebar-collapsed .site-account-trigger::after {
+      border: 1px solid var(--codex-border-soft);
+      border-radius: 0.5rem;
+      background: var(--codex-elevated);
+      box-shadow: 0 0.55rem 1.4rem rgb(0 0 0 / 0.32);
+      color: var(--codex-text);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: normal;
+      text-transform: none;
+    }
+
+    .site-home-link.is-active {
+      background: var(--codex-elevated) !important;
+      color: var(--codex-text) !important;
+    }
+
+    .site-sidebar-collapse {
+      border-color: var(--codex-border-soft);
+      border-radius: 0.55rem;
+      background: transparent;
+      color: var(--codex-muted);
+      box-shadow: none;
+    }
+
+    .site-sidebar-collapse:hover,
+    .site-sidebar-collapse:focus-visible {
+      border-color: var(--codex-border);
+      background: var(--codex-elevated);
+      color: var(--codex-text);
+    }
+
+    .site-account-trigger {
+      border-color: var(--codex-border);
+      background: var(--codex-elevated);
+      color: var(--codex-text);
+      box-shadow: none;
+    }
+
+    .site-shell.has-sidebar > main.site-main-with-sidebar {
+      padding: 2rem clamp(1rem, 4vw, 3.5rem) 4rem !important;
+    }
+
+    .card,
+    .hero,
+    .stats,
+    .modal-box,
+    .list,
+    .site-account-menu {
+      border-color: var(--codex-border-soft) !important;
+      border-radius: 0.75rem;
+      background: var(--codex-surface) !important;
+      box-shadow: none !important;
+    }
+
+    .rounded-box,
+    .rounded-xl,
+    .rounded-2xl {
+      border-radius: 0.75rem !important;
+    }
+
+    .card-body {
+      gap: 1rem;
+    }
+
+    .shadow-sm,
+    .shadow-md,
+    .shadow-lg,
+    .shadow-xl,
+    .shadow-2xl,
+    .backdrop-blur,
+    .backdrop-blur-sm {
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+    }
+
+    .auth-card {
+      border-color: var(--codex-border-soft) !important;
+      background: var(--codex-surface) !important;
+      box-shadow: none !important;
+    }
+
+    .auth-logo {
+      width: 2.25rem;
+      height: 2.25rem;
+      object-fit: contain;
+      filter: invert(1) brightness(1.6);
+    }
+
+    .bg-base-100 {
+      background: var(--codex-surface) !important;
+    }
+
+    .bg-base-200 {
+      background: var(--codex-elevated) !important;
+    }
+
+    .bg-base-300 {
+      background: #414141 !important;
+    }
+
+    .border-base-300 {
+      border-color: var(--codex-border-soft) !important;
+    }
+
+    .btn {
+      min-height: 2.5rem;
+      border-radius: 0.55rem;
+      box-shadow: none !important;
+      font-weight: 500;
+      letter-spacing: normal;
+      text-transform: none;
+      transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: none;
+    }
+
+    .btn-primary {
+      border-color: var(--codex-accent) !important;
+      background: var(--codex-accent) !important;
+      color: #ffffff !important;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+      border-color: var(--codex-accent-hover) !important;
+      background: var(--codex-accent-hover) !important;
+    }
+
+    .btn-secondary,
+    .btn-accent {
+      border-color: transparent !important;
+      background: var(--codex-elevated) !important;
+      color: var(--codex-text) !important;
+    }
+
+    .btn-outline {
+      border-color: var(--codex-border) !important;
+      background: transparent !important;
+      color: var(--codex-text) !important;
+    }
+
+    .btn-outline:hover,
+    .btn-outline:focus-visible,
+    .btn-secondary:hover,
+    .btn-secondary:focus-visible,
+    .btn-accent:hover,
+    .btn-accent:focus-visible {
+      border-color: var(--codex-border) !important;
+      background: var(--codex-elevated) !important;
+    }
+
+    .btn-ghost {
+      background: transparent !important;
+      color: var(--codex-muted) !important;
+    }
+
+    .btn-ghost:hover,
+    .btn-ghost:focus-visible {
+      background: var(--codex-elevated) !important;
+      color: var(--codex-text) !important;
+    }
+
+    .input,
+    .select,
+    .textarea,
+    .file-input {
+      border-color: var(--codex-border) !important;
+      border-radius: 0.55rem;
+      background: var(--codex-elevated) !important;
+      color: var(--codex-text) !important;
+      box-shadow: none !important;
+    }
+
+    .input::placeholder,
+    .textarea::placeholder {
+      color: var(--codex-subtle);
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus,
+    .file-input:focus {
+      border-color: var(--codex-accent) !important;
+      outline: 2px solid rgb(58 131 247 / 0.28) !important;
+      outline-offset: 0;
+    }
+
+    .label-text,
+    .label-text-alt {
+      color: var(--codex-muted);
+    }
+
+    .divider {
+      color: var(--codex-subtle);
+    }
+
+    .divider::before,
+    .divider::after {
+      background: var(--codex-border-soft);
+    }
+
+    .alert {
+      border-color: var(--codex-border-soft) !important;
+      border-radius: 0.65rem;
+      box-shadow: none !important;
+    }
+
+    .badge {
+      border-radius: 999px;
+      font-weight: 500;
+    }
+
+    .table :where(th, td) {
+      border-color: var(--codex-border-soft);
+    }
+
+    .table-zebra tbody tr:nth-child(even) {
+      background: rgb(255 255 255 / 0.035);
+    }
+
+    .breadcrumbs a,
+    a.link,
+    a.link-primary {
+      color: var(--codex-accent-hover);
+    }
+
+    .breadcrumbs a:hover,
+    a.link:hover,
+    a.link-primary:hover {
+      color: #ffffff;
+    }
+
+    .site-footer-frame {
+      border-top-color: var(--codex-border-soft);
+      background: var(--codex-sidebar) !important;
+      box-shadow: none;
+    }
+
+    @media (min-width: 901px) {
+      .site-shell:not(.sidebar-collapsed) {
+        --site-sidebar-width: 20rem;
+        --site-sidebar-half-width: 10rem;
+      }
+
+      .site-main-nav > .container {
+        gap: 1rem;
+        padding: 0.75rem 0.7rem;
+      }
+
+      .site-sidebar-links {
+        gap: 0.2rem;
+      }
+
+      .site-shell.sidebar-collapsed .site-sidebar-links .site-nav-link {
+        border-radius: 0.65rem;
+      }
+    }
   </style>
   {% block head_extra %}{% endblock %}
 </head>
 <body class="min-h-screen text-base-content">
-  <div class="site-shell{% if layout_config.header_visible %} has-sidebar{% endif %}">
+  <div class="site-shell{% if layout_config.header_visible %} has-sidebar sidebar-collapsed{% endif %}">
     {% if layout_config.header_visible %}
     <button type="button" class="site-sidebar-toggle" data-sidebar-toggle aria-label="Abrir menu">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -717,8 +1215,10 @@
       <header class="site-header-frame" data-sidebar>
         <nav class="site-main-nav" aria-label="Navegação principal">
           <div class="container mx-auto flex min-h-20 items-center gap-6 px-4 md:px-8">
-            <a href="{% url 'home' %}" aria-label="Ir para a Home" class="site-brand shrink-0">
-              <img src="{% static 'core/img/tesseract.svg' %}" alt="" class="site-brand-logo" />
+            <a href="{% url 'home' %}" aria-label="Ir para a Home" title="Inicio" class="site-brand site-home-link shrink-0{% if request.path == '/' %} is-active{% endif %}">
+              <span class="site-home-icon">
+                <img src="{% static 'core/img/tesseract.svg' %}" alt="Logo Codex" class="site-home-logo" />
+              </span>
               <span class="site-brand-copy">
                 <strong>Codex</strong>
                 <small>Contos da Cachoeira</small>
@@ -816,17 +1316,18 @@
                 </div>
               {% endif %}
             </div>
+
+            <button type="button" class="site-sidebar-collapse" data-sidebar-collapse aria-expanded="true" aria-label="Recolher barra lateral" title="Recolher barra lateral">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m15 6-6 6 6 6" />
+              </svg>
+            </button>
           </div>
         </nav>
       </header>
-      <button type="button" class="site-sidebar-collapse" data-sidebar-collapse aria-expanded="true" aria-label="Recolher barra lateral" title="Recolher barra lateral">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="m15 6-6 6 6 6" />
-        </svg>
-      </button>
     {% endif %}
 
-    <main class="{% if layout_config.header_visible %}site-main-with-sidebar {% endif %}container mx-auto px-4 py-8 md:py-12" data-animate-up>
+    <main class="{% if layout_config.header_visible %}site-main-with-sidebar {% endif %}{% if is_guildas %}site-main-guildas {% endif %}container mx-auto px-4 py-8 md:py-12" data-animate-up>
       {% if messages %}
         <div class="space-y-2 mb-6">
           {% for message in messages %}
@@ -959,20 +1460,38 @@
       const shell = document.querySelector('.site-shell');
 
       function setSidebarCollapsed(collapsed) {
-        if (!shell || !sidebarCollapse) {
+        if (!shell) {
           return;
         }
         shell.classList.toggle('sidebar-collapsed', collapsed);
-        document.documentElement.style.setProperty('--site-sidebar-width', collapsed ? '5rem' : '16rem');
-        sidebarCollapse.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-        sidebarCollapse.setAttribute('aria-label', collapsed ? 'Expandir barra lateral' : 'Recolher barra lateral');
+        document.documentElement.style.setProperty('--site-sidebar-width', collapsed ? '4rem' : '20rem');
+        if (sidebarCollapse) {
+          sidebarCollapse.hidden = collapsed;
+          sidebarCollapse.setAttribute('aria-expanded', 'true');
+          sidebarCollapse.setAttribute('aria-label', 'Recolher barra lateral');
+          sidebarCollapse.setAttribute('title', 'Recolher barra lateral');
+        }
         window.localStorage.setItem('codex-sidebar-collapsed', collapsed ? '1' : '0');
       }
 
       if (shell && sidebarCollapse && window.innerWidth > 900) {
-        setSidebarCollapsed(window.localStorage.getItem('codex-sidebar-collapsed') === '1');
+        setSidebarCollapsed(window.localStorage.getItem('codex-sidebar-collapsed') !== '0');
         sidebarCollapse.addEventListener('click', function () {
           setSidebarCollapsed(!shell.classList.contains('sidebar-collapsed'));
+        });
+      }
+
+      if (sidebar && shell) {
+        sidebar.addEventListener('click', function (event) {
+          if (window.innerWidth <= 900 || !shell.classList.contains('sidebar-collapsed')) {
+            return;
+          }
+
+          if (event.target.closest('[data-sidebar-collapse], [data-account-trigger]')) {
+            return;
+          }
+
+          setSidebarCollapsed(false);
         });
       }
 
