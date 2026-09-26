@@ -17,7 +17,7 @@
 
 .guildas-eyebrow {
     margin: 0;
-    color: var(--accent);
+    color: var(--codex-accent);
     font-size: .78rem;
     font-weight: 700;
     letter-spacing: .18em;
@@ -26,7 +26,7 @@
 
 .guildas-showcase-heading h1 {
     margin: 0;
-    color: var(--text-primary);
+    color: var(--codex-text);
     font-size: clamp(2.25rem, 5vw, 4rem);
     font-weight: 700;
     letter-spacing: -.045em;
@@ -39,7 +39,7 @@
     width: min(100%, 24rem);
     align-items: center;
     gap: .6rem;
-    color: var(--accent);
+    color: var(--codex-accent);
     opacity: .8;
 }
 
@@ -61,7 +61,7 @@
 .guildas-showcase-heading > p:last-child {
     max-width: 34rem;
     margin: 0;
-    color: var(--text-muted);
+    color: var(--codex-muted);
     font-size: .95rem;
 }
 
@@ -93,10 +93,10 @@
     min-width: 0;
     flex-direction: column;
     overflow: hidden;
-    color: var(--text-primary);
-    border: 1px solid var(--border-subtle);
+    color: var(--codex-text);
+    border: 1px solid var(--codex-border-soft);
     border-radius: .2rem;
-    background: var(--surface);
+    background: var(--codex-surface);
     text-decoration: none;
     transition: transform .18s ease, border-color .18s ease, background .18s ease;
     scroll-snap-align: start;
@@ -104,8 +104,8 @@
 
 .guilda-showcase-card:hover,
 .guilda-showcase-card:focus-visible {
-    border-color: var(--accent);
-    background: var(--surface-elevated);
+    border-color: var(--codex-accent);
+    background: var(--codex-elevated);
     outline: none;
     transform: translateY(-4px);
 }
@@ -126,7 +126,7 @@
 }
 
 .guilda-showcase-image > span {
-    color: var(--accent);
+    color: var(--codex-accent);
     font-size: 3rem;
 }
 
@@ -141,7 +141,7 @@
 
 .guilda-showcase-footer h2 {
     margin: 0;
-    color: var(--text-primary);
+    color: var(--codex-text);
     font-size: clamp(.78rem, 1.1vw, 1rem);
     font-weight: 800;
     line-height: 1.15;
@@ -149,7 +149,7 @@
 }
 
 .guilda-showcase-footer > span {
-    color: var(--text-muted);
+    color: var(--codex-muted);
     font-size: .72rem;
     font-weight: 600;
 }
@@ -163,9 +163,9 @@
     height: 2.5rem;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--codex-border);
     border-radius: 999px;
-    color: var(--text-primary);
+    color: var(--codex-text);
     background: rgba(23, 23, 23, .92);
     font-size: 1.8rem;
     line-height: 1;
@@ -174,7 +174,7 @@
 }
 
 .guildas-carousel-button:hover {
-    background: var(--surface-elevated);
+    background: var(--codex-elevated);
 }
 
 .guildas-carousel-prev {

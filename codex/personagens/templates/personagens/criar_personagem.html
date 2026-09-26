@@ -1,8 +1,11 @@
 ﻿{% extends 'core/base.html' %}
 
+{% load static %}
+
 {% block title %}Novo Personagem | Codex{% endblock title %}
 
 {% block head_extra %}
+  <link rel="stylesheet" href="{% static 'core/css/guildas-showcase.css' %}">
   <style>
     .character-create-page { max-width: 70rem; }
     .character-create-hero { position: relative; overflow: hidden; border-color: var(--codex-border-soft) !important; background: var(--codex-surface); }
@@ -19,10 +22,36 @@
     .character-question .label-text { color: var(--site-text); font-weight: 800; }
     .character-question input:not([type="checkbox"]), .character-question textarea, .character-question select { margin-top: 0.55rem; width: 100%; }
     .character-choice-panel { padding: 1.2rem; border: 1px solid var(--codex-border-soft); border-radius: 0.7rem; background: var(--codex-elevated); }
+    .character-guild-carousel { position: relative; margin-top: 1rem; padding: 0 2.5rem; }
+    .character-guild-carousel .guildas-carousel-track { padding-bottom: .35rem; }
+    .character-class-carousel { position: relative; margin-top: 1rem; padding: 0 2.5rem; }
+    .character-class-carousel .guildas-carousel-track { padding-bottom: .35rem; }
+    .character-guild-card { position: relative; cursor: pointer; }
+    .character-class-card { position: relative; cursor: pointer; }
+    .character-guild-card input[type="radio"] { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+    .character-class-card input[type="radio"] { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+    .character-guild-card.is-selected, .character-guild-card:has(input[type="radio"]:checked) { border-color: var(--codex-accent); background: var(--codex-elevated); box-shadow: 0 0 0 2px rgb(58 131 247 / .24); }
+    .character-class-card.is-selected, .character-class-card:has(input[type="radio"]:checked) { border-color: var(--codex-accent); background: var(--codex-elevated); box-shadow: 0 0 0 2px rgb(58 131 247 / .24); }
+    .character-guild-card.is-selected .guilda-showcase-footer h2, .character-guild-card:has(input[type="radio"]:checked) .guilda-showcase-footer strong { color: var(--codex-accent); }
+    .character-class-card.is-selected .guilda-showcase-footer strong, .character-class-card:has(input[type="radio"]:checked) .guilda-showcase-footer strong { color: var(--codex-accent); }
+    .character-guild-card:focus-within { border-color: var(--codex-accent); outline: 2px solid rgb(58 131 247 / .3); outline-offset: 2px; }
+    .character-class-card:focus-within { border-color: var(--codex-accent); outline: 2px solid rgb(58 131 247 / .3); outline-offset: 2px; }
+    .character-guild-card .guilda-showcase-image { height: 14rem; }
+    .character-class-card .guilda-showcase-image { height: 14rem; background: #f0f0f0; }
+    .character-guild-card .guilda-showcase-footer { min-height: 4.8rem; }
+    .character-class-card .guilda-showcase-footer { min-height: 4.8rem; }
+    .character-guild-card, .character-class-card { flex-basis: calc((100% - 4.6rem) / 5); }
+    .character-guild-card .guilda-showcase-footer strong { color: var(--codex-text); font-size: clamp(.72rem, 1vw, .9rem); font-weight: 800; line-height: 1.15; text-transform: uppercase; }
+    .character-class-card .guilda-showcase-footer strong { color: var(--codex-text); font-size: clamp(.72rem, 1vw, .9rem); font-weight: 800; line-height: 1.15; text-transform: uppercase; }
+    .character-guild-card .guilda-showcase-footer > span { color: var(--codex-muted); }
+    .character-class-card .guilda-showcase-footer > span { color: var(--codex-muted); }
+    .character-guild-carousel .guildas-carousel-button { width: 2.25rem; height: 2.25rem; }
+    .character-class-carousel .guildas-carousel-button { width: 2.25rem; height: 2.25rem; }
+    .character-native-select { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
     .character-action-row { margin-top: auto; padding-top: 1.25rem; border-top: 1px solid var(--codex-border-soft); }
     .field-block { animation: rise-in 280ms ease-out both; }
     .character-step[hidden] { display: none; }
-    @media (max-width: 640px) { .character-step { min-height: 0; padding: 1rem; } .character-tab { min-height: 3.6rem; padding: 0.7rem; font-size: 0.68rem; } .character-tab span { font-size: 0.58rem; } }
+    @media (max-width: 640px) { .character-step { min-height: 0; padding: 1rem; } .character-tab { min-height: 3.6rem; padding: 0.7rem; font-size: 0.68rem; } .character-tab span { font-size: 0.58rem; } .character-guild-card, .character-class-card { flex-basis: min(72vw, 15rem); } }
   </style>
 {% endblock %}
 
@@ -33,7 +62,6 @@
       <div>
         <p class="text-xs font-black uppercase tracking-[0.22em] text-primary">Construcao de personagem</p>
         <h1 class="mt-2 text-3xl font-black tracking-tight md:text-5xl">Crie sua identidade na Cachoeira</h1>
-        <p class="mt-3 max-w-2xl text-base-content/75">Responda cada etapa com calma. Suas escolhas definem como o personagem sera reconhecido no mundo.</p>
       </div>
       <div class="rounded-box border border-primary/25 bg-base-100/10 px-4 py-3 text-left backdrop-blur-sm"><p class="text-xs uppercase tracking-[0.16em] text-base-content/60">Cadastro</p><p class="mt-1 font-bold text-primary">4 etapas</p></div>
     </div>
@@ -50,29 +78,73 @@
 
         <div class="grid grid-cols-2 gap-2 border-b border-base-300 pb-4 md:grid-cols-4" role="tablist" aria-label="Etapas do personagem">
           <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="identity" aria-selected="true">01<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Nome e descricao</span></button>
-          <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="guild" aria-selected="false">02<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Guilda</span></button>
-          <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="class" aria-selected="false">03<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Classe</span></button>
+          <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="class" aria-selected="false">02<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Classe</span></button>
+          <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="guild" aria-selected="false">03<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Guilda</span></button>
           <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="talent" aria-selected="false">04<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Talentos</span></button>
         </div>
 
         <div class="character-step space-y-4" data-character-panel="identity">
           <div class="character-step-heading"><p class="text-xs font-bold uppercase tracking-[0.16em] text-primary">Etapa 1 / Identidade</p><h2 class="mt-1 text-2xl font-bold">Quem e seu personagem?</h2><p class="mt-2 text-sm text-base-content/70">Comece dando um nome e contando um pouco sobre ele.</p></div>
-          <div class="grid gap-4 md:grid-cols-2"><label class="character-question form-control field-block"><span class="label-text">Nome do personagem</span><span class="text-xs text-base-content/55">Escolha um nome marcante para sua ficha.</span><input type="text" name="nome" class="input input-bordered" value="{{ form.nome.value|default:'' }}" placeholder="Ex.: Arven, o Vigia" required />{% if form.nome.errors %}<span class="label-text-alt text-error">{{ form.nome.errors|striptags }}</span>{% endif %}</label><div class="hidden rounded-box border border-primary/15 bg-primary/5 p-4 md:block"><p class="text-xs font-bold uppercase tracking-[0.14em] text-primary">Dica</p><p class="mt-2 text-sm leading-6 text-base-content/70">Pense em como esse personagem sera apresentado quando chegar a uma nova cena.</p></div></div>
-          <label class="character-question form-control field-block"><span class="label-text">Descricao do personagem</span><span class="text-xs text-base-content/55">Conte quem ele e, de onde veio e o que o move.</span><textarea name="descricao_personagem" class="textarea textarea-bordered" rows="8" placeholder="Escreva a historia, personalidade ou aparencia que ajudam a definir seu personagem." required>{{ form.descricao_personagem.value|default:'' }}</textarea>{% if form.descricao_personagem.errors %}<span class="label-text-alt text-error">{{ form.descricao_personagem.errors|striptags }}</span>{% endif %}</label>
-          <div class="character-action-row flex justify-end"><button type="button" class="btn btn-primary" data-character-next="guild">Continuar para guilda <span aria-hidden="true">→</span></button></div>
+          <label class="character-question form-control field-block"><span class="label-text">Nome do personagem</span><input type="text" name="nome" class="input input-bordered" value="{{ form.nome.value|default:'' }}" placeholder="Ex.: Arven, o Vigia" required />{% if form.nome.errors %}<span class="label-text-alt text-error">{{ form.nome.errors|striptags }}</span>{% endif %}</label>
+          <label class="character-question form-control field-block"><span class="label-text">Descricao do personagem</span><span class="text-xs text-base-content/55"></span><textarea name="descricao_personagem" class="textarea textarea-bordered" rows="8" placeholder="Escreva a historia, personalidade ou aparencia que ajudam a definir seu personagem." required>{{ form.descricao_personagem.value|default:'' }}</textarea>{% if form.descricao_personagem.errors %}<span class="label-text-alt text-error">{{ form.descricao_personagem.errors|striptags }}</span>{% endif %}</label>
+          <div class="character-action-row flex justify-end"><button type="button" class="btn btn-primary" data-character-next="class">Continuar para classe <span aria-hidden="true">→</span></button></div>
         </div>
 
         <div class="character-step space-y-4" data-character-panel="guild" hidden>
-          <div class="character-step-heading"><p class="text-xs font-bold uppercase tracking-[0.16em] text-primary">Etapa 2 / Pertencimento</p><h2 class="mt-1 text-2xl font-bold">Escolha sua guilda</h2><p class="mt-2 text-sm text-base-content/70">Escolha o grupo que combina com a historia e os ideais do personagem.</p></div>
-          <div class="character-choice-panel"><label class="form-control field-block"><span class="label-text">Guilda</span><span class="mt-1 text-xs text-base-content/55">Essa escolha representa as aliancas do personagem.</span><select name="guilda" class="select select-bordered" required><option value="">Selecione uma guilda</option>{% for value, label in form.fields.guilda.choices %}<option value="{{ value }}" {% if form.guilda.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>{% if form.guilda.errors %}<span class="label-text-alt text-error">{{ form.guilda.errors|striptags }}</span>{% endif %}</label></div>
-          <div class="character-action-row flex justify-between"><button type="button" class="btn btn-ghost" data-character-prev="identity">← Voltar</button><button type="button" class="btn btn-primary" data-character-next="class">Continuar para classe <span aria-hidden="true">→</span></button></div>
+          <div class="character-step-heading"><p class="text-xs font-bold uppercase tracking-[0.16em] text-primary">Etapa 3 / Pertencimento</p><h2 class="mt-1 text-2xl font-bold">Escolha sua guilda</h2><p class="mt-2 text-sm text-base-content/70">Escolha o grupo que combina com a historia e os ideais do personagem.</p></div>
+          <div class="character-choice-panel">
+            <div class="flex flex-wrap items-end justify-between gap-2">
+              <div><p class="label-text font-bold">Guilda</p><p class="mt-1 text-xs text-base-content/55">Escolha o grupo que representa os ideais do personagem.</p></div>
+            </div>
+            <div class="character-guild-carousel">
+              <button type="button" class="guildas-carousel-button guildas-carousel-prev" data-character-guild-prev aria-label="Guildas anteriores">&lsaquo;</button>
+              <div class="guildas-carousel-track" data-character-guild-track tabindex="0" aria-label="Escolha uma guilda">
+                {% for guilda in guildas_personagem %}
+                  <label class="guilda-showcase-card character-guild-card {% if form.guilda.value|stringformat:'s' == guilda.value|stringformat:'s' %}is-selected{% endif %}">
+                    <input type="radio" name="guilda" value="{{ guilda.value }}" {% if form.guilda.value|stringformat:'s' == guilda.value|stringformat:'s' %}checked{% endif %} required>
+                    <span class="guilda-showcase-image">
+                      <img src="{% static guilda.imagem %}" alt="Símbolo da guilda {{ guilda.nome }}" loading="lazy">
+                    </span>
+                    <span class="guilda-showcase-footer">
+                      <strong>{{ guilda.nome }}</strong>
+                    </span>
+                  </label>
+                {% endfor %}
+              </div>
+              <button type="button" class="guildas-carousel-button guildas-carousel-next" data-character-guild-next aria-label="Próximas guildas">&rsaquo;</button>
+            </div>
+            {% if form.guilda.errors %}<span class="mt-2 block text-sm text-error">{{ form.guilda.errors|striptags }}</span>{% endif %}
+          </div>
+          <div class="character-action-row flex justify-between"><button type="button" class="btn btn-ghost" data-character-prev="class">← Voltar</button><button type="button" class="btn btn-primary" data-character-next="talent">Continuar para talentos <span aria-hidden="true">→</span></button></div>
         </div>
 
         <div class="character-step space-y-4" data-character-panel="class" hidden>
-          <div class="character-step-heading"><p class="text-xs font-bold uppercase tracking-[0.16em] text-primary">Etapa 3 / Aptidao</p><h2 class="mt-1 text-2xl font-bold">Escolha a classe</h2><p class="mt-2 text-sm text-base-content/70">A classe define as possibilidades, especialidades e magias do personagem.</p></div>
-          <label class="character-question form-control field-block"><span class="label-text">Classe</span><span class="text-xs text-base-content/55">Escolha a forma como ele atua no mundo.</span><select name="classe" id="classe-select" class="select select-bordered" required><option value="">Selecione uma classe</option>{% for value, label in form.fields.classe.choices %}<option value="{{ value }}" data-conjuradora="{% if value|stringformat:'s' == '2' or value|stringformat:'s' == '4' or value|stringformat:'s' == '5' or value|stringformat:'s' == '8' or value|stringformat:'s' == '9' %}1{% else %}0{% endif %}" data-fixa="{% if value|stringformat:'s' == '5' or value|stringformat:'s' == '9' %}1{% else %}0{% endif %}" {% if form.classe.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>{% if form.classe.errors %}<span class="label-text-alt text-error">{{ form.classe.errors|striptags }}</span>{% endif %}</label>
+          <div class="character-step-heading"><p class="text-xs font-bold uppercase tracking-[0.16em] text-primary">Etapa 2 / Aptidao</p><h2 class="mt-1 text-2xl font-bold">Escolha a classe</h2><p class="mt-2 text-sm text-base-content/70">A classe define as possibilidades, especialidades e magias do personagem.</p></div>
+          <div class="character-question form-control field-block">
+            <span class="label-text">Classe</span>
+            <span class="text-xs text-base-content/55">Escolha a forma como ele atua no mundo.</span>
+            <select name="classe" id="classe-select" class="character-native-select" required aria-hidden="true" tabindex="-1"><option value="">Selecione uma classe</option>{% for value, label in form.fields.classe.choices %}<option value="{{ value }}" data-conjuradora="{% if value|stringformat:'s' == '2' or value|stringformat:'s' == '4' or value|stringformat:'s' == '5' or value|stringformat:'s' == '8' or value|stringformat:'s' == '9' %}1{% else %}0{% endif %}" data-fixa="{% if value|stringformat:'s' == '5' or value|stringformat:'s' == '9' %}1{% else %}0{% endif %}" {% if form.classe.value|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+            <div class="character-class-carousel">
+              <button type="button" class="guildas-carousel-button guildas-carousel-prev" data-character-class-prev aria-label="Classes anteriores">&lsaquo;</button>
+              <div class="guildas-carousel-track" data-character-class-track tabindex="0" aria-label="Escolha uma classe">
+                {% for classe in classes_personagem %}
+                  <label class="guilda-showcase-card character-class-card {% if form.classe.value|stringformat:'s' == classe.value|stringformat:'s' %}is-selected{% endif %}">
+                    <input type="radio" name="classe_visual" value="{{ classe.value }}" {% if form.classe.value|stringformat:'s' == classe.value|stringformat:'s' %}checked{% endif %} required>
+                    <span class="guilda-showcase-image">
+                      <img src="{% static classe.imagem %}" alt="Ilustração minimalista da classe {{ classe.nome }}" loading="lazy">
+                    </span>
+                    <span class="guilda-showcase-footer">
+                      <strong>{{ classe.nome }}</strong>
+                    </span>
+                  </label>
+                {% endfor %}
+              </div>
+              <button type="button" class="guildas-carousel-button guildas-carousel-next" data-character-class-next aria-label="Próximas classes">&rsaquo;</button>
+            </div>
+            {% if form.classe.errors %}<span class="label-text-alt text-error">{{ form.classe.errors|striptags }}</span>{% endif %}
+          </div>
           <div class="character-choice-panel field-block hidden" id="magias-wrapper"><h3 class="text-lg font-semibold">Magias que o personagem sabe</h3><div class="mt-1 text-xs text-base-content/55">As opcoes aparecem de acordo com a classe escolhida.</div><div class="mt-3 hidden" id="magias-fixas-info"><div class="alert alert-info">Para esta classe, as magias sao definidas automaticamente.</div></div><div class="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2" id="magias-opcoes"><p class="text-sm text-base-content/70">Escolha uma classe conjuradora para liberar as opcoes.</p></div>{% if form.magias_pretendidas.errors %}<div class="mt-2 text-sm text-error">{{ form.magias_pretendidas.errors|striptags }}</div>{% endif %}</div>
-          <div class="character-action-row flex justify-between"><button type="button" class="btn btn-ghost" data-character-prev="guild">← Voltar</button><button type="button" class="btn btn-primary" data-character-next="talent">Continuar para talentos <span aria-hidden="true">→</span></button></div>
+          <div class="character-action-row flex justify-between"><button type="button" class="btn btn-ghost" data-character-prev="identity">← Voltar</button><button type="button" class="btn btn-primary" data-character-next="guild">Continuar para guilda <span aria-hidden="true">→</span></button></div>
         </div>
 
         <div class="character-step space-y-4" data-character-panel="talent" hidden>
@@ -88,6 +160,95 @@
 
 {{ magias_por_classe|json_script:"magias-por-classe-data" }}
 {{ magias_selecionadas|json_script:"magias-selecionadas-data" }}
+
+<script>
+  window.addEventListener('DOMContentLoaded', function () {
+    const guildTrack = document.querySelector('[data-character-guild-track]');
+    const guildPrevious = document.querySelector('[data-character-guild-prev]');
+    const guildNext = document.querySelector('[data-character-guild-next]');
+    const guildCards = document.querySelectorAll('.character-guild-card');
+
+    if (guildTrack && guildPrevious && guildNext) {
+      const moveGuilds = function (direction) {
+        const card = guildTrack.querySelector('.character-guild-card');
+        if (!card) return;
+        const styles = getComputedStyle(guildTrack);
+        const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+        guildTrack.scrollBy({
+          left: direction * (card.getBoundingClientRect().width + gap),
+          behavior: 'smooth',
+        });
+      };
+
+      guildPrevious.addEventListener('click', function () { moveGuilds(-1); });
+      guildNext.addEventListener('click', function () { moveGuilds(1); });
+    }
+
+    guildCards.forEach(function (card) {
+      const radio = card.querySelector('input[type="radio"]');
+      if (!radio) return;
+      radio.addEventListener('change', function () {
+        guildCards.forEach(function (otherCard) { otherCard.classList.remove('is-selected'); });
+        card.classList.add('is-selected');
+      });
+    });
+
+    const classTrack = document.querySelector('[data-character-class-track]');
+    const classPrevious = document.querySelector('[data-character-class-prev]');
+    const classNext = document.querySelector('[data-character-class-next]');
+    const classCards = document.querySelectorAll('.character-class-card');
+    const classeSelect = document.getElementById('classe-select');
+
+    if (classTrack && classPrevious && classNext) {
+      const moveClasses = function (direction) {
+        const card = classTrack.querySelector('.character-class-card');
+        if (!card) return;
+        const styles = getComputedStyle(classTrack);
+        const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
+        const step = card.getBoundingClientRect().width + gap;
+        const maximum = classTrack.scrollWidth - classTrack.clientWidth;
+        const target = classTrack.scrollLeft + direction * step;
+        if (direction > 0 && target >= maximum - 2) {
+          classTrack.scrollTo({ left: 0, behavior: 'smooth' });
+        } else if (direction < 0 && target <= 0) {
+          classTrack.scrollTo({ left: maximum, behavior: 'smooth' });
+        } else {
+          classTrack.scrollBy({ left: direction * step, behavior: 'smooth' });
+        }
+      };
+
+      classPrevious.addEventListener('click', function () { moveClasses(-1); });
+      classNext.addEventListener('click', function () { moveClasses(1); });
+      window.setInterval(function () { moveClasses(1); }, 3000);
+    }
+
+    const syncClassCards = function (value) {
+      classCards.forEach(function (card) {
+        const radio = card.querySelector('input[type="radio"]');
+        const selected = radio && radio.value === value;
+        card.classList.toggle('is-selected', selected);
+        if (radio) radio.checked = selected;
+      });
+    };
+
+    classCards.forEach(function (card) {
+      const radio = card.querySelector('input[type="radio"]');
+      if (!radio) return;
+      radio.addEventListener('change', function () {
+        syncClassCards(radio.value);
+        if (classeSelect) {
+          classeSelect.value = radio.value;
+          classeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      });
+    });
+
+    if (classeSelect) {
+      classeSelect.addEventListener('change', function () { syncClassCards(classeSelect.value); });
+      syncClassCards(classeSelect.value);
+    }
+  });
+</script>
 
 <script>
   window.addEventListener('DOMContentLoaded', function () {
