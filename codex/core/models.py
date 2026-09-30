@@ -166,6 +166,7 @@ class HomeDynamicSection(models.Model):
 class LarpEvento(models.Model):
 	titulo = models.CharField(max_length=180)
 	slug = models.SlugField(max_length=220, unique=True, blank=True)
+	capa = models.ImageField(upload_to='larps/capas/', blank=True, null=True, verbose_name='Capa do evento')
 	historia = models.TextField()
 	local = models.CharField(max_length=180)
 	data_evento = models.DateTimeField()

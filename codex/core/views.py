@@ -90,7 +90,7 @@ def detalhe_larp(request, slug):
         inscricoes = evento.inscricoes.select_related('usuario', 'personagem').order_by('nome_completo_jogador', 'id')
 
         if request.method == 'POST' and request.POST.get('action') == 'edit_event':
-            event_form = LarpEventoForm(request.POST, instance=evento)
+            event_form = LarpEventoForm(request.POST, request.FILES, instance=evento)
             if event_form.is_valid():
                 event_form.save()
                 messages.success(request, 'Informações do evento atualizadas.')

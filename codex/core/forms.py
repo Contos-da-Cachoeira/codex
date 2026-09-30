@@ -39,9 +39,9 @@ class EventCharacterBalanceForm(forms.Form):
 class LarpEventoForm(forms.ModelForm):
     class Meta:
         model = LarpEvento
-        fields = ('titulo', 'local', 'data_evento', 'data_limite_inscricao', 'historia', 'visivel_publicamente')
+        fields = ('titulo', 'capa', 'local', 'data_evento', 'data_limite_inscricao', 'historia', 'visivel_publicamente')
         labels = {
-            'titulo': 'Título', 'local': 'Local', 'data_evento': 'Data e horário do evento',
+            'titulo': 'Título', 'capa': 'Capa do evento', 'local': 'Local', 'data_evento': 'Data e horário do evento',
             'data_limite_inscricao': 'Inscrições até', 'historia': 'História',
             'visivel_publicamente': 'Visível para usuários comuns',
         }
@@ -49,6 +49,7 @@ class LarpEventoForm(forms.ModelForm):
             'data_evento': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local'}),
             'data_limite_inscricao': forms.DateTimeInput(format='%Y-%m-%dT%H:%M', attrs={'type': 'datetime-local'}),
             'historia': forms.Textarea(attrs={'rows': 5}),
+            'capa': forms.ClearableFileInput(attrs={'accept': 'image/*'}),
         }
 
     def __init__(self, *args, **kwargs):
