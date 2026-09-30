@@ -1,0 +1,40 @@
+{% load static %}
+<style>
+  .home-editor-grid { display:grid; grid-template-columns:minmax(260px, 1fr) minmax(0, 1.5fr); gap:1.5rem; }
+  .home-editor-card { padding:1rem; margin:1rem 0; border:1px solid var(--codex-border); border-radius:.75rem; background:var(--codex-surface); }
+  .home-editor-card label { display:flex; flex-direction:column; gap:.4rem; margin-top:.8rem; }
+  .home-editor-card input:not([type=checkbox]), .home-editor-card textarea { width:100%; max-width:none; }
+  .home-preview-box { overflow:hidden; border:1px solid var(--codex-border); border-radius:.75rem; background:var(--codex-background); }
+  .home-preview-stage { position:relative; width:100%; overflow:hidden; }
+  .home-preview-stage iframe { position:absolute; top:0; left:50%; border:0; transform-origin:top left; }
+  @media(max-width:1000px) { .home-editor-grid { grid-template-columns:1fr; } }
+</style>
+<h3 class="text-xl font-bold">Componentes da home</h3>
+<p class="mt-2 mb-5 text-sm text-base-content/70">Adicione, edite, oculte ou reordene os componentes. A prévia mostra seu rascunho; salvar publica as alterações para todos.</p>
+{{ home_components_data|json_script:'home-components-data' }}
+<div class="home-editor-grid" data-home-editor>
+  <form method="post" action="{% url 'admin_dashboard' %}" data-components-form data-save-url="{% url 'admin_dashboard' %}" data-preview-url="{% url 'home_preview' %}">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="update_home_components">
+    <input type="hidden" name="components_json">
+    <div class="flex flex-wrap gap-2">
+      <select class="select select-bordered" aria-label="Tipo do novo componente" data-component-kind>
+        <option value="text">Texto</option><option value="community">Comunidade / guildas</option><option value="banner">Banner dividido</option><option value="callout">Chamada centralizada</option><option value="links">Atalhos</option>
+      </select>
+      <button type="button" class="btn btn-outline" data-add-component>Adicionar componente</button>
+    </div>
+    <div data-component-list></div>
+    <button type="submit" class="btn btn-primary">Salvar e publicar home</button>
+    <p class="text-sm mt-3" data-editor-status role="status"></p>
+  </form>
+  <div>
+    <div class="flex flex-wrap gap-2 mb-3" role="group" aria-label="Tamanho da prévia">
+      <button type="button" class="btn btn-primary" data-preview-width="1366" aria-pressed="true">Computador</button>
+      <button type="button" class="btn btn-outline" data-preview-width="390" aria-pressed="false">Celular</button>
+      <a href="{% url 'home' %}" target="_blank" rel="noopener" class="btn btn-ghost">Home publicada ↗</a>
+    </div>
+    <p class="text-xs mb-3 text-base-content/60">Prévia em escala. O conteúdo pode ser rolado dentro da tela.</p>
+    <div class="home-preview-box"><div class="home-preview-stage"><iframe title="Prévia da home" sandbox="allow-scripts allow-same-origin" data-home-preview></iframe></div></div>
+  </div>
+</div>
+<script src="{% static 'dashboard/home-editor.js' %}" defer></script>

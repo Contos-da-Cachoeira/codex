@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% block title %}Planilha | {{ evento.titulo }}{% endblock %}
+{% block content %}
+{% include 'core/includes/larp_actions_style.html' %}
+<div class="larp-toolbar mb-6">
+  <div><h1 class="text-2xl font-bold">{{ evento.titulo }}</h1><p class="text-sm text-base-content/70">{{ evento.data_evento|date:'d/m/Y H:i' }} &middot; {{ balance_rows|length }} participantes</p></div>
+  <a href="{% url 'detalhe_larp' evento.slug %}" class="btn btn-outline">Voltar ao evento</a>
+</div>
+  <section id="planilha-participantes" class="bg-base-100 rounded-box p-6 border border-base-300 space-y-4">
+    <h2 class="text-xl font-semibold">Planilha dos participantes</h2>
+    <p class="text-sm text-base-content/70">Edite o saldo final de XP e ouro de cada personagem. Os valores substituem os saldos atuais e valem em todo o site. Use Tab para avançar entre as células.</p>
+    <form method="post" action="#planilha-participantes">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="update_balances">
+      <div class="overflow-x-auto rounded-box border border-base-300">
+        <table class="table table-zebra">
+          <thead><tr><th>Usuário / jogador</th><th>Personagem</th><th>Classe / guilda</th><th>Pagamento</th><th>XP final</th><th>Ouro final</th></tr></thead>
+          <tbody>
+            {% for row in balance_rows %}
+            <tr>
+              <td><a class="link" href="{% url 'admin_user_profile' row.registration.usuario_id %}">{{ row.registration.usuario.username }}</a><div class="text-xs text-base-content/60">{{ row.registration.nome_completo_jogador }}</div></td>
+              <td>{{ row.registration.personagem.nome }}</td>
+              <td>{{ row.registration.personagem.get_classe_display|default:'Sem classe' }}<div class="text-xs">{{ row.registration.personagem.get_guilda_display|default:'Sem guilda' }}</div></td>
+              <td>{% if row.registration.taxa_paga %}Pago{% else %}Pendente{% endif %}</td>
+              <td><label class="sr-only" for="{{ row.form.xp.id_for_label }}">XP de {{ row.registration.personagem.nome }}</label>{{ row.form.xp }}<div class="text-error text-sm">{{ row.form.xp.errors }}</div></td>
+              <td><label class="sr-only" for="{{ row.form.ouro.id_for_label }}">Ouro de {{ row.registration.personagem.nome }}</label>{{ row.form.ouro }}<div class="text-error text-sm">{{ row.form.ouro.errors }}</div></td>
+            </tr>
+            {% empty %}<tr><td colspan="6">Nenhum participante inscrito neste evento.</td></tr>{% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% if balance_rows %}<div class="larp-actions mt-4"><button type="reset" class="btn btn-outline larp-back">Desfazer alterações não salvas</button><button type="submit" class="btn btn-primary">Salvar XP e ouro</button></div>{% endif %}
+    </form>
+  </section>
+
+{% endblock %}

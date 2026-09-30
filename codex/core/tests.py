@@ -34,6 +34,7 @@ class SshDbTunnelTests(SimpleTestCase):
 	@patch('core.management.commands.runserver.time.sleep')
 	@patch('core.management.commands.runserver.socket.create_connection')
 	@patch('core.management.commands.runserver.subprocess.Popen')
+	@patch.dict(os.environ, {'SSH_DB_HOST': 'test-db-host'})
 	def test_starts_and_stops_only_the_created_process(
 		self,
 		popen,
@@ -53,7 +54,7 @@ class SshDbTunnelTests(SimpleTestCase):
 		command = popen.call_args.args[0]
 		self.assertEqual(command[:3], ['ssh', '-o', 'BatchMode=yes'])
 		self.assertIn('127.0.0.1:5433:127.0.0.1:5432', command)
-		self.assertEqual(command[-1], 'servidor')
+		self.assertEqual(command[-1], 'test-db-host')
 		self.assertIn('BatchMode=yes', command)
 		self.assertIn('ConnectTimeout=10', command)
 		process.terminate.assert_called_once_with()

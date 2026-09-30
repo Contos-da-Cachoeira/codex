@@ -20,8 +20,8 @@
       --site-glow-1: 79 215 255;
       --site-glow-2: 27 116 185;
       --site-glow-3: 14 46 82;
-      --site-sidebar-width: 20rem;
-      --site-sidebar-half-width: 10rem;
+      --site-sidebar-width: 12.5rem;
+      --site-sidebar-half-width: 6.25rem;
     }
 
     html {
@@ -836,29 +836,29 @@
 
     /* Codex visual system: dark, quiet and content-first. */
     :root {
-      --codex-background: #000000;
-      --codex-sidebar: #171717;
-      --codex-surface: #212121;
-      --codex-elevated: #303030;
-      --codex-border: rgb(255 255 255 / 0.14);
-      --codex-border-soft: rgb(255 255 255 / 0.08);
-      --codex-text: #ededed;
-      --codex-muted: #afafaf;
-      --codex-subtle: #8f8f8f;
-      --codex-accent: #3a83f7;
-      --codex-accent-hover: #63a8f8;
+      --codex-background: var(--site-background);
+      --codex-sidebar: color-mix(in srgb, var(--site-surface) 70%, var(--site-background));
+      --codex-surface: var(--site-surface);
+      --codex-elevated: {{ layout_config.secondary_color|default:'#303030' }};
+      --codex-border: color-mix(in srgb, var(--site-text) 14%, transparent);
+      --codex-border-soft: color-mix(in srgb, var(--site-text) 8%, transparent);
+      --codex-text: var(--site-text);
+      --codex-muted: var(--site-muted);
+      --codex-subtle: color-mix(in srgb, var(--site-muted) 82%, var(--site-background));
+      --codex-accent: var(--site-accent);
+      --codex-accent-hover: color-mix(in srgb, var(--site-accent) 80%, white);
       --font-sans: "OpenAI Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Segoe UI", sans-serif;
       --font-content: var(--font-sans);
       --color-base-100: var(--codex-surface);
       --color-base-200: var(--codex-elevated);
-      --color-base-300: #414141;
+      --color-base-300: color-mix(in srgb, var(--codex-elevated) 90%, var(--site-text));
       --color-base-content: var(--codex-text);
-      --color-primary: var(--codex-accent);
-      --color-primary-content: #ffffff;
+      --color-primary: {{ layout_config.primary_color|default:'#3A83F7' }};
+      --color-primary-content: {{ layout_config.primary_content_color|default:'#FFFFFF' }};
       --color-secondary: var(--codex-elevated);
-      --color-secondary-content: var(--codex-text);
+      --color-secondary-content: {{ layout_config.secondary_content_color|default:'#EDEDED' }};
       --color-accent: var(--codex-accent);
-      --color-accent-content: #ffffff;
+      --color-accent-content: var(--site-accent-content);
       --color-info: var(--codex-accent);
       --color-success: #40c977;
       --color-warning: #ffd240;
@@ -1006,9 +1006,24 @@
 
       .site-header-frame .site-brand {
         min-height: 2.5rem;
-        margin-left: 2.75rem;
-        padding: .35rem .5rem;
+        margin-left: 0;
+        padding: .35rem .85rem;
+        border-left: 2px solid transparent;
+        gap: .7rem;
         border-radius: .55rem;
+      }
+
+      .site-header-frame .site-home-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 1.25rem;
+        width: 1.25rem;
+      }
+
+      .site-header-frame .site-home-logo {
+        width: 1.25rem;
+        height: 1.25rem;
       }
 
       .site-header-frame .site-brand strong {
@@ -1185,22 +1200,27 @@
     }
 
     .btn-primary {
-      border-color: var(--codex-accent) !important;
-      background: var(--codex-accent) !important;
-      color: #ffffff !important;
+      border-color: var(--color-primary) !important;
+      background: var(--color-primary) !important;
+      color: var(--color-primary-content) !important;
     }
 
     .btn-primary:hover,
     .btn-primary:focus-visible {
-      border-color: var(--codex-accent-hover) !important;
-      background: var(--codex-accent-hover) !important;
+      border-color: color-mix(in srgb, var(--color-primary) 80%, white) !important;
+      background: color-mix(in srgb, var(--color-primary) 80%, white) !important;
     }
 
-    .btn-secondary,
-    .btn-accent {
+    .btn-secondary {
       border-color: transparent !important;
       background: var(--codex-elevated) !important;
-      color: var(--codex-text) !important;
+      color: var(--color-secondary-content) !important;
+    }
+
+    .btn-accent {
+      border-color: var(--site-accent) !important;
+      background: var(--site-accent) !important;
+      color: var(--site-accent-content) !important;
     }
 
     .btn-outline {
@@ -1308,8 +1328,8 @@
 
     @media (min-width: 901px) {
       .site-shell:not(.sidebar-collapsed) {
-        --site-sidebar-width: 20rem;
-        --site-sidebar-half-width: 10rem;
+        --site-sidebar-width: 12.5rem;
+        --site-sidebar-half-width: 6.25rem;
       }
 
       .site-main-nav > .container {
@@ -1328,7 +1348,7 @@
   </style>
   {% block head_extra %}{% endblock %}
 </head>
-<body class="min-h-screen text-base-content">
+<body class="min-h-screen text-base-content" data-image-upload-url="{% url 'upload_image' %}">
   <div class="site-shell{% if layout_config.header_visible %} has-sidebar sidebar-collapsed{% endif %}">
     {% if layout_config.header_visible %}
     <button type="button" class="site-sidebar-toggle" data-sidebar-toggle aria-label="Abrir menu">
@@ -1386,7 +1406,9 @@
               {% if user.is_authenticated %}
                 <div class="site-account-dropdown dropdown dropdown-start" data-account-dropdown>
                   <button type="button" class="site-account-trigger" data-account-trigger aria-expanded="false" aria-label="Abrir menu da conta de {{ user.username }}" title="{{ user.username }}">
-                    {% if account_profile and account_profile.avatar %}
+                    {% if account_profile.image_asset %}
+                      {% include 'core/includes/image_asset.html' with asset=account_profile.image_asset %}
+                    {% elif account_profile and account_profile.avatar %}
                       <img src="{{ account_profile.avatar.url }}" alt="Foto de perfil de {{ user.username }}" />
                     {% else %}
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
@@ -1589,7 +1611,7 @@
           return;
         }
         shell.classList.toggle('sidebar-collapsed', collapsed);
-        document.documentElement.style.setProperty('--site-sidebar-width', collapsed ? '4rem' : '20rem');
+        document.documentElement.style.setProperty('--site-sidebar-width', collapsed ? '4rem' : '12.5rem');
         if (sidebarCollapse) {
           sidebarCollapse.hidden = collapsed;
           sidebarCollapse.setAttribute('aria-expanded', 'true');
@@ -1703,5 +1725,6 @@
       }
     })();
   </script>
+<script src="{% static 'core/js/image-picker.js' %}" defer></script>
 </body>
 </html>

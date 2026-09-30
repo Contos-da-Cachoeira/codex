@@ -1,0 +1,20 @@
+/* Split banner adapted from the user-supplied HyperUI reference. */
+.home-designed-block { margin:0; padding:clamp(2rem,4vw,4rem) 0; }
+.codex-home > section + section { border-top:1px solid var(--codex-border-soft); }
+.home-split-banner { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(1.5rem,4vw,4rem); align-items:center; }
+.home-banner-copy { min-width:0; }
+.home-banner-eyebrow { color:var(--site-accent); font-size:.8rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:1rem; }
+.home-banner-copy h2 { color:var(--site-text); font-size:clamp(2rem,4.4vw,3.7rem); line-height:1.08; font-weight:750; letter-spacing:-.045em; overflow-wrap:anywhere; }
+.home-banner-description { margin-top:1.4rem; color:var(--site-muted); line-height:1.8; font-size:1.05rem; white-space:pre-line; overflow-wrap:anywhere; }
+.home-banner-buttons { display:flex; flex-wrap:wrap; gap:.85rem; margin-top:1.8rem; }
+.home-banner-buttons:empty { display:none; }
+.home-banner-buttons .btn { min-height:3rem; height:auto; padding:.8rem 1.25rem; border-radius:.65rem; }
+.home-banner-art { min-width:0; overflow:hidden; border-radius:1rem; }
+.home-banner-photo { display:block; width:100%; aspect-ratio:4/3; object-fit:cover; }
+.home-banner-emblem { aspect-ratio:4/3; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.8rem; background:radial-gradient(ellipse at center,color-mix(in srgb,var(--site-accent) 24%,transparent),transparent 70%),var(--codex-background); }
+.home-banner-emblem img { width:40%; filter:invert(1); }
+.home-banner-emblem span { color:var(--site-muted); font-size:.65rem; letter-spacing:.18em; }
+.home-callout { text-align:center; padding-block:clamp(2.5rem,6vw,5rem); }
+.home-callout .home-banner-copy { max-width:48rem; margin:auto; }
+.home-callout .home-banner-buttons { justify-content:center; }
+@media(max-width:767px) { .home-split-banner { grid-template-columns:1fr; } .home-banner-copy h2 { font-size:2.15rem; } .home-banner-buttons .btn { flex:1 1 auto; } }

@@ -86,7 +86,7 @@ class HomeDynamicSectionAdmin(admin.ModelAdmin):
 
 @admin.register(LarpEvento)
 class LarpEventoAdmin(admin.ModelAdmin):
-	list_display = ('titulo', 'local', 'data_evento', 'visivel_publicamente')
+	list_display = ('titulo', 'local', 'data_evento', 'data_limite_inscricao', 'visivel_publicamente')
 	list_filter = ('visivel_publicamente', 'data_evento')
 	search_fields = ('titulo', 'local', 'historia')
 	readonly_fields = ('inscricao_token',)

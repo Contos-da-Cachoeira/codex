@@ -1,33 +1,39 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}Area Admin | Codex{% endblock title %}
 
 {% block content %}
-<section class="space-y-6">
-  <div class="flex flex-col gap-5 rounded-box border border-base-300 bg-base-100 p-6 shadow-lg lg:flex-row lg:items-end lg:justify-between">
-    <div>
-      <p class="text-xs font-bold uppercase tracking-[0.2em] text-primary">Codex / Controle geral</p>
-      <h1 class="mt-2 text-3xl font-black md:text-4xl">Dashboard administrativo</h1>
-      <p class="mt-2 max-w-2xl text-base-content/70">Acompanhe usuarios, personagens, guildas, eventos e configuracoes em uma unica visao.</p>
-    </div>
-    <div class="flex flex-wrap gap-2">
-      <button type="button" class="btn btn-primary btn-sm" data-open-modal="user_roles_modal">Gerenciar usuarios</button>
-      <button type="button" class="btn btn-outline btn-sm" data-open-modal="character_modal">Ver personagens</button>
-      <a href="/admin/" class="btn btn-ghost btn-sm">Painel Django</a>
-    </div>
+{% include 'core/includes/larp_actions_style.html' %}
+<section class="space-y-6" data-admin-dashboard>
+  <style>
+    [data-admin-panel][hidden] { display: none !important; }
+    .admin-tabs { display: flex; gap: .5rem; overflow-x: auto; padding: .5rem; border: 1px solid var(--site-muted); border-radius: .75rem; }
+    .admin-tabs [role="tab"] { flex-shrink: 0; padding: .7rem 1rem; border-radius: .5rem; cursor: pointer; color: var(--site-muted); }
+    .admin-tabs [aria-selected="true"] { background: var(--site-accent); color: var(--site-accent-content); }
+    .admin-tabs [role="tab"]:focus-visible { outline: 2px solid var(--site-text); outline-offset: 2px; }
+  </style>
+<div class="admin-tabs" role="tablist" aria-label="Seções administrativas">
+    <button type="button" role="tab" id="tab-overview" aria-controls="overview" aria-selected="true" tabindex="0" data-admin-tab="overview">Visão geral</button>
+    <button type="button" role="tab" id="tab-user_roles_modal" aria-controls="user_roles_modal" aria-selected="false" tabindex="-1" data-admin-tab="user_roles_modal">Usuários</button>
+    <button type="button" role="tab" id="tab-character_modal" aria-controls="character_modal" aria-selected="false" tabindex="-1" data-admin-tab="character_modal">Personagens</button>
+    <button type="button" role="tab" id="tab-larp_modal" aria-controls="larp_modal" aria-selected="false" tabindex="-1" data-admin-tab="larp_modal">LARPs</button>
+    <button type="button" role="tab" id="tab-home_components_modal" aria-controls="home_components_modal" aria-selected="false" tabindex="-1" data-admin-tab="home_components_modal">Página inicial</button>
+    <button type="button" role="tab" id="tab-theme_modal" aria-controls="theme_modal" aria-selected="false" tabindex="-1" data-admin-tab="theme_modal">Aparência</button>
+    <button type="button" role="tab" id="tab-social_modal" aria-controls="social_modal" aria-selected="false" tabindex="-1" data-admin-tab="social_modal">Redes sociais</button>
   </div>
-
+  <section id="overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0" data-admin-panel class="space-y-6">
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-    <button type="button" class="card border border-primary/25 bg-primary/10 text-left shadow-md transition hover:-translate-y-0.5" data-open-modal="user_roles_modal">
+    <button type="button" class="card border border-primary/25 bg-primary/10 text-left shadow-md transition hover:-translate-y-0.5" data-admin-target="user_roles_modal">
       <div class="card-body gap-1"><p class="text-xs font-bold uppercase tracking-[0.15em] text-base-content/60">Usuarios</p><p class="text-4xl font-black text-primary">{{ dashboard_stats.users_total }}</p><p class="text-sm text-base-content/70">{{ dashboard_stats.users_admin }} admins / {{ dashboard_stats.users_common }} comuns</p></div>
     </button>
-    <button type="button" class="card border border-secondary/25 bg-secondary/10 text-left shadow-md transition hover:-translate-y-0.5" data-open-modal="character_modal">
+    <button type="button" class="card border border-secondary/25 bg-secondary/10 text-left shadow-md transition hover:-translate-y-0.5" data-admin-target="character_modal">
       <div class="card-body gap-1"><p class="text-xs font-bold uppercase tracking-[0.15em] text-base-content/60">Personagens</p><p class="text-4xl font-black text-secondary">{{ dashboard_stats.characters_total }}</p><p class="text-sm text-base-content/70">{{ dashboard_stats.characters_active }} ativos</p></div>
     </button>
-    <button type="button" class="card border border-warning/25 bg-warning/10 text-left shadow-md transition hover:-translate-y-0.5" data-open-modal="character_modal">
+    <button type="button" class="card border border-warning/25 bg-warning/10 text-left shadow-md transition hover:-translate-y-0.5" data-admin-target="character_modal">
       <div class="card-body gap-1"><p class="text-xs font-bold uppercase tracking-[0.15em] text-base-content/60">Pendencias</p><p class="text-4xl font-black text-warning">{{ dashboard_stats.characters_pending }}</p><p class="text-sm text-base-content/70">personagens aguardando aprovacao</p></div>
     </button>
-    <button type="button" class="card border border-accent/25 bg-accent/10 text-left shadow-md transition hover:-translate-y-0.5" data-open-modal="larp_modal">
+    <button type="button" class="card border border-accent/25 bg-accent/10 text-left shadow-md transition hover:-translate-y-0.5" data-admin-target="larp_modal">
       <div class="card-body gap-1"><p class="text-xs font-bold uppercase tracking-[0.15em] text-base-content/60">LARPs</p><p class="text-4xl font-black text-accent">{{ dashboard_stats.larps_total }}</p><p class="text-sm text-base-content/70">{{ dashboard_stats.larps_upcoming }} proximos / {{ dashboard_stats.registrations_total }} inscricoes</p></div>
     </button>
   </div>
@@ -38,8 +44,8 @@
       <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
         <div class="rounded-box bg-base-200 p-4"><div class="flex items-center justify-between gap-3"><span class="font-semibold">Eventos publicos</span><strong>{{ dashboard_stats.larps_public }}</strong></div><div class="mt-2 h-2 rounded-full bg-base-300"><div class="h-2 rounded-full bg-success" style="width: {% if dashboard_stats.larps_total %}{% widthratio dashboard_stats.larps_public dashboard_stats.larps_total 100 %}{% else %}0{% endif %}%"></div></div><p class="mt-2 text-xs text-base-content/60">{{ dashboard_stats.larps_private }} eventos ainda privados</p></div>
         <div class="rounded-box bg-base-200 p-4"><div class="flex items-center justify-between gap-3"><span class="font-semibold">Personagens com guilda</span><strong>{{ dashboard_stats.characters_with_guild }}</strong></div><div class="mt-2 h-2 rounded-full bg-base-300"><div class="h-2 rounded-full bg-primary" style="width: {% if dashboard_stats.characters_total %}{% widthratio dashboard_stats.characters_with_guild dashboard_stats.characters_total 100 %}{% else %}0{% endif %}%"></div></div><p class="mt-2 text-xs text-base-content/60">{{ dashboard_stats.characters_without_guild }} personagens sem guilda</p></div>
-        <div class="rounded-box bg-base-200 p-4"><div class="flex items-center justify-between gap-3"><span class="font-semibold">Guildas disponiveis</span><strong>{{ dashboard_stats.guilds_total }}</strong></div><p class="mt-2 text-xs text-base-content/60">Guildas reconhecidas pelo sistema para personagens.</p><button type="button" class="btn btn-xs btn-ghost mt-3" data-open-modal="character_modal">Ver distribuicao</button></div>
-        <div class="rounded-box bg-base-200 p-4"><div class="flex items-center justify-between gap-3"><span class="font-semibold">Home</span><strong>{{ dashboard_stats.home_sections_visible }}</strong></div><p class="mt-2 text-xs text-base-content/60">componentes extras visiveis atualmente.</p><button type="button" class="btn btn-xs btn-ghost mt-3" data-open-modal="home_components_modal">Editar Home</button></div>
+        <div class="rounded-box bg-base-200 p-4"><div class="flex items-center justify-between gap-3"><span class="font-semibold">Guildas disponiveis</span><strong>{{ dashboard_stats.guilds_total }}</strong></div><p class="mt-2 text-xs text-base-content/60">Guildas reconhecidas pelo sistema para personagens.</p><button type="button" class="btn btn-xs btn-ghost mt-3" data-admin-target="character_modal">Ver distribuicao</button></div>
+        <div class="rounded-box bg-base-200 p-4"><div class="flex items-center justify-between gap-3"><span class="font-semibold">Home</span><strong>{{ dashboard_stats.home_sections_visible }}</strong></div><p class="mt-2 text-xs text-base-content/60">componentes extras visiveis atualmente.</p><button type="button" class="btn btn-xs btn-ghost mt-3" data-admin-target="home_components_modal">Editar Home</button></div>
       </div>
     </div>
 
@@ -49,23 +55,23 @@
         <div class="space-y-3">
           {% for personagem in pending_characters %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ personagem.nome }}</p><p class="truncate text-xs text-base-content/60">{{ personagem.usuario.username }}</p></div><span class="badge badge-warning badge-sm">Pendente</span></div>{% endfor %}
         </div>
-        <button type="button" class="btn btn-warning btn-sm mt-5 w-full" data-open-modal="character_modal">Revisar personagens</button>
+        <button type="button" class="btn btn-warning btn-sm mt-5 w-full" data-admin-target="character_modal">Revisar personagens</button>
       {% else %}<div class="rounded-box bg-success/10 p-4 text-sm text-success-content">Nenhuma aprovacao pendente no momento.</div>{% endif %}
     </div>
   </div>
 
   <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
-    <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">Usuarios recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-open-modal="user_roles_modal">Ver todos</button></div><div class="space-y-3">{% for recent_user in recent_users %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ recent_user.username }}</p><p class="truncate text-xs text-base-content/60">{{ recent_user.email|default:'Sem email' }}</p></div>{% if recent_user.is_superuser %}<span class="badge badge-warning badge-sm">Super</span>{% elif recent_user.profile.role == 'ADMIN' %}<span class="badge badge-primary badge-sm">Admin</span>{% else %}<span class="badge badge-ghost badge-sm">User</span>{% endif %}</div>{% empty %}<p class="text-sm text-base-content/60">Nenhum usuario cadastrado.</p>{% endfor %}</div></div>
-    <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">Personagens recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-open-modal="character_modal">Ver todos</button></div><div class="space-y-3">{% for personagem in recent_characters %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ personagem.nome }}</p><p class="truncate text-xs text-base-content/60">{{ personagem.usuario.username }}</p></div><span class="badge badge-sm {% if personagem.status_aprovacao == 1 %}badge-warning{% elif personagem.status_aprovacao == 2 %}badge-success{% else %}badge-error{% endif %}">{{ personagem.get_status_aprovacao_display }}</span></div>{% empty %}<p class="text-sm text-base-content/60">Nenhum personagem cadastrado.</p>{% endfor %}</div></div>
-    <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">LARPs recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-open-modal="larp_modal">Ver todos</button></div><div class="space-y-3">{% for larp in recent_larps %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ larp.titulo }}</p><p class="truncate text-xs text-base-content/60">{{ larp.data_evento|date:'d/m/Y H:i' }}</p></div>{% if larp.visivel_publicamente %}<span class="badge badge-success badge-sm">Publico</span>{% else %}<span class="badge badge-ghost badge-sm">Privado</span>{% endif %}</div>{% empty %}<p class="text-sm text-base-content/60">Nenhum LARP criado.</p>{% endfor %}</div></div>
+    <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">Usuarios recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-admin-target="user_roles_modal">Ver todos</button></div><div class="space-y-3">{% for recent_user in recent_users %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ recent_user.username }}</p><p class="truncate text-xs text-base-content/60">{{ recent_user.email|default:'Sem email' }}</p></div>{% if recent_user.is_superuser %}<span class="badge badge-warning badge-sm">Super</span>{% elif recent_user.profile.role == 'ADMIN' %}<span class="badge badge-primary badge-sm">Admin</span>{% else %}<span class="badge badge-ghost badge-sm">User</span>{% endif %}</div>{% empty %}<p class="text-sm text-base-content/60">Nenhum usuario cadastrado.</p>{% endfor %}</div></div>
+    <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">Personagens recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-admin-target="character_modal">Ver todos</button></div><div class="space-y-3">{% for personagem in recent_characters %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ personagem.nome }}</p><p class="truncate text-xs text-base-content/60">{{ personagem.usuario.username }}</p></div><span class="badge badge-sm {% if personagem.status_aprovacao == 1 %}badge-warning{% elif personagem.status_aprovacao == 2 %}badge-success{% else %}badge-error{% endif %}">{{ personagem.get_status_aprovacao_display }}</span></div>{% empty %}<p class="text-sm text-base-content/60">Nenhum personagem cadastrado.</p>{% endfor %}</div></div>
+    <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">LARPs recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-admin-target="larp_modal">Ver todos</button></div><div class="space-y-3">{% for larp in recent_larps %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ larp.titulo }}</p><p class="truncate text-xs text-base-content/60">Evento: {{ larp.data_evento|date:'d/m/Y H:i' }}<br>Inscrições até: {{ larp.data_limite_inscricao|date:'d/m/Y H:i' }}</p></div>{% if larp.visivel_publicamente %}<span class="badge badge-success badge-sm">Publico</span>{% else %}<span class="badge badge-ghost badge-sm">Privado</span>{% endif %}</div>{% empty %}<p class="text-sm text-base-content/60">Nenhum LARP criado.</p>{% endfor %}</div></div>
   </div>
 
-  <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"><div><p class="text-xs font-bold uppercase tracking-[0.16em] text-base-content/55">Gerenciamento</p><h2 class="mt-1 text-xl font-bold">Acesso rapido aos modulos</h2></div><div class="flex flex-wrap gap-2"><button type="button" class="btn btn-sm btn-primary" data-open-modal="home_components_modal">Editar Home</button><button type="button" class="btn btn-sm btn-secondary" data-open-modal="theme_modal">Paleta do site</button><button type="button" class="btn btn-sm btn-accent" data-open-modal="social_modal">Redes sociais</button><a href="/admin/" class="btn btn-sm btn-outline">Dados avancados</a></div></div></div>
+  <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"><div><p class="text-xs font-bold uppercase tracking-[0.16em] text-base-content/55">Gerenciamento</p><h2 class="mt-1 text-xl font-bold">Acesso rapido aos modulos</h2></div><div class="flex flex-wrap gap-2"><button type="button" class="btn btn-sm btn-primary" data-admin-target="home_components_modal">Editar Home</button><button type="button" class="btn btn-sm btn-secondary" data-admin-target="theme_modal">Paleta do site</button><button type="button" class="btn btn-sm btn-accent" data-admin-target="social_modal">Redes sociais</button><a href="/admin/" class="btn btn-sm btn-outline">Dados avancados</a></div></div></div>
 </section>
 
-  <dialog id="theme_modal" class="modal">
-    <div class="modal-box max-w-2xl">
-      <h3 class="font-bold text-xl">Paleta azul escura</h3>
+  <section id="theme_modal" role="tabpanel" aria-labelledby="tab-theme_modal" tabindex="0" data-admin-panel hidden>
+    <div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
+      <h3 class="font-bold text-xl">Cores do site</h3>
       <p class="text-sm text-base-content/70 mt-1 mb-4">As cores salvas aqui serao aplicadas para todos os usuarios em todo o site.</p>
       <form method="post" class="space-y-4">
         {% csrf_token %}
@@ -88,15 +94,15 @@
             <input type="color" name="secondary_content_color" value="{{ layout_config.secondary_content_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
           </label>
           <label class="form-control">
-            <span class="label-text">Fundo azul escuro</span>
+            <span class="label-text">Fundo principal</span>
             <input type="color" name="site_background_color" value="{{ layout_config.site_background_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
           </label>
           <label class="form-control">
-            <span class="label-text">Superficie azul</span>
+            <span class="label-text">Superfície dos painéis</span>
             <input type="color" name="site_surface_color" value="{{ layout_config.site_surface_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
           </label>
           <label class="form-control">
-            <span class="label-text">Azul de destaque</span>
+            <span class="label-text">Cor de destaque</span>
             <input type="color" name="site_accent_color" value="{{ layout_config.site_accent_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
           </label>
           <label class="form-control">
@@ -122,15 +128,18 @@
         </div>
         <div class="modal-action">
           <button type="submit" class="btn btn-primary">Salvar cores</button>
-          <button type="button" class="btn" onclick="theme_modal.close()">Fechar</button>
         </div>
       </form>
+      <form method="post" class="mt-4 flex justify-end">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="reset_theme_config" />
+        <button type="submit" class="btn btn-outline">Restaurar cores padrão</button>
+      </form>
     </div>
-    <form method="dialog" class="modal-backdrop"><button>close</button></form>
-  </dialog>
+  </section>
 
-  <dialog id="social_modal" class="modal">
-    <div class="modal-box max-w-2xl">
+  <section id="social_modal" role="tabpanel" aria-labelledby="tab-social_modal" tabindex="0" data-admin-panel hidden>
+    <div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
       <h3 class="font-bold text-xl">Redes sociais do cabeçalho</h3>
       <p class="text-sm text-base-content/70 mt-1 mb-4">
         Informe os links que devem aparecer no cabeçalho. Deixe um campo vazio para esconder o respectivo botão.
@@ -156,15 +165,13 @@
         </label>
         <div class="modal-action">
           <button type="submit" class="btn btn-primary">Salvar redes sociais</button>
-          <button type="button" class="btn" onclick="social_modal.close()">Fechar</button>
         </div>
       </form>
     </div>
-    <form method="dialog" class="modal-backdrop"><button>close</button></form>
-  </dialog>
+  </section>
 
-  <dialog id="user_roles_modal" class="modal">
-    <div class="modal-box max-w-5xl">
+  <section id="user_roles_modal" role="tabpanel" aria-labelledby="tab-user_roles_modal" tabindex="0" data-admin-panel hidden>
+    <div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
       <h3 class="font-bold text-xl">Usuarios e Tipos de Conta</h3>
       <p class="text-sm text-base-content/70 mt-1 mb-4">Altere o tipo entre Admin e Usuario comum.</p>
 
@@ -200,6 +207,7 @@
                 <th>Email</th>
                 <th>Tipo atual</th>
                 <th class="text-right">Alterar tipo</th>
+                <th>Perfil</th>
               </tr>
             </thead>
             <tbody>
@@ -225,10 +233,11 @@
                       </select>
                     {% endif %}
                   </td>
+                  <td><a href="{% url 'admin_user_profile' item.id %}" class="btn btn-outline btn-sm" aria-label="Ver perfil de {{ item.username }}">Ver perfil</a></td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="4" class="text-center text-base-content/70">Nenhum usuario encontrado.</td>
+                  <td colspan="5" class="text-center text-base-content/70">Nenhum usuario encontrado.</td>
                 </tr>
               {% endfor %}
             </tbody>
@@ -237,231 +246,17 @@
 
         <div class="modal-action">
           <button type="submit" class="btn btn-primary">Salvar</button>
-          <form method="dialog">
-            <button class="btn">Fechar</button>
-          </form>
         </div>
       </form>
     </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
+  </section>
 
-  <dialog id="home_components_modal" class="modal">
-    <div class="modal-box max-w-5xl">
-      <h3 class="font-bold text-xl">Componentes da Home</h3>
-      <p class="text-sm text-base-content/70 mt-1 mb-4">Edite banner, menu, secao de texto, cabecalho e rodape sem sair da area-admin.</p>
+  <section id="home_components_modal" role="tabpanel" aria-labelledby="tab-home_components_modal" tabindex="0" data-admin-panel hidden>
+    {% include 'dashboard/home_editor.html' %}
+  </section>
 
-      <form method="post" enctype="multipart/form-data" class="space-y-6">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="update_home_components" />
-
-        <div class="bg-base-200 rounded-box p-4 space-y-4">
-          <h4 class="font-semibold">Banner (longo horizontal)</h4>
-          <label class="label cursor-pointer justify-start gap-3">
-            <input type="checkbox" name="banner_visible" class="checkbox checkbox-sm" {% if home_config.banner_visible %}checked{% endif %} />
-            <span class="label-text">Mostrar banner</span>
-          </label>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <label class="form-control">
-              <span class="label-text text-xs">Badge</span>
-              <input type="text" name="banner_badge_text" value="{{ home_config.banner_badge_text }}" class="input input-bordered" maxlength="80" />
-            </label>
-            <label class="form-control md:col-span-2">
-              <span class="label-text text-xs">Titulo do banner</span>
-              <input type="text" name="banner_title" value="{{ home_config.banner_title }}" class="input input-bordered" maxlength="180" required />
-            </label>
-            <label class="form-control md:col-span-2">
-              <span class="label-text text-xs">Subtitulo do banner</span>
-              <textarea name="banner_subtitle" class="textarea textarea-bordered" rows="3" required>{{ home_config.banner_subtitle }}</textarea>
-            </label>
-          </div>
-
-          <div class="space-y-2">
-            <label class="form-control">
-              <span class="label-text text-xs">Imagem do banner</span>
-              <input type="file" name="banner_image" accept="image/*" class="file-input file-input-bordered" />
-            </label>
-            {% if home_config.banner_image %}
-              <div class="rounded-box border border-base-300 p-2 bg-base-100">
-                <img src="{{ home_config.banner_image.url }}" alt="Banner atual" class="w-full max-h-44 object-cover rounded" />
-              </div>
-              <label class="label cursor-pointer justify-start gap-3">
-                <input type="checkbox" name="remove_banner_image" class="checkbox checkbox-sm" />
-                <span class="label-text">Remover imagem atual</span>
-              </label>
-            {% endif %}
-          </div>
-        </div>
-
-        <div class="bg-base-200 rounded-box p-4 space-y-4">
-          <h4 class="font-semibold">Menu da Home</h4>
-          <label class="label cursor-pointer justify-start gap-3">
-            <input type="checkbox" name="menu_section_visible" class="checkbox checkbox-sm" {% if home_config.menu_section_visible %}checked{% endif %} />
-            <span class="label-text">Mostrar secao de menu</span>
-          </label>
-          <label class="form-control">
-            <span class="label-text text-xs">Titulo da secao de menu</span>
-            <input type="text" name="menu_section_title" value="{{ home_config.menu_section_title }}" class="input input-bordered" maxlength="120" required />
-          </label>
-        </div>
-
-        <div class="bg-base-200 rounded-box p-4 space-y-4">
-          <h4 class="font-semibold">Secao de texto</h4>
-          <label class="label cursor-pointer justify-start gap-3">
-            <input type="checkbox" name="text_section_visible" class="checkbox checkbox-sm" {% if home_config.text_section_visible %}checked{% endif %} />
-            <span class="label-text">Mostrar secao de texto</span>
-          </label>
-          <label class="form-control">
-            <span class="label-text text-xs">Titulo</span>
-            <input type="text" name="text_section_title" value="{{ home_config.text_section_title }}" class="input input-bordered" maxlength="140" required />
-          </label>
-          <label class="form-control">
-            <span class="label-text text-xs">Conteudo</span>
-            <textarea name="text_section_content" class="textarea textarea-bordered" rows="4" required>{{ home_config.text_section_content }}</textarea>
-          </label>
-        </div>
-
-        <div class="bg-base-200 rounded-box p-4 space-y-4">
-          <h4 class="font-semibold">Cabecalho e rodape padrao</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <label class="label cursor-pointer justify-start gap-3 md:col-span-2">
-              <input type="checkbox" name="header_visible" class="checkbox checkbox-sm" {% if layout_config.header_visible %}checked{% endif %} />
-              <span class="label-text">Mostrar cabecalho</span>
-            </label>
-            <label class="form-control md:col-span-2">
-              <span class="label-text text-xs">Titulo do cabecalho</span>
-              <input type="text" name="header_title" value="{{ layout_config.header_title }}" class="input input-bordered" maxlength="120" required />
-            </label>
-
-            <label class="label cursor-pointer justify-start gap-3 md:col-span-2 mt-2">
-              <input type="checkbox" name="footer_visible" class="checkbox checkbox-sm" {% if layout_config.footer_visible %}checked{% endif %} />
-              <span class="label-text">Mostrar rodape</span>
-            </label>
-            <label class="form-control md:col-span-2">
-              <span class="label-text text-xs">Titulo do rodape</span>
-              <input type="text" name="footer_title" value="{{ layout_config.footer_title }}" class="input input-bordered" maxlength="120" required />
-            </label>
-            <label class="form-control md:col-span-2">
-              <span class="label-text text-xs">Descricao do rodape</span>
-              <input type="text" name="footer_description" value="{{ layout_config.footer_description }}" class="input input-bordered" maxlength="220" required />
-            </label>
-            <label class="form-control md:col-span-2">
-              <span class="label-text text-xs">Copyright</span>
-              <input type="text" name="footer_copyright" value="{{ layout_config.footer_copyright }}" class="input input-bordered" maxlength="160" required />
-            </label>
-          </div>
-        </div>
-
-        <div class="bg-base-200 rounded-box p-4 space-y-4">
-          <h4 class="font-semibold">Componentes extras da Home</h4>
-          <p class="text-xs text-base-content/70">Adicione novos blocos de conteudo, altere ordem e remova quando quiser.</p>
-
-          <div class="overflow-x-auto rounded-box border border-base-300 bg-base-100">
-            <table class="table table-zebra">
-              <thead>
-                <tr>
-                  <th>Mostrar</th>
-                  <th>Ordem</th>
-                  <th>Titulo</th>
-                  <th>Conteudo</th>
-                  <th>Remover</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for section in dynamic_sections %}
-                  <tr>
-                    <td>
-                      <input type="hidden" name="section_ids" value="{{ section.id }}" />
-                      <input
-                        type="checkbox"
-                        name="section_visible_{{ section.id }}"
-                        class="checkbox checkbox-sm"
-                        {% if section.is_visible %}checked{% endif %}
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="number"
-                        min="1"
-                        name="section_order_{{ section.id }}"
-                        value="{{ section.display_order }}"
-                        class="input input-bordered input-sm w-20"
-                      />
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        name="section_title_{{ section.id }}"
-                        value="{{ section.title }}"
-                        maxlength="140"
-                        class="input input-bordered input-sm min-w-52"
-                        required
-                      />
-                    </td>
-                    <td>
-                      <textarea
-                        name="section_content_{{ section.id }}"
-                        class="textarea textarea-bordered textarea-sm min-w-72"
-                        rows="2"
-                        required
-                      >{{ section.content }}</textarea>
-                    </td>
-                    <td>
-                      <input
-                        type="checkbox"
-                        name="delete_section_ids"
-                        value="{{ section.id }}"
-                        class="checkbox checkbox-error checkbox-sm"
-                      />
-                    </td>
-                  </tr>
-                {% empty %}
-                  <tr>
-                    <td colspan="5" class="text-center text-sm text-base-content/70">Nenhum componente extra criado.</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-
-          <div class="divider my-2">Adicionar novo componente</div>
-
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-start">
-            <label class="form-control md:col-span-2">
-              <span class="label-text text-xs">Titulo do novo componente</span>
-              <input type="text" name="new_section_title" class="input input-bordered" maxlength="140" placeholder="Ex: Novidades da semana" />
-            </label>
-            <label class="form-control">
-              <span class="label-text text-xs">Ordem</span>
-              <input type="number" min="1" name="new_section_order" value="1" class="input input-bordered" />
-            </label>
-            <label class="label cursor-pointer justify-start gap-3 mt-6">
-              <input type="checkbox" name="new_section_visible" class="checkbox checkbox-sm" checked />
-              <span class="label-text">Mostrar ao criar</span>
-            </label>
-            <label class="form-control md:col-span-4">
-              <span class="label-text text-xs">Conteudo do novo componente</span>
-              <textarea name="new_section_content" class="textarea textarea-bordered" rows="3" placeholder="Texto do componente..."></textarea>
-            </label>
-          </div>
-        </div>
-
-        <div class="modal-action">
-          <button type="submit" class="btn btn-primary">Salvar componentes</button>
-          <button type="button" class="btn" onclick="home_components_modal.close()">Fechar</button>
-        </div>
-      </form>
-    </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
-
-  <dialog id="character_modal" class="modal">
-    <div class="modal-box max-w-7xl">
+  <section id="character_modal" role="tabpanel" aria-labelledby="tab-character_modal" tabindex="0" data-admin-panel hidden>
+    <div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
       <h3 class="font-bold text-xl">Personagens</h3>
       <p class="text-sm text-base-content/70 mt-1 mb-4">Leia e edite os personagens em lote.</p>
 
@@ -572,52 +367,91 @@
 
         <div class="modal-action">
           <button type="submit" class="btn btn-primary">Salvar</button>
-          <button type="button" class="btn" onclick="character_modal.close()">Fechar</button>
         </div>
       </form>
     </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
+  </section>
 
-  <dialog id="larp_modal" class="modal">
-    <div class="modal-box max-w-6xl">
+  <section id="larp_modal" role="tabpanel" aria-labelledby="tab-larp_modal" tabindex="0" data-admin-panel hidden>
+    <style>
+      .larp-create-form {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.25rem;
+        padding: 1.5rem;
+        border: 1px solid var(--codex-border-soft);
+      }
+      .larp-create-form[hidden] { display: none !important; }
+      .larp-create-form .larp-field {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: .5rem;
+        min-width: 0;
+      }
+      .larp-create-form .larp-field > span { font-size: .875rem; font-weight: 600; }
+      .larp-create-form .input,
+      .larp-create-form .textarea { width: 100%; max-width: none; min-width: 0; box-sizing: border-box; }
+      .larp-create-form .input { min-height: 2.75rem; }
+      .larp-create-form .textarea { min-height: 9rem; resize: vertical; }
+      .larp-create-form .larp-full-row { grid-column: 1 / -1; }
+      .larp-create-form .larp-form-footer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .larp-create-form .larp-visibility { display: flex; align-items: center; gap: .75rem; cursor: pointer; }
+      @media (max-width: 640px) {
+        .larp-create-form { grid-template-columns: minmax(0, 1fr); padding: 1rem; }
+        .larp-create-form .larp-form-footer > .btn { width: 100%; }
+      }
+    </style>
+    <div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
       <h3 class="font-bold text-xl">Eventos de LARP</h3>
       <p class="text-sm text-base-content/70 mt-1 mb-4">Crie eventos, controle visibilidade e copie o link de inscricao de cada LARP.</p>
 
       <div class="space-y-5">
-        <form method="post" class="bg-base-200 rounded-box p-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div class="larp-toolbar">
+          <h4 class="font-semibold">Criação de eventos</h4>
+          <button type="button" class="btn btn-primary" data-toggle-event-form aria-controls="larp-create-form" aria-expanded="false">Criar novo evento</button>
+        </div>
+        <form id="larp-create-form" method="post" class="larp-create-form bg-base-200 rounded-box" hidden>
           {% csrf_token %}
           <input type="hidden" name="action" value="create_larp_event" />
 
-          <label class="form-control md:col-span-2">
-            <span class="label-text text-xs">Titulo</span>
+          <label class="larp-field larp-full-row">
+            <span>Título do evento</span>
             <input type="text" name="larp_titulo" class="input input-bordered" maxlength="180" required />
           </label>
 
-          <label class="form-control">
-            <span class="label-text text-xs">Local</span>
+          <label class="larp-field larp-full-row">
+            <span>Local</span>
             <input type="text" name="larp_local" class="input input-bordered" maxlength="180" required />
           </label>
 
-          <label class="form-control">
-            <span class="label-text text-xs">Data e horario</span>
+          <label class="larp-field">
+            <span class="label-text text-xs">Data e horário do evento</span>
             <input type="datetime-local" name="larp_data_evento" class="input input-bordered" required />
           </label>
+          <label class="larp-field">
+            <span class="label-text text-xs">Inscrições até (data e horário)</span>
+            <input type="datetime-local" name="larp_data_limite_inscricao" class="input input-bordered" required />
+          </label>
 
-          <label class="form-control md:col-span-2">
-            <span class="label-text text-xs">Historia</span>
+          <label class="larp-field larp-full-row">
+            <span>História do evento</span>
             <textarea name="larp_historia" class="textarea textarea-bordered" rows="3" required></textarea>
           </label>
 
-          <label class="label cursor-pointer justify-start gap-3 md:col-span-2">
+          <div class="larp-full-row larp-actions larp-form-footer">
+          <label class="larp-visibility">
             <input type="checkbox" name="larp_visivel_publicamente" class="checkbox checkbox-sm" checked />
-            <span class="label-text">Visivel para usuarios comuns</span>
+            <span class="label-text">Visível para usuários comuns</span>
           </label>
 
-          <div class="md:col-span-2 flex justify-end">
-            <button type="submit" class="btn btn-primary btn-sm">Criar LARP</button>
+            <button type="submit" class="btn btn-primary">Criar evento</button>
           </div>
         </form>
 
@@ -631,7 +465,8 @@
                 <tr>
                   <th>Titulo</th>
                   <th>Local</th>
-                  <th>Data</th>
+                  <th>Data do evento</th>
+                  <th>Inscrições até</th>
                   <th>Inscricoes</th>
                   <th>Visivel</th>
                   <th>Link de inscricao</th>
@@ -645,6 +480,7 @@
                     </td>
                     <td>{{ larp.local }}</td>
                     <td>{{ larp.data_evento|date:'d/m/Y H:i' }}</td>
+                    <td>{{ larp.data_limite_inscricao|date:'d/m/Y H:i' }}</td>
                     <td>{{ larp.inscricoes_count }}</td>
                     <td>
                       <input type="hidden" name="larp_ids" value="{{ larp.id }}" />
@@ -656,116 +492,38 @@
                       />
                     </td>
                     <td>
-                      <div class="flex items-center gap-2">
-                        <a href="{{ larp.inscricao_url }}" class="link link-primary text-xs break-all" target="_blank">{{ larp.inscricao_url }}</a>
+                      <div class="larp-row-actions">
+                        <a href="{{ larp.detalhe_url }}" class="btn btn-primary">Informações</a>
+                        <a href="{{ larp.detalhe_url }}?editar=1#editar-evento" class="btn btn-outline">Editar</a>
+                        <a href="{{ larp.inscricao_url }}" class="btn btn-ghost" target="_blank" rel="noopener" aria-label="Abrir inscrição de {{ larp.titulo }} em nova aba">Abrir link ↗</a>
                         <button
                           type="button"
-                          class="btn btn-xs btn-outline"
+                          class="btn btn-outline"
+                          aria-label="Copiar link de inscrição de {{ larp.titulo }}"
+                          aria-live="polite"
                           data-copy-link="{{ larp.inscricao_url }}"
-                        >Copiar</button>
+                        >Copiar link</button>
                       </div>
                     </td>
                   </tr>
                 {% empty %}
                   <tr>
-                    <td colspan="6" class="text-center text-base-content/70">Nenhum LARP criado ainda.</td>
+                    <td colspan="7" class="text-center text-base-content/70">Nenhum LARP criado ainda.</td>
                   </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
 
-          <div class="modal-action">
-            <button type="submit" class="btn btn-primary">Salvar visibilidade</button>
-            <button type="button" class="btn" onclick="larp_modal.close()">Fechar</button>
+          <div class="larp-actions mt-4">
+            <a href="{% url 'listar_larps' %}" class="btn btn-outline larp-back">Ver eventos publicados ↗</a>
+            <button type="submit" class="btn btn-primary" {% if not larp_events_data %}disabled{% endif %}>Salvar visibilidade</button>
           </div>
         </form>
       </div>
     </div>
-    <form method="dialog" class="modal-backdrop">
-      <button>close</button>
-    </form>
-  </dialog>
+  </section>
 </section>
 
-{% if open_users_modal %}
-  <script>
-    window.addEventListener('DOMContentLoaded', function () {
-      const modal = document.getElementById('user_roles_modal');
-      if (modal) {
-        modal.showModal();
-      }
-    });
-  </script>
-{% endif %}
-
-{% if open_personagens_modal %}
-  <script>
-    window.addEventListener('DOMContentLoaded', function () {
-      const modal = document.getElementById('character_modal');
-      if (modal) {
-        modal.showModal();
-      }
-    });
-  </script>
-{% endif %}
-
-{% if open_home_components_modal %}
-  <script>
-    window.addEventListener('DOMContentLoaded', function () {
-      const modal = document.getElementById('home_components_modal');
-      if (modal) {
-        modal.showModal();
-      }
-    });
-  </script>
-{% endif %}
-
-{% if open_larps_modal %}
-  <script>
-    window.addEventListener('DOMContentLoaded', function () {
-      const modal = document.getElementById('larp_modal');
-      if (modal) {
-        modal.showModal();
-      }
-    });
-  </script>
-{% endif %}
-
-<script>
-  window.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('[data-open-modal]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        const modal = document.getElementById(button.dataset.openModal);
-        if (modal) {
-          modal.showModal();
-        }
-      });
-    });
-
-    const themeModal = document.getElementById('theme_modal');
-    if (themeModal && {{ open_theme_modal|yesno:'true,false' }}) {
-      themeModal.showModal();
-    }
-
-    const socialModal = document.getElementById('social_modal');
-    if (socialModal && {{ open_social_modal|yesno:'true,false' }}) {
-      socialModal.showModal();
-    }
-
-    document.querySelectorAll('[data-copy-link]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        const url = button.dataset.copyLink || '';
-        if (!url || !navigator.clipboard) {
-          return;
-        }
-        navigator.clipboard.writeText(url);
-        button.textContent = 'Copiado';
-        window.setTimeout(function () {
-          button.textContent = 'Copiar';
-        }, 1100);
-      });
-    });
-  });
-</script>
+<script src="{% static 'dashboard/admin-tabs.js' %}" defer></script>
 {% endblock content %}

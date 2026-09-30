@@ -2,7 +2,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
-from core.models import Profile
+from core.models import Profile, ImageAsset
+from core.validators import validate_birth_date
+
+
+def birth_date_field():
+    return forms.DateField(label='Data de nascimento do jogador', validators=[validate_birth_date],
+                           widget=forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'input input-bordered w-full', 'autocomplete': 'bday'}))
 
 
 class RegisterForm(UserCreationForm):
@@ -14,6 +20,8 @@ class RegisterForm(UserCreationForm):
 
 
 class AccountPersonalDataForm(forms.ModelForm):
+    image_asset = forms.ModelChoiceField(queryset=ImageAsset.objects.none(), required=False, widget=forms.HiddenInput)
+    data_nascimento = birth_date_field()
     avatar = forms.ImageField(required=False)
     nome_completo_jogador = forms.CharField(max_length=180, required=False)
     apelido_cla = forms.CharField(max_length=120, required=False)
@@ -32,9 +40,14 @@ class AccountPersonalDataForm(forms.ModelForm):
     def __init__(self, *args, profile=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.profile = profile
+        if self.instance.pk:
+            self.fields['image_asset'].queryset = ImageAsset.objects.filter(owner=self.instance)
+        if profile:
+            self.fields['image_asset'].initial = profile.image_asset_id
         self.fields['email'].required = True
 
         if self.profile is not None:
+            self.fields['data_nascimento'].initial = self.profile.data_nascimento
             self.fields['avatar'].initial = self.profile.avatar
             self.fields['nome_completo_jogador'].initial = self.profile.nome_completo_jogador
             self.fields['apelido_cla'].initial = self.profile.apelido_cla
@@ -63,6 +76,8 @@ class AccountPersonalDataForm(forms.ModelForm):
             user.save(update_fields=['username', 'email', 'first_name', 'last_name'])
 
         profile = self.profile or Profile.objects.get_or_create(user=user)[0]
+        profile.image_asset = self.cleaned_data.get('image_asset')
+        profile.data_nascimento = self.cleaned_data['data_nascimento']
         if self.cleaned_data.get('avatar'):
             profile.avatar = self.cleaned_data['avatar']
         profile.nome_completo_jogador = (self.cleaned_data.get('nome_completo_jogador') or '').strip()

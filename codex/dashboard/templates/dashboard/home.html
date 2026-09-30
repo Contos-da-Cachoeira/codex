@@ -7,8 +7,6 @@
   <style>
     .codex-home { max-width: 76rem; margin: 0 auto; }
     .codex-home-hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr); gap: 3rem; align-items: end; padding: clamp(2rem, 6vw, 5rem) 0 3.5rem; border-bottom: 1px solid var(--codex-border-soft); }
-    .codex-home-kicker { display: inline-flex; align-items: center; gap: 0.55rem; color: var(--codex-muted); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; }
-    .codex-home-kicker img { width: 1.1rem; height: 1.1rem; filter: invert(1) brightness(1.6); }
     .codex-home h1 { max-width: 48rem; margin-top: 1.2rem; color: var(--codex-text); font-size: clamp(2.4rem, 6vw, 5rem); font-weight: 600; letter-spacing: -0.055em; line-height: 0.98; }
     .codex-home-lead { max-width: 38rem; margin-top: 1.4rem; color: var(--codex-muted); font-size: 1.05rem; line-height: 1.7; }
     .codex-home-actions { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 1.8rem; }
@@ -17,7 +15,6 @@
     .codex-home-summary-item strong { display: block; color: var(--codex-text); font-size: 1.25rem; font-weight: 600; }
     .codex-home-summary-item span { display: block; margin-top: 0.2rem; color: var(--codex-muted); font-size: 0.82rem; }
     .codex-home-section { padding: 3.5rem 0; }
-    .codex-home-section + .codex-home-section { border-top: 1px solid var(--codex-border-soft); }
     .codex-home-section-heading { max-width: 44rem; margin-bottom: 1.5rem; }
     .codex-home-section-heading p:first-child { color: var(--codex-accent-hover); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; }
     .codex-home-section-heading h2 { margin-top: 0.5rem; color: var(--codex-text); font-size: clamp(1.7rem, 3vw, 2.5rem); font-weight: 600; letter-spacing: -0.04em; }
@@ -35,40 +32,14 @@
     @media (max-width: 900px) { .codex-home-hero, .codex-home-feature-grid, .codex-home-guild-grid { grid-template-columns: 1fr; } .codex-home-hero { gap: 2rem; } }
   </style>
   <link rel="stylesheet" href="{% static 'core/css/guildas-showcase.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/home-components.css' %}">
 {% endblock head_extra %}
 
 {% block content %}
   <div class="codex-home">
-    <section class="codex-home-hero" aria-labelledby="home-title">
-      <div>
-        <p class="codex-home-kicker"><img src="{% static 'core/img/tesseract.svg' %}" alt="" /> Codex da Cachoeira</p>
-        <h1 id="home-title">Organize sua jornada. Viva a história.</h1>
-        <p class="codex-home-lead">Um espaço simples para acompanhar personagens, guildas, regras e eventos do universo do Codex.</p>
-        <div class="codex-home-actions">
-          {% if user.is_authenticated %}<a href="{% url 'meus_personagens' %}" class="btn btn-primary">Meus personagens</a>{% else %}<a href="{% url 'register' %}" class="btn btn-primary">Criar conta</a>{% endif %}
-          <a href="{% url 'wiki_home' %}" class="btn btn-outline">Explorar a Wiki</a>
-        </div>
-      </div>
-      <div class="codex-home-summary" aria-label="Recursos do Codex">
-        <div class="codex-home-summary-item"><strong>Personagens</strong><span>Crie e acompanhe sua ficha.</span></div>
-        <div class="codex-home-summary-item"><strong>Guildas</strong><span>Encontre seu lugar na Cachoeira.</span></div>
-        <div class="codex-home-summary-item"><strong>Eventos LARP</strong><span>Participe dos próximos capítulos.</span></div>
-      </div>
-    </section>
-
-    <section class="codex-home-section" aria-labelledby="home-features-title">
-      <div class="codex-home-section-heading"><p>Comece por aqui</p><h2 id="home-features-title">Tudo o que você precisa, sem excesso.</h2><p>Encontre rapidamente as áreas mais importantes do sistema e continue sua jornada de onde parou.</p></div>
-      <div class="codex-home-feature-grid">
-        <a class="codex-home-feature" href="{% url 'meus_personagens' %}"><span class="codex-home-feature-number">01</span><h3>Crie seu personagem</h3><p>Construa uma identidade e acompanhe seu progresso.</p></a>
-        <a class="codex-home-feature" href="{% url 'listar_guildas' %}"><span class="codex-home-feature-number">02</span><h3>Conheça as guildas</h3><p>Descubra ideais, histórias e companheiros.</p></a>
-        <a class="codex-home-feature" href="{% url 'listar_larps' %}"><span class="codex-home-feature-number">03</span><h3>Participe dos LARPs</h3><p>Veja eventos, detalhes e inscrições abertas.</p></a>
-      </div>
-    </section>
-
-    <section class="codex-home-section" aria-labelledby="home-guilds-title">
-      <div class="codex-home-section-heading"><p>Comunidade</p><h2 id="home-guilds-title">Guildas em destaque</h2><p>Conheça os grupos que dão vida ao mundo do Codex.</p></div>
-      {% include "core/includes/guildas_showcase.html" %}
-    </section>
+    {% for component in home_components %}
+      {% if component.is_visible %}{% include 'dashboard/home_component.html' %}{% endif %}
+    {% endfor %}
   </div>
 
   {% if show_character_prompt %}

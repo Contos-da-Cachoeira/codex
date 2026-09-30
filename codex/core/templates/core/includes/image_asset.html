@@ -1,0 +1,3 @@
+<span style="display:block;position:relative;width:100%;height:100%;overflow:hidden;aspect-ratio:{{ asset.ratio|stringformat:'.4f' }};border-radius:inherit">
+  <img src="{{ asset.source }}" alt="{{ image_alt|default:'' }}" style="display:block;width:100%;height:100%;object-fit:cover;object-position:{{ asset.x|stringformat:'.6f' }}% {{ asset.y|stringformat:'.6f' }}%;transform:scale({{ asset.zoom|stringformat:'.4f' }});transform-origin:{{ asset.x|stringformat:'.6f' }}% {{ asset.y|stringformat:'.6f' }}%">
+</span>

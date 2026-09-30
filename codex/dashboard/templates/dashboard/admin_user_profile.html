@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+{% block title %}Perfil de {{ account.username }} | Codex{% endblock %}
+{% block content %}
+<section class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      {% if player_profile.image_asset %}<div class="w-16 h-16 rounded-full overflow-hidden">{% include 'core/includes/image_asset.html' with asset=player_profile.image_asset %}</div>{% elif player_profile.avatar %}<img src="{{ player_profile.avatar.url }}" alt="Avatar de {{ account.username }}" class="w-16 h-16 rounded-full object-cover">{% endif %}
+      <div><h1 class="text-2xl font-bold">{{ account.username }}</h1><p class="text-base-content/70">{% if account.is_superuser %}Superadministrador{% elif account_is_admin %}Administrador{% else %}Usuário comum{% endif %} · {% if account.is_active %}Conta ativa{% else %}Conta inativa{% endif %}</p></div>
+    </div>
+    <a href="{% url 'admin_dashboard' %}#user_roles_modal" class="btn btn-outline">← Voltar aos usuários</a>
+  </div>
+  <div class="rounded-box border border-base-300 bg-base-100 p-6">
+    <h2 class="text-xl font-semibold mb-5">Informações do jogador</h2>
+    <dl class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div><dt class="text-sm text-base-content/60">Data de nascimento</dt><dd>{{ player_profile.data_nascimento|date:'d/m/Y'|default:'Não informada' }}</dd></div>
+      <div><dt class="text-sm text-base-content/60">Nome completo</dt><dd>{{ player_profile.nome_completo_jogador|default:account.get_full_name|default:'Não informado' }}</dd></div>
+      <div><dt class="text-sm text-base-content/60">E-mail</dt><dd class="break-all">{{ account.email|default:'Não informado' }}</dd></div>
+      <div><dt class="text-sm text-base-content/60">Apelido no clã</dt><dd>{{ player_profile.apelido_cla|default:'Não informado' }}</dd></div>
+      <div><dt class="text-sm text-base-content/60">Telefone</dt><dd>{{ player_profile.telefone|default:'Não informado' }}</dd></div>
+      <div><dt class="text-sm text-base-content/60">CPF</dt><dd>{{ player_profile.cpf|default:'Não informado' }}</dd></div>
+      <div><dt class="text-sm text-base-content/60">Cadastro</dt><dd>{{ account.date_joined|date:'d/m/Y H:i' }}</dd></div>
+      <div><dt class="text-sm text-base-content/60">Último acesso</dt><dd>{{ account.last_login|date:'d/m/Y H:i'|default:'Nunca acessou' }}</dd></div>
+      <div class="md:col-span-2"><dt class="font-semibold">{% if player_profile.fobia_gatilho %}⚠ Atenção — {% endif %}Fobias ou gatilhos</dt><dd class="mt-2 whitespace-pre-line">{{ player_profile.fobia_gatilho|default:'Nenhuma informação cadastrada.' }}</dd></div>
+    </dl>
+  </div>
+  <div class="rounded-box border border-base-300 bg-base-100 p-6">
+    <h2 class="text-xl font-semibold mb-4">Personagens ({{ characters|length }})</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for character in characters %}
+      <div class="rounded-box border border-base-300 p-4">
+        <h3 class="font-bold">{{ character.nome }}</h3>
+        <p class="text-sm mt-2">{{ character.get_classe_display|default:'Sem classe' }} · {{ character.get_guilda_display|default:'Sem guilda' }}</p>
+        <p class="text-sm text-base-content/70">{{ character.get_status_display }} · {{ character.get_status_aprovacao_display }}</p>
+      </div>
+      {% empty %}<p class="text-base-content/70">Nenhum personagem cadastrado.</p>{% endfor %}
+    </div>
+  </div>
+  <div class="rounded-box border border-base-300 bg-base-100 p-6">
+    <h2 class="text-xl font-semibold mb-4">Inscrições em eventos ({{ registrations|length }})</h2>
+    <div class="space-y-3">
+      {% for registration in registrations %}
+      <div class="flex flex-wrap items-center justify-between gap-3 rounded-box border border-base-300 p-4">
+        <div><a class="link link-primary font-semibold" href="{% url 'detalhe_larp' registration.evento.slug %}">{{ registration.evento.titulo }}</a><p class="text-sm text-base-content/70">{{ registration.personagem.nome }} · {{ registration.evento.data_evento|date:'d/m/Y H:i' }}</p></div>
+        <span class="badge {% if registration.taxa_paga %}badge-success{% else %}badge-warning{% endif %}">{% if registration.taxa_paga %}Pago{% else %}Pagamento pendente{% endif %}</span>
+      </div>
+      {% empty %}<p class="text-base-content/70">Nenhuma inscrição em evento.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

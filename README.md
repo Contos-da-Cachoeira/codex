@@ -29,10 +29,11 @@ Abra http://127.0.0.1:8000/ no navegador.
 
 ### Tunel SSH local para o banco
 
-Para usar o PostgreSQL remoto por meio do alias SSH `servidor`, configure no `.env` local:
+Para usar o PostgreSQL remoto por meio do alias SSH `kiwiki`, configure no `.env` local:
 
 ```dotenv
 AUTO_SSH_DB_TUNNEL=True
+SSH_DB_HOST=kiwiki
 POSTGRES_HOST=127.0.0.1
 POSTGRES_PORT=5433
 ```

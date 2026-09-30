@@ -3,14 +3,16 @@
 {% block title %}{{ evento.titulo }} | LARP{% endblock title %}
 
 {% block content %}
-<section class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-  <div class="lg:col-span-2 bg-base-100 rounded-box p-6 shadow-lg border border-base-300 space-y-6">
+{% include 'core/includes/larp_actions_style.html' %}
+<section class="grid grid-cols-1 {% if not is_admin %}lg:grid-cols-3{% endif %} gap-6 items-start">
+  <div class="{% if not is_admin %}lg:col-span-2 {% endif %}bg-base-100 rounded-box p-6 shadow-lg border border-base-300 space-y-6">
     <div>
       <h1 class="text-3xl font-bold">{{ evento.titulo }}</h1>
       <p class="mt-2 text-sm text-base-content/70">
         <strong>Local:</strong> {{ evento.local }}
         <br>
-        <strong>Data:</strong> {{ evento.data_evento|date:'d/m/Y H:i' }}
+        <strong>Data do evento:</strong> {{ evento.data_evento|date:'d/m/Y H:i' }}<br><strong>Inscrições até:</strong> {{ evento.data_limite_inscricao|date:'d/m/Y H:i' }}
+            {% if not evento.inscricoes_abertas %}<br><span class="badge badge-warning">Inscrições encerradas</span>{% endif %}
         <br>
         <strong>Status:</strong>
         {% if evento.visivel_publicamente %}
@@ -23,25 +25,55 @@
 
     <p class="whitespace-pre-line text-base-content/80">{{ evento.historia }}</p>
 
-    <div class="flex flex-wrap gap-2">
-      <a href="{% url 'listar_larps' %}" class="btn btn-ghost btn-sm">Voltar para LARPs</a>
+    <div class="larp-actions">
+      {% if is_admin %}
+        <a href="{% url 'admin_dashboard' %}#larp_modal" class="btn btn-outline">Painel de eventos</a>
+        <a href="?editar=1#editar-evento" class="btn btn-primary">Editar evento</a>
+        <a href="{% url 'planilha_larp' evento.slug %}" class="btn btn-outline">Planilha dos participantes</a>
+        <button type="button" class="btn btn-error btn-outline" onclick="document.getElementById('delete-event-dialog').showModal()">Excluir evento</button>
+      {% endif %}
+      <a href="{% url 'listar_larps' %}" class="btn btn-outline larp-back">← Voltar aos eventos</a>
       {% if user.is_authenticated %}
         {% if not is_admin and inscricao_usuario %}
-          <button type="button" class="btn btn-success btn-sm btn-disabled">Voce ja esta inscrito</button>
-        {% elif not is_admin %}
+          <span class="badge badge-success">Inscrição confirmada</span>
+        {% elif not is_admin and evento.inscricoes_abertas %}
           <a href="{% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Inscrever-se neste LARP</a>
         {% endif %}
-      {% else %}
-        <a href="{% url 'login' %}?next={% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Entrar para se inscrever</a>
+      {% elif evento.inscricoes_abertas %}
+<a href="{% url 'login' %}?next={% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Entrar para se inscrever</a>
       {% endif %}
     </div>
   </div>
+
+  {% if is_admin %}
+  <details id="editar-evento" class="rounded-box border border-base-300 bg-base-100 p-6" {% if request.GET.editar or event_form.errors %}open{% endif %}>
+    <summary class="cursor-pointer font-semibold">Editar informações do evento</summary>
+    <form method="post" class="mt-5 space-y-4">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="edit_event">
+      {{ event_form.non_field_errors }}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {% for field in event_form %}
+          <div {% if field.name == 'historia' %}class="md:col-span-2"{% endif %}>
+            <label for="{{ field.id_for_label }}" class="block mb-2 text-sm font-semibold">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}<div class="text-error text-sm mt-1">{{ field.errors }}</div>{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="larp-actions">
+        <a href="{% url 'detalhe_larp' evento.slug %}" class="btn btn-outline larp-back">Cancelar</a>
+        <button type="submit" class="btn btn-primary">Salvar evento</button>
+      </div>
+    </form>
+  </details>
+  {% endif %}
 
   <aside class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300 space-y-4">
     {% if is_admin %}
       <div>
         <h2 class="text-xl font-semibold">Painel do LARP</h2>
-        <div class="mt-3 grid grid-cols-3 gap-2 text-sm">
+        <div class="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
           <div class="rounded-lg border border-base-300 p-3">
             <strong>Inscritos:</strong> {{ total_inscricoes }}
           </div>
@@ -50,6 +82,9 @@
           </div>
           <div class="rounded-lg border border-base-300 p-3">
             <strong>Pendentes:</strong> {{ total_pendentes }}
+          </div>
+          <div class="rounded-lg border border-base-300 p-3">
+            <strong>⚠ Atenção:</strong> {{ total_alertas }}
           </div>
         </div>
       </div>
@@ -60,24 +95,37 @@
       {% if inscricoes %}
         <form method="post" class="space-y-3">
           {% csrf_token %}
+          <input type="hidden" name="action" value="update_payments">
           <div class="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
             {% for inscricao in inscricoes %}
-              <label class="flex items-start justify-between gap-3 rounded-lg border border-base-300 p-3 cursor-pointer">
-                <span class="text-sm">
+              <div class="flex flex-wrap items-start justify-between gap-3 rounded-lg border border-base-300 p-4">
+                <div class="text-sm">
                   <strong>{{ inscricao.apelido_cla|default:inscricao.nome_completo_jogador|default:inscricao.usuario.username }}</strong>
                   <br>
                   <span class="text-base-content/70">Personagem: {{ inscricao.personagem.nome }}</span>
-                </span>
+                  <br><span class="text-base-content/70">Jogador: {{ inscricao.nome_completo_jogador }} · @{{ inscricao.usuario.username }}</span>
+                  <br><span class="text-base-content/70">Inscrição: {{ inscricao.data_inscricao|date:'d/m/Y H:i' }}</span>
+                  {% if inscricao.fobia_gatilho %}
+                    <details class="mt-3">
+                      <summary class="cursor-pointer text-warning font-semibold">⚠ Atenção: fobia ou gatilho informado</summary>
+                      <p class="mt-2 whitespace-pre-line">{{ inscricao.fobia_gatilho }}</p>
+                    </details>
+                  {% endif %}
+                </div>
+                <label class="flex items-center gap-3 cursor-pointer">
+                <span class="badge {% if inscricao.taxa_paga %}badge-success{% else %}badge-warning{% endif %}">{% if inscricao.taxa_paga %}Pago{% else %}Não pago{% endif %}</span>
+                <span class="text-sm">Taxa paga</span>
                 <input
                   type="checkbox"
                   name="taxa_paga_{{ inscricao.id }}"
                   class="checkbox checkbox-success mt-1"
                   {% if inscricao.taxa_paga %}checked{% endif %}
                 />
-              </label>
+                </label>
+              </div>
             {% endfor %}
           </div>
-          <button type="submit" class="btn btn-primary btn-sm w-full">Salvar checklist</button>
+          <div class="larp-actions"><button type="submit" class="btn btn-primary w-full">Salvar pagamentos</button></div>
         </form>
       {% else %}
         <div class="alert alert-info">
@@ -114,4 +162,19 @@
     {% endif %}
   </aside>
 </section>
+{% if is_admin %}
+<dialog id="delete-event-dialog" class="modal" aria-labelledby="delete-event-title">
+  <div class="modal-box">
+    <h2 id="delete-event-title" class="text-xl font-bold">Excluir evento?</h2>
+    <p class="mt-3">O evento <strong>{{ evento.titulo }}</strong> e suas {{ total_inscricoes }} inscrições serão excluídos permanentemente, incluindo os registros de pagamento. Os usuários e personagens serão mantidos.</p>
+    <form method="post" class="larp-actions mt-5">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="delete_event">
+      <button type="button" class="btn btn-outline larp-back" autofocus onclick="document.getElementById('delete-event-dialog').close()">Cancelar</button>
+      <button type="submit" class="btn btn-error">Excluir definitivamente</button>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop"><button aria-label="Cancelar exclusão">Fechar</button></form>
+</dialog>
+{% endif %}
 {% endblock content %}

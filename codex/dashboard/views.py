@@ -5,8 +5,13 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Q
+from django.db import transaction
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .home_components import parse_components, serialize_components
 from django.urls import reverse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import never_cache
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
@@ -43,7 +48,7 @@ def _is_admin(user):
     return user.profile.role == Profile.UserRole.ADMIN
 
 
-def home(request):
+def home(request, components=None, preview=False):
     guildas_home = [
         {
             'nome': info.get('nome', key.replace('_', ' ').title()),
@@ -65,9 +70,39 @@ def home(request):
         {
             'guildas_home': guildas_home,
             'guildas_showcase': guildas_home,
-            'show_character_prompt': show_character_prompt,
+            'show_character_prompt': show_character_prompt and not preview,
+            'home_components': components if components is not None else HomeDynamicSection.objects.filter(is_visible=True),
         },
     )
+
+
+@login_required(login_url='login')
+@never_cache
+@require_POST
+def home_preview(request):
+    if not _is_admin(request.user):
+        return JsonResponse({'error': 'Acesso restrito.'}, status=403)
+    try:
+        components = parse_components(request.POST.get('components_json'), user=request.user)
+    except ValidationError as error:
+        return JsonResponse({'error': ' '.join(error.messages)}, status=400)
+    return home(request, components=components, preview=True)
+
+
+@login_required(login_url='login')
+@never_cache
+def admin_user_profile(request, user_id):
+    if not _is_admin(request.user):
+        return redirect('home')
+    account = get_object_or_404(User.objects.select_related('profile'), pk=user_id)
+    profile = getattr(account, 'profile', None)
+    return render(request, 'dashboard/admin_user_profile.html', {
+        'account': account,
+        'player_profile': profile,
+        'account_is_admin': _is_admin(account),
+        'characters': account.personagens.all(),
+        'registrations': account.inscricoes_larp.select_related('evento', 'personagem'),
+    })
 
 
 @login_required(login_url='login')
@@ -86,7 +121,7 @@ def admin_dashboard(request):
     home_config = HomePageConfig.load()
     layout_config = SiteLayoutConfig.load()
 
-    if request.method == 'POST' and request.POST.get('action') == 'update_theme_config':
+    if request.method == 'POST' and request.POST.get('action') in ('update_theme_config', 'reset_theme_config'):
         color_fields = (
             'primary_color',
             'primary_content_color',
@@ -99,13 +134,20 @@ def admin_dashboard(request):
 			'site_text_color',
 			'site_muted_text_color',
         )
+        reset_theme = request.POST.get('action') == 'reset_theme_config'
         for field_name in color_fields:
-            value = request.POST.get(field_name, '').strip().upper()
-            if len(value) == 7 and value.startswith('#'):
-                setattr(layout_config, field_name, value)
-        layout_config.full_clean()
+            value = (
+                SiteLayoutConfig._meta.get_field(field_name).get_default()
+                if reset_theme else request.POST.get(field_name, '').strip().upper()
+            )
+            setattr(layout_config, field_name, value)
+        try:
+            layout_config.full_clean()
+        except ValidationError:
+            messages.error(request, 'Informe cores validas no formato #RRGGBB.')
+            return redirect(f"{reverse('admin_dashboard')}?open_theme_modal=1")
         layout_config.save(update_fields=color_fields)
-        messages.success(request, 'Cores do layout atualizadas para todo o site.')
+        messages.success(request, 'Cores padrao restauradas.' if reset_theme else 'Cores do layout atualizadas para todo o site.')
         return redirect(f"{reverse('admin_dashboard')}?open_theme_modal=1")
 
     if request.method == 'POST' and request.POST.get('action') == 'update_social_links':
@@ -129,73 +171,19 @@ def admin_dashboard(request):
         return redirect(f"{reverse('admin_dashboard')}?open_social_modal=1")
 
     if request.method == 'POST' and request.POST.get('action') == 'update_home_components':
-        home_config.banner_visible = request.POST.get('banner_visible') == 'on'
-        home_config.banner_badge_text = request.POST.get('banner_badge_text', '').strip()
-        home_config.banner_title = request.POST.get('banner_title', '').strip()
-        home_config.banner_subtitle = request.POST.get('banner_subtitle', '').strip()
-
-        if request.POST.get('remove_banner_image') == 'on':
-            if home_config.banner_image:
-                home_config.banner_image.delete(save=False)
-            home_config.banner_image = None
-        elif request.FILES.get('banner_image'):
-            home_config.banner_image = request.FILES['banner_image']
-
-        home_config.menu_section_visible = request.POST.get('menu_section_visible') == 'on'
-        home_config.menu_section_title = request.POST.get('menu_section_title', '').strip()
-
-        home_config.text_section_visible = request.POST.get('text_section_visible') == 'on'
-        home_config.text_section_title = request.POST.get('text_section_title', '').strip()
-        home_config.text_section_content = request.POST.get('text_section_content', '').strip()
-        home_config.save()
-
-        layout_config.header_visible = request.POST.get('header_visible') == 'on'
-        layout_config.header_title = request.POST.get('header_title', '').strip()
-        layout_config.footer_visible = request.POST.get('footer_visible') == 'on'
-        layout_config.footer_title = request.POST.get('footer_title', '').strip()
-        layout_config.footer_description = request.POST.get('footer_description', '').strip()
-        layout_config.footer_copyright = request.POST.get('footer_copyright', '').strip()
-        layout_config.save()
-
-        section_ids = request.POST.getlist('section_ids')
-        for section_id in section_ids:
-            section = HomeDynamicSection.objects.filter(id=section_id).first()
-            if not section:
-                continue
-
-            section.title = request.POST.get(f'section_title_{section_id}', section.title).strip()
-            section.content = request.POST.get(f'section_content_{section_id}', section.content).strip()
-            section.is_visible = request.POST.get(f'section_visible_{section_id}') == 'on'
-
-            order_raw = request.POST.get(f'section_order_{section_id}', section.display_order)
-            try:
-                section.display_order = max(1, int(order_raw))
-            except (TypeError, ValueError):
-                pass
-
-            section.save()
-
-        delete_section_ids = request.POST.getlist('delete_section_ids')
-        if delete_section_ids:
-            HomeDynamicSection.objects.filter(id__in=delete_section_ids).delete()
-
-        new_title = request.POST.get('new_section_title', '').strip()
-        new_content = request.POST.get('new_section_content', '').strip()
-        if new_title and new_content:
-            new_order_raw = request.POST.get('new_section_order', '1').strip()
-            try:
-                new_order = max(1, int(new_order_raw))
-            except (TypeError, ValueError):
-                new_order = 1
-
-            HomeDynamicSection.objects.create(
-                title=new_title,
-                content=new_content,
-                display_order=new_order,
-                is_visible=request.POST.get('new_section_visible') == 'on',
-            )
-
-        messages.success(request, 'Componentes da Home atualizados com sucesso.')
+        try:
+            components = parse_components(request.POST.get('components_json'), user=request.user)
+        except ValidationError as error:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'error': ' '.join(error.messages)}, status=400)
+            messages.error(request, ' '.join(error.messages))
+        else:
+            with transaction.atomic():
+                HomeDynamicSection.objects.all().delete()
+                HomeDynamicSection.objects.bulk_create(components)
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'saved': True})
+            messages.success(request, 'Componentes publicados na home.')
         return redirect(f"{reverse('admin_dashboard')}?open_home_components_modal=1")
 
     if request.method == 'POST' and request.POST.get('action') == 'bulk_update_roles':
@@ -225,7 +213,7 @@ def admin_dashboard(request):
             updated_count += 1
 
         messages.success(request, 'Tipos de usuario atualizados.')
-        return redirect('admin_dashboard')
+        return redirect(f"{reverse('admin_dashboard')}?open_users_modal=1")
 
     if request.method == 'POST' and request.POST.get('action') == 'bulk_update_personagens':
         allowed_status = {choice[0] for choice in STATUS_PERSONAGEM_CHOICES}
@@ -332,12 +320,22 @@ def admin_dashboard(request):
         data_evento_raw = request.POST.get('larp_data_evento', '').strip()
         visivel_publicamente = request.POST.get('larp_visivel_publicamente') == 'on'
 
-        data_evento = parse_datetime(data_evento_raw) if data_evento_raw else None
+        try:
+            data_evento = parse_datetime(data_evento_raw) if data_evento_raw else None
+            data_limite = parse_datetime(request.POST.get('larp_data_limite_inscricao', '').strip())
+        except ValueError:
+            data_evento = data_limite = None
+        if data_limite and timezone.is_naive(data_limite):
+            data_limite = timezone.make_aware(data_limite, timezone.get_current_timezone())
         if data_evento and timezone.is_naive(data_evento):
             data_evento = timezone.make_aware(data_evento, timezone.get_current_timezone())
 
-        if not titulo or not local or not historia or not data_evento:
-            messages.error(request, 'Preencha titulo, local, historia e data para criar o LARP.')
+        if not titulo or not local or not historia or not data_evento or not data_limite:
+            messages.error(request, 'Preencha titulo, local, historia, data do evento e prazo de inscricao.')
+            return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
+
+        if data_limite > data_evento:
+            messages.error(request, 'O prazo de inscricao nao pode ser posterior ao evento.')
             return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
 
         LarpEvento.objects.create(
@@ -345,6 +343,7 @@ def admin_dashboard(request):
             local=local,
             historia=historia,
             data_evento=data_evento,
+            data_limite_inscricao=data_limite,
             visivel_publicamente=visivel_publicamente,
             criado_por=request.user,
         )
@@ -527,9 +526,11 @@ def admin_dashboard(request):
                 'titulo': evento.titulo,
                 'local': evento.local,
                 'data_evento': evento.data_evento,
+                'data_limite_inscricao': evento.data_limite_inscricao,
                 'visivel_publicamente': evento.visivel_publicamente,
                 'inscricao_path': inscricao_path,
                 'inscricao_url': inscricao_url,
+                'detalhe_url': reverse('detalhe_larp', kwargs={'slug': evento.slug}),
                 'inscricoes_count': evento.inscricoes.count(),
             }
         )
@@ -558,6 +559,7 @@ def admin_dashboard(request):
         'home_config': home_config,
         'layout_config': layout_config,
         'dynamic_sections': HomeDynamicSection.objects.all(),
+        'home_components_data': serialize_components(),
         'open_home_components_modal': open_home_components_modal,
         'open_theme_modal': open_theme_modal,
         'open_social_modal': open_social_modal,

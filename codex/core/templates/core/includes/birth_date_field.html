@@ -1,0 +1,5 @@
+<div class="form-control w-full" style="display:flex;flex-direction:column;gap:.5rem">
+  <label for="{{ form.data_nascimento.id_for_label }}" class="text-sm font-semibold">Data de nascimento do jogador</label>
+  {{ form.data_nascimento }}
+  {% if form.data_nascimento.errors %}<p class="text-error text-sm">{{ form.data_nascimento.errors|striptags }}</p>{% endif %}
+</div>

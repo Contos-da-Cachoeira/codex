@@ -17,11 +17,11 @@ class _SshDbTunnel:
     local_port = 5433
     remote_host = '127.0.0.1'
     remote_port = 5432
-    ssh_alias = 'servidor'
     wait_timeout = 15.0
     retry_interval = 0.2
 
     def __init__(self, stdout, stderr):
+        self.ssh_alias = os.environ.get('SSH_DB_HOST', 'kiwiki')
         self.stdout = stdout
         self.stderr = stderr
         self.process = None
@@ -114,7 +114,7 @@ class _SshDbTunnel:
             )
 
         self.stdout.write(
-            '[DB Tunnel] Abrindo 127.0.0.1:5433 -> servidor:5432'
+            f'[DB Tunnel] Abrindo 127.0.0.1:5433 -> {self.ssh_alias}:5432'
         )
         command = [
             'ssh',

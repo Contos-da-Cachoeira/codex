@@ -51,13 +51,54 @@
     .character-action-row { margin-top: auto; padding-top: 1.25rem; border-top: 1px solid var(--codex-border-soft); }
     .field-block { animation: rise-in 280ms ease-out both; }
     .character-step[hidden] { display: none; }
-    @media (max-width: 640px) { .character-step { min-height: 0; padding: 1rem; } .character-tab { min-height: 3.6rem; padding: 0.7rem; font-size: 0.68rem; } .character-tab span { font-size: 0.58rem; } .character-guild-card, .character-class-card { flex-basis: min(72vw, 15rem); } }
+    .character-mobile-title { display: none; }
+    #talentos-grid > label[hidden] { display: none; }
+    #talentos-grid > label:has(input:checked) { border-color: var(--codex-accent); }
+    #talentos-grid > label:has(input:disabled) { opacity: .5; cursor: default; }
+    .talent-tools { display: grid; gap: .75rem; margin-top: .75rem; }
+    .talent-tools input { width: 100%; min-width: 0; }
+    .talent-selected { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .talent-selected button { padding: .4rem .6rem; border: 1px solid var(--codex-accent); border-radius: 1rem; font-size: .8rem; text-align: left; }
+    .talent-pagination { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .75rem; font-size: .8rem; }
+    @media (max-width: 640px) {
+      .character-create-page { min-width: 0; }
+      .character-create-page > .character-create-hero { padding: .75rem 1rem; box-shadow: none; }
+      .character-create-hero::after, .character-create-hero > div { display: none; }
+      .character-mobile-title { display: block; margin: 0; font-size: 1.15rem; font-weight: 800; }
+      .character-create-page > .character-create-card { margin-top: .75rem; }
+      .character-create-card > .card-body { padding: .75rem; }
+      .character-create-card [role="tablist"] { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .3rem; padding-bottom: .75rem; }
+      .character-tab { min-height: 3rem; padding: .4rem .25rem; font-size: .65rem; text-align: center; letter-spacing: 0; }
+      .character-tab span { display: inline-block; font-size: .6rem; line-height: 1.2; }
+      .character-tab[aria-selected="true"]::before { display: none; }
+      .character-step { min-height: 0; padding: .75rem; gap: .75rem; }
+      .character-step > * + * { margin-top: 0; }
+      .character-step-heading { padding-bottom: .75rem; }
+      .character-step-heading > p:first-child { display: none; }
+      .character-step-heading h2 { margin-top: 0; font-size: 1.25rem; }
+      .character-step-heading > p:last-child { margin-top: .35rem; font-size: .8rem; }
+      .character-question, .character-choice-panel { padding: .75rem; }
+      .character-guild-carousel, .character-class-carousel { min-width: 0; padding: 0 2.5rem; }
+      .character-guild-carousel .guildas-carousel-track,
+      .character-class-carousel .guildas-carousel-track { padding: 0; }
+      .character-guild-card, .character-class-card { flex: 0 0 100%; box-sizing: border-box; scroll-snap-stop: always; }
+      .character-guild-card:hover, .character-class-card:hover { transform: none; }
+      .character-guild-carousel .guildas-carousel-button,
+      .character-class-carousel .guildas-carousel-button { display: block; padding: 0; font-size: 0; }
+      .character-guild-carousel .guildas-carousel-button::before,
+      .character-class-carousel .guildas-carousel-button::before { content: ''; position: absolute; top: 50%; left: 50%; box-sizing: border-box; width: .5rem; height: .5rem; border-top: 2px solid currentColor; border-right: 2px solid currentColor; }
+      .character-create-page .guildas-carousel-prev::before { transform: translate(-25%, -50%) rotate(-135deg); }
+      .character-create-page .guildas-carousel-next::before { transform: translate(-75%, -50%) rotate(45deg); }
+      .character-action-row { gap: .5rem; padding-top: .75rem; }
+      .character-action-row .btn { min-height: 2.75rem; height: auto; padding: .5rem .65rem; font-size: .75rem; }
+    }
   </style>
 {% endblock %}
 
 {% block content %}
 <section class="character-create-page mx-auto space-y-6">
   <div class="character-create-hero rounded-box border border-primary/25 p-6 shadow-lg md:p-8">
+    <h1 class="character-mobile-title">Novo personagem</h1>
     <div class="relative z-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
       <div>
         <p class="text-xs font-black uppercase tracking-[0.22em] text-primary">Construcao de personagem</p>
@@ -198,6 +239,7 @@
     const classNext = document.querySelector('[data-character-class-next]');
     const classCards = document.querySelectorAll('.character-class-card');
     const classeSelect = document.getElementById('classe-select');
+    let classRotationInterval = null;
 
     if (classTrack && classPrevious && classNext) {
       const moveClasses = function (direction) {
@@ -207,10 +249,9 @@
         const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
         const step = card.getBoundingClientRect().width + gap;
         const maximum = classTrack.scrollWidth - classTrack.clientWidth;
-        const target = classTrack.scrollLeft + direction * step;
-        if (direction > 0 && target >= maximum - 2) {
+        if (direction > 0 && classTrack.scrollLeft >= maximum - 2) {
           classTrack.scrollTo({ left: 0, behavior: 'smooth' });
-        } else if (direction < 0 && target <= 0) {
+        } else if (direction < 0 && classTrack.scrollLeft <= 2) {
           classTrack.scrollTo({ left: maximum, behavior: 'smooth' });
         } else {
           classTrack.scrollBy({ left: direction * step, behavior: 'smooth' });
@@ -219,10 +260,14 @@
 
       classPrevious.addEventListener('click', function () { moveClasses(-1); });
       classNext.addEventListener('click', function () { moveClasses(1); });
-      window.setInterval(function () { moveClasses(1); }, 3000);
+      classRotationInterval = window.setInterval(function () { moveClasses(1); }, 3000);
     }
 
     const syncClassCards = function (value) {
+      if (value && classRotationInterval !== null) {
+        window.clearInterval(classRotationInterval);
+        classRotationInterval = null;
+      }
       classCards.forEach(function (card) {
         const radio = card.querySelector('input[type="radio"]');
         const selected = radio && radio.value === value;
@@ -339,10 +384,62 @@
       const selected = classeSelecionada();
       return selected && selected.dataset.fixa === '1';
     }
+    const talentGrid = document.getElementById('talentos-grid');
+    const talentInputs = Array.from(document.querySelectorAll('.talento-checkbox'));
+    let talentPage = 0;
+    const talentPageSize = 6;
+    const talentTools = document.createElement('div');
+    talentTools.className = 'talent-tools';
+    talentTools.innerHTML = '<label for="talent-search" class="text-sm">Buscar talento</label><input id="talent-search" type="search" class="input input-bordered" placeholder="Digite o nome do talento"><p class="text-xs text-base-content/70">Seus escolhidos — toque para remover</p><div class="talent-selected" id="talent-selected"></div><p id="talent-limit" class="text-xs" role="status"></p>';
+    talentGrid.before(talentTools);
+    const talentSearch = talentTools.querySelector('input');
+    const talentSelected = document.getElementById('talent-selected');
+    const talentPagination = document.createElement('div');
+    talentPagination.className = 'talent-pagination';
+    talentPagination.innerHTML = '<button type="button" class="btn btn-sm btn-ghost" aria-label="Página anterior de talentos">← Anterior</button><span role="status" aria-live="polite"></span><button type="button" class="btn btn-sm btn-ghost" aria-label="Próxima página de talentos">Próxima →</button>';
+    talentGrid.after(talentPagination);
+    const talentPrevious = talentPagination.firstElementChild;
+    const talentNext = talentPagination.lastElementChild;
+    const normalizeTalent = function (value) { return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); };
+    function renderTalentPage() {
+      const query = normalizeTalent(talentSearch.value);
+      const matches = talentInputs.filter(function (input) { return normalizeTalent(input.parentElement.textContent).includes(query); });
+      const pages = Math.max(1, Math.ceil(matches.length / talentPageSize));
+      talentPage = Math.min(talentPage, pages - 1);
+      const visible = new Set(matches.slice(talentPage * talentPageSize, (talentPage + 1) * talentPageSize));
+      talentInputs.forEach(function (input) { input.parentElement.hidden = !visible.has(input); });
+      talentPagination.querySelector('span').textContent = matches.length ? (talentPage + 1) + ' / ' + pages : 'Nenhum talento encontrado';
+      talentPrevious.disabled = talentPage === 0;
+      talentNext.disabled = talentPage >= pages - 1;
+    }
+    talentSearch.addEventListener('input', function () { talentPage = 0; renderTalentPage(); });
+    talentSearch.addEventListener('keydown', function (event) { if (event.key === 'Enter') event.preventDefault(); });
+    talentPrevious.addEventListener('click', function () { talentPage--; renderTalentPage(); });
+    talentNext.addEventListener('click', function () { talentPage++; renderTalentPage(); });
+    renderTalentPage();
+
     function updateTalentosCounter() {
       const talentos = document.querySelectorAll('.talento-checkbox:checked').length;
       const target = document.getElementById('talentos-count');
       if (target) { target.textContent = talentos + '/5 selecionados'; }
+      talentSelected.replaceChildren();
+      talentInputs.forEach(function (input) {
+        input.disabled = talentos >= 5 && !input.checked;
+        if (!input.checked) return;
+        const name = input.parentElement.querySelector('span').textContent;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = name + ' ×';
+        button.setAttribute('aria-label', 'Remover talento ' + name);
+        button.addEventListener('click', function () {
+          input.checked = false;
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+          talentSearch.focus();
+        });
+        talentSelected.appendChild(button);
+      });
+      if (!talentos) talentSelected.textContent = 'Nenhum talento escolhido ainda.';
+      document.getElementById('talent-limit').textContent = talentos >= 5 ? 'Você escolheu 5 talentos. Remova um para trocar.' : 'Você pode escolher mais ' + (5 - talentos) + '.';
     }
     function renderMagias() {
       const fixed = classeComMagiasFixas();

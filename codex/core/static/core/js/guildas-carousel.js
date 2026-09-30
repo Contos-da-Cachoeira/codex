@@ -1,5 +1,7 @@
 (function () {
   document.querySelectorAll('[data-guildas-carousel]').forEach(function (carousel) {
+    if (carousel.dataset.initialized) return;
+    carousel.dataset.initialized = 'true';
     const track = carousel.querySelector('[data-carousel-track]');
     const previous = carousel.querySelector('[data-carousel-prev]');
     const next = carousel.querySelector('[data-carousel-next]');
@@ -54,6 +56,7 @@
 
     previous.addEventListener('click', () => move(-1));
     next.addEventListener('click', () => move(1));
+    window.addEventListener('resize', () => goToCurrent('instant'));
     window.requestAnimationFrame(() => goToCurrent('auto'));
     window.setInterval(() => move(1), 3000);
   });

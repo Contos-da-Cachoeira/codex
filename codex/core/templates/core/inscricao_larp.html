@@ -3,11 +3,12 @@
 {% block title %}Inscricao no LARP | Codex{% endblock title %}
 
 {% block content %}
+{% include 'core/includes/larp_actions_style.html' %}
 <section class="max-w-5xl mx-auto space-y-6">
   <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
     <h1 class="text-3xl font-bold">Inscricao no LARP</h1>
     <p class="mt-1 text-base-content/70"><strong>{{ evento.titulo }}</strong></p>
-    <p class="text-sm text-base-content/70">{{ evento.local }} | {{ evento.data_evento|date:'d/m/Y H:i' }}</p>
+    <p class="text-sm text-base-content/70">{{ evento.local }} | {{ evento.data_evento|date:'d/m/Y H:i' }}<br><strong>Inscrições até:</strong> {{ evento.data_limite_inscricao|date:'d/m/Y H:i' }}</p>
     <p class="mt-4 whitespace-pre-line text-base-content/85">{{ evento.historia }}</p>
   </div>
 
@@ -67,6 +68,8 @@
           </div>
         {% endif %}
 
+        {% include 'core/includes/birth_date_field.html' %}
+
         <div>
           <p class="label-text mb-2">Possui fobia ou gatilho psicologico?</p>
           <div class="flex gap-6">
@@ -92,7 +95,7 @@
 
     <div class="card bg-base-100 shadow-md border border-base-300">
       <div class="card-body space-y-3">
-        <div class="flex items-center justify-between gap-2">
+        <div class="larp-toolbar">
           <h2 class="card-title">2. Informacoes do Personagem</h2>
           <button type="button" class="btn btn-sm btn-outline" onclick="personagem_modal.showModal()">Criar personagem agora</button>
         </div>
@@ -128,9 +131,9 @@
       </div>
     </div>
 
-    <div class="flex justify-between items-center">
-      <a href="{% url 'listar_larps' %}" class="btn btn-ghost">Voltar</a>
-      <button type="submit" class="btn btn-primary">Finalizar inscricao</button>
+    <div class="larp-actions">
+      <a href="{% url 'detalhe_larp' evento.slug %}" class="btn btn-outline larp-back">← Voltar ao evento</a>
+      <button type="submit" class="btn btn-primary">Confirmar inscrição</button>
     </div>
   </form>
 </section>

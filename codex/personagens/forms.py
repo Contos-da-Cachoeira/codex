@@ -1,5 +1,6 @@
 from django import forms
 from django.db import transaction
+from accounts.forms import birth_date_field
 
 from core.models import LarpInscricao, Profile
 from wiki.constants.talentos import TALENTOS_WIKI
@@ -106,6 +107,7 @@ class PersonagemCreateForm(forms.Form):
 
 
 class LarpInscricaoEventoForm(forms.Form):
+    data_nascimento = birth_date_field()
     nome_confirmado = forms.BooleanField(required=False)
     nome_completo_jogador = forms.CharField(max_length=180, required=False)
     apelido_cla = forms.CharField(max_length=120, required=False)
@@ -156,6 +158,7 @@ class LarpInscricaoEventoForm(forms.Form):
         }
 
         if self.profile and not self.is_bound:
+            self.fields['data_nascimento'].initial = self.profile.data_nascimento
             self.fields['nome_completo_jogador'].initial = nome_profile or nome_sistema
             self.fields['apelido_cla'].initial = apelido_profile
             self.fields['telefone'].initial = self.profile.telefone
@@ -221,6 +224,7 @@ class LarpInscricaoEventoForm(forms.Form):
             raise ValueError('LarpInscricaoEventoForm requer usuario e evento para salvar.')
 
         profile, _ = Profile.objects.get_or_create(user=self.user)
+        profile.data_nascimento = self.cleaned_data['data_nascimento']
         if not self.player_data_status.get('nome_existe'):
             profile.nome_completo_jogador = self.cleaned_data['nome_completo_jogador'].strip()
             profile.apelido_cla = self.cleaned_data.get('apelido_cla', '').strip()

@@ -1,11 +1,30 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
+from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .forms import ImageAssetForm
+
+
+@require_POST
+def upload_image(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({'error': 'Sua sessão expirou. Entre novamente.'}, status=401)
+    form = ImageAssetForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return JsonResponse({'error': ' '.join(str(e) for errors in form.errors.values() for e in errors)}, status=400)
+    asset = form.save(commit=False)
+    asset.owner = request.user
+    asset.save()
+    return JsonResponse({'id': asset.pk, 'source': asset.source, 'x': asset.x, 'y': asset.y, 'zoom': asset.zoom, 'ratio': asset.ratio})
 
 from personagens.forms import LarpInscricaoEventoForm
 
 from .models import LarpEvento, LarpInscricao, Profile
+from .forms import LarpEventoForm, EventCharacterBalanceForm
 
 
 def _is_admin(user):
@@ -59,11 +78,25 @@ def detalhe_larp(request, slug):
     inscricoes = None
     total_inscricoes = 0
     total_pagos = 0
+    total_alertas = 0
+    event_form = None
 
     if is_admin:
+        event_form = LarpEventoForm(instance=evento)
+        if request.method == 'POST' and request.POST.get('action') == 'delete_event':
+            evento.delete()
+            messages.success(request, 'Evento e inscrições excluídos.')
+            return redirect(f"{reverse('admin_dashboard')}#larp_modal")
         inscricoes = evento.inscricoes.select_related('usuario', 'personagem').order_by('nome_completo_jogador', 'id')
 
-        if request.method == 'POST':
+        if request.method == 'POST' and request.POST.get('action') == 'edit_event':
+            event_form = LarpEventoForm(request.POST, instance=evento)
+            if event_form.is_valid():
+                event_form.save()
+                messages.success(request, 'Informações do evento atualizadas.')
+                return redirect('detalhe_larp', slug=evento.slug)
+
+        if request.method == 'POST' and request.POST.get('action') == 'update_payments':
             atualizadas = 0
             for inscricao in inscricoes:
                 taxa_paga_nova = request.POST.get(f'taxa_paga_{inscricao.id}') == 'on'
@@ -80,6 +113,7 @@ def detalhe_larp(request, slug):
 
         total_inscricoes = inscricoes.count()
         total_pagos = inscricoes.filter(taxa_paga=True).count()
+        total_alertas = sum(bool(item.fobia_gatilho.strip()) for item in inscricoes)
     elif request.method == 'POST':
         messages.error(request, 'Apenas administradores podem atualizar o checklist de pagamento.')
         return redirect('detalhe_larp', slug=evento.slug)
@@ -98,6 +132,8 @@ def detalhe_larp(request, slug):
         'is_admin': is_admin,
         'total_inscricoes': total_inscricoes,
         'total_pagos': total_pagos,
+        'total_alertas': total_alertas,
+        'event_form': event_form,
         'total_pendentes': total_inscricoes - total_pagos,
         'inscricao_usuario': inscricao_usuario,
     }
@@ -123,6 +159,10 @@ def inscricao_larp(request, slug, token):
         messages.info(request, 'Voce ja esta inscrito neste LARP.')
         return redirect('listar_larps')
 
+    if not evento.inscricoes_abertas:
+        messages.error(request, 'As inscrições para este LARP estão encerradas.')
+        return redirect('detalhe_larp', slug=evento.slug)
+
     form = LarpInscricaoEventoForm(request.POST or None, user=request.user, evento=evento)
     if request.method == 'POST' and form.is_valid():
         form.save()
@@ -136,3 +176,36 @@ def inscricao_larp(request, slug, token):
         'is_admin': is_admin,
     }
     return render(request, 'core/inscricao_larp.html', context)
+
+
+@login_required
+def planilha_larp(request, slug):
+    if not _is_admin(request.user):
+        return redirect('home')
+    evento = get_object_or_404(LarpEvento, slug=slug)
+    inscricoes = evento.inscricoes.select_related('usuario', 'personagem').order_by('nome_completo_jogador', 'id')
+    balance_rows = []
+    editing_balances = request.method == 'POST' and request.POST.get('action') == 'update_balances'
+    for registration in inscricoes:
+        balance_rows.append({
+            'registration': registration,
+            'form': EventCharacterBalanceForm(
+                request.POST if editing_balances else None,
+                prefix=f'character-{registration.personagem_id}',
+                initial={'xp': registration.personagem.xp_atual, 'ouro': registration.personagem.ouro},
+            ),
+        })
+    if editing_balances:
+        valid = [row['form'].is_valid() for row in balance_rows]
+        if all(valid):
+            with transaction.atomic():
+                for row in balance_rows:
+                    character = row['registration'].personagem
+                    character.xp_atual = row['form'].cleaned_data['xp']
+                    character.ouro = row['form'].cleaned_data['ouro']
+                    character.save(update_fields=['xp_atual', 'ouro', 'data_atualizacao'])
+            messages.success(request, 'XP e ouro dos participantes atualizados.')
+            return redirect('planilha_larp', slug=evento.slug)
+        messages.error(request, 'Confira os valores da planilha. Nenhum saldo foi alterado.')
+
+    return render(request, 'core/planilha_larp.html', {'evento': evento, 'balance_rows': balance_rows})

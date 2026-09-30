@@ -60,7 +60,9 @@
   <div class="account-layout">
     <aside class="account-profile-panel" aria-label="Resumo da conta">
       <div class="account-avatar" data-account-avatar>
-        {% if profile.avatar %}
+        {% if profile.image_asset %}
+          {% include 'core/includes/image_asset.html' with asset=profile.image_asset %}
+        {% elif profile.avatar %}
           <img src="{{ profile.avatar.url }}" alt="Foto de perfil de {{ request.user.username }}" />
         {% else %}
           <span aria-hidden="true">{{ request.user.username|slice:':1'|upper }}</span>
@@ -84,19 +86,17 @@
         </div>
 
         <form method="post" enctype="multipart/form-data" class="account-form grid grid-cols-1 md:grid-cols-2">
-          {% csrf_token %}
+    {% csrf_token %}
 
-          <label class="account-avatar-upload md:col-span-2">
-            <span class="account-avatar" data-account-avatar>
-              {% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="Foto de perfil atual" />{% else %}<span aria-hidden="true">{{ request.user.username|slice:':1'|upper }}</span>{% endif %}
-            </span>
-            <span class="account-upload-copy">
-              <strong>Foto de perfil</strong>
-              <p>Escolha uma imagem quadrada para representar sua conta.</p>
-              <input id="account-avatar-input" type="file" name="avatar" accept="image/*" class="file-input file-input-bordered" />
-              {% if form.avatar.errors %}<span class="label-text-alt text-error">{{ form.avatar.errors|striptags }}</span>{% endif %}
-            </span>
-          </label>
+          <div class="md:col-span-2">
+            <h3 class="font-semibold">Foto de perfil</h3>
+            <div data-profile-image-preview style="width:100px;height:100px;border-radius:50%;overflow:hidden;margin:1rem 0">
+              {% if profile.image_asset %}{% include 'core/includes/image_asset.html' with asset=profile.image_asset %}{% elif profile.avatar %}<img src="{{ profile.avatar.url }}" alt="Foto atual" style="width:100%;height:100%;object-fit:cover">{% endif %}
+            </div>
+            {{ form.image_asset }}
+            {{ form.image_asset.errors }}
+            <button type="button" class="btn btn-outline" data-profile-image-picker data-image-x="{{ profile.image_asset.x|default_if_none:50|stringformat:'.6f' }}" data-image-y="{{ profile.image_asset.y|default_if_none:50|stringformat:'.6f' }}" data-image-zoom="{{ profile.image_asset.zoom|stringformat:'.4f' }}" data-image-source="{% if profile.image_asset %}{{ profile.image_asset.source }}{% elif profile.avatar %}{{ profile.avatar.url }}{% endif %}">Escolher imagem / URL e enquadrar</button>
+          </div>
 
           <label class="form-control">
             <span class="label-text">Usuário</span>
@@ -135,6 +135,8 @@
             <input type="text" name="cpf" value="{{ form.cpf.value|default:'' }}" class="input input-bordered w-full" />
             {% if form.cpf.errors %}<span class="label-text-alt text-error">{{ form.cpf.errors|striptags }}</span>{% endif %}
           </label>
+
+          {% include 'core/includes/birth_date_field.html' %}
 
           <div class="account-fobia-block">
             <div class="account-fobia-question">

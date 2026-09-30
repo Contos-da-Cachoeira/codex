@@ -1,0 +1,44 @@
+{% load static %}
+{% if component.kind == "banner" or component.kind == "callout" %}
+<section class="home-designed-block {% if component.kind == 'callout' %}home-callout{% else %}home-split-banner{% endif %}">
+  <div class="home-banner-copy">
+    {% if component.eyebrow %}<p class="home-banner-eyebrow">{{ component.eyebrow }}</p>{% endif %}
+    <h2>{{ component.title }}</h2>
+    {% if component.content %}<p class="home-banner-description">{{ component.content }}</p>{% endif %}
+    <div class="home-banner-buttons">
+      {% if component.button_label and component.button_url %}<a href="{{ component.button_url }}" class="btn btn-primary">{{ component.button_label }} <span aria-hidden="true">&rarr;</span></a>{% endif %}
+      {% if component.secondary_label and component.secondary_url %}<a href="{{ component.secondary_url }}" class="btn btn-outline">{{ component.secondary_label }}</a>{% endif %}
+    </div>
+  </div>
+  {% if component.kind == 'banner' %}
+  <div class="home-banner-art">
+    {% if component.image_asset %}{% include 'core/includes/image_asset.html' with asset=component.image_asset %}
+    {% elif component.image_url %}<img src="{{ component.image_url }}" alt="" class="home-banner-photo">
+    {% else %}<div class="home-banner-emblem"><img src="{% static 'core/img/tesseract.svg' %}" alt="" /><span>CONTOS DA CACHOEIRA</span></div>{% endif %}
+  </div>
+  {% endif %}
+</section>
+{% else %}
+<section class="codex-home-section">
+  {% if component.kind == 'banner' %}
+    {% if component.image_asset %}<div class="rounded-xl overflow-hidden mb-5">{% include 'core/includes/image_asset.html' with asset=component.image_asset %}</div>
+    {% elif component.image_url %}<img src="{{ component.image_url }}" alt="" class="w-full max-h-96 object-cover rounded-xl mb-5">{% endif %}
+  {% endif %}
+  <div class="codex-home-section-heading">
+    {% if component.eyebrow %}<p>{{ component.eyebrow }}</p>{% endif %}
+    <h2>{{ component.title }}</h2>
+    {% if component.content %}<p class="whitespace-pre-line">{{ component.content }}</p>{% endif %}
+  </div>
+  {% if component.kind == 'community' %}
+    {% include 'core/includes/guildas_showcase.html' %}
+  {% elif component.kind == 'links' %}
+    <div class="codex-home-actions">
+      <a href="{% url 'meus_personagens' %}" class="btn btn-primary">Personagens</a>
+      <a href="{% url 'listar_guildas' %}" class="btn btn-outline">Guildas</a>
+      <a href="{% url 'listar_larps' %}" class="btn btn-outline">LARPs</a>
+      <a href="{% url 'wiki_home' %}" class="btn btn-outline">Wiki</a>
+    </div>
+  {% endif %}
+</section>
+
+{% endif %}

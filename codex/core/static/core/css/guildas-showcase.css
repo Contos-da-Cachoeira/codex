@@ -193,10 +193,21 @@
 
 @media (max-width: 640px) {
     .guildas-showcase {
-        padding: 0 2.35rem;
+        width: 100%;
+        max-width: 26rem;
+        margin-inline: auto;
+        padding: 0 2.75rem;
+        box-sizing: border-box;
+    }
+
+    .guildas-carousel-track {
+        padding-inline: 0;
     }
 
     .guilda-showcase-card {
-        flex-basis: min(72vw, 15rem);
+        flex: 0 0 100%;
+        box-sizing: border-box;
+        scroll-snap-align: center;
+        scroll-snap-stop: always;
     }
 }

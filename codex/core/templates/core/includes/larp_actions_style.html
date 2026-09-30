@@ -1,0 +1,41 @@
+<style>
+  .larp-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--codex-border-soft);
+  }
+  .larp-actions .btn,
+  .larp-toolbar .btn,
+  .larp-row-actions .btn {
+    min-height: 2.75rem;
+    height: auto;
+    padding: .65rem 1rem;
+    border-radius: .65rem;
+    font-size: .875rem;
+    font-weight: 600;
+    white-space: normal;
+    text-align: center;
+  }
+  .larp-actions .btn:focus-visible,
+  .larp-toolbar .btn:focus-visible,
+  .larp-row-actions .btn:focus-visible {
+    outline: 2px solid var(--site-accent);
+    outline-offset: 3px;
+  }
+  .larp-actions .larp-back { margin-right: auto; }
+  .larp-card-actions { margin-top: auto; }
+  .larp-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
+  .larp-row-actions { display: flex; align-items: center; gap: .5rem; min-width: 15rem; }
+  .larp-registration-status { margin-right: auto; color: var(--site-muted); font-size: .875rem; }
+  @media (max-width: 600px) {
+    .larp-actions { align-items: stretch; }
+    .larp-actions .btn { width: 100%; }
+    .larp-actions .larp-back { margin-right: 0; }
+    .larp-registration-status { width: 100%; }
+    .larp-toolbar > .btn { width: 100%; }
+  }
+</style>

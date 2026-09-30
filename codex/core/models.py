@@ -3,10 +3,27 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.utils.text import slugify
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 import secrets
+from .validators import validate_birth_date
+
+
+class ImageAsset(models.Model):
+	owner = models.ForeignKey(User, on_delete=models.CASCADE)
+	file = models.ImageField(upload_to='images/', blank=True)
+	url = models.URLField(blank=True)
+	x = models.FloatField(default=50)
+	y = models.FloatField(default=50)
+	zoom = models.FloatField(default=1)
+	ratio = models.FloatField(default=1)
+
+	@property
+	def source(self):
+		return self.file.url if self.file else self.url
 
 
 class Profile(models.Model):
+	image_asset = models.ForeignKey(ImageAsset, null=True, blank=True, on_delete=models.SET_NULL)
 	class UserRole(models.TextChoices):
 		ADMIN = 'ADMIN', 'Admin'
 		COMMON = 'COMMON', 'Usuario comum'
@@ -15,6 +32,7 @@ class Profile(models.Model):
 	role = models.CharField(max_length=10, choices=UserRole.choices, default=UserRole.COMMON)
 	avatar = models.ImageField(upload_to='profiles/avatars/', blank=True, null=True, verbose_name='Foto de perfil')
 	nome_completo_jogador = models.CharField(max_length=180, blank=True)
+	data_nascimento = models.DateField(null=True, blank=True, validators=[validate_birth_date], verbose_name='Data de nascimento')
 	apelido_cla = models.CharField(max_length=120, blank=True)
 	telefone = models.CharField(max_length=30, blank=True)
 	cpf = models.CharField(max_length=14, blank=True)
@@ -122,6 +140,14 @@ class HomePageConfig(SingletonBaseModel):
 
 
 class HomeDynamicSection(models.Model):
+	image_asset = models.ForeignKey(ImageAsset, null=True, blank=True, on_delete=models.SET_NULL)
+	kind = models.CharField(max_length=20, choices=[('text', 'Texto'), ('community', 'Comunidade / guildas'), ('banner', 'Banner dividido'), ('callout', 'Chamada centralizada'), ('links', 'Atalhos')], default='text')
+	button_label = models.CharField(max_length=60, blank=True)
+	button_url = models.CharField(max_length=500, blank=True)
+	secondary_label = models.CharField(max_length=60, blank=True)
+	secondary_url = models.CharField(max_length=500, blank=True)
+	eyebrow = models.CharField(max_length=80, blank=True)
+	image_url = models.URLField(blank=True)
 	title = models.CharField(max_length=140, verbose_name='Titulo')
 	content = models.TextField(verbose_name='Conteudo')
 	is_visible = models.BooleanField(default=True, verbose_name='Mostrar secao')
@@ -143,6 +169,7 @@ class LarpEvento(models.Model):
 	historia = models.TextField()
 	local = models.CharField(max_length=180)
 	data_evento = models.DateTimeField()
+	data_limite_inscricao = models.DateTimeField(verbose_name='Inscrições até')
 	visivel_publicamente = models.BooleanField(default=False)
 	inscricao_token = models.CharField(max_length=32, unique=True, editable=False)
 	criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='eventos_larp_criados')
@@ -153,6 +180,15 @@ class LarpEvento(models.Model):
 		ordering = ('-data_evento', '-id')
 		verbose_name = 'Evento LARP'
 		verbose_name_plural = 'Eventos LARP'
+
+	def clean(self):
+		super().clean()
+		if self.data_limite_inscricao and self.data_evento and self.data_limite_inscricao > self.data_evento:
+			raise ValidationError({'data_limite_inscricao': 'O prazo de inscrição não pode ser posterior ao evento.'})
+
+	@property
+	def inscricoes_abertas(self):
+		return bool(self.data_limite_inscricao and timezone.now() <= min(self.data_limite_inscricao, self.data_evento))
 
 	def save(self, *args, **kwargs):
 		if not self.slug:
