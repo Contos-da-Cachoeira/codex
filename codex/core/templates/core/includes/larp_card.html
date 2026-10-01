@@ -1,0 +1,44 @@
+      <article class="card bg-base-100 shadow-md border border-base-300">
+        {% if evento.capa %}
+          <img src="{{ evento.capa.url }}" alt="Capa do evento {{ evento.titulo }}" class="w-full h-48 object-cover">
+        {% endif %}
+        <div class="card-body">
+          <div class="flex items-center justify-between gap-2">
+            <h2 class="card-title">{{ evento.titulo }}</h2>
+            {% if evento.visivel_publicamente %}
+              <span class="badge badge-success">Visivel</span>
+            {% elif is_admin %}
+              <span class="badge badge-warning">Oculto</span>
+            {% endif %}
+          </div>
+
+          <p class="text-sm text-base-content/70">
+            <strong>Local:</strong> {{ evento.local }}
+            <br>
+            <strong>Data do evento:</strong> {{ evento.data_evento|date:'d/m/Y H:i' }}<br><strong>Inscrições até:</strong> {{ evento.data_limite_inscricao|date:'d/m/Y H:i' }}
+            {% if not evento.inscricoes_abertas %}<br><span class="badge badge-warning">Inscrições encerradas</span>{% endif %}
+            {% if is_admin %}
+              <br>
+              <strong>Inscritos:</strong> {{ evento.inscricoes_total }}
+            {% endif %}
+          </p>
+
+          <p class="text-base-content/80 whitespace-pre-line">{% if compact %}{{ evento.historia|truncatewords:45 }}{% else %}{{ evento.historia }}{% endif %}</p>
+
+          <div class="larp-actions larp-card-actions">
+            <a href="{% url 'detalhe_larp' evento.slug %}" class="btn btn-outline larp-back">Ver detalhes</a>
+            {% if user.is_authenticated %}
+              {% if not is_admin and evento.id in inscricoes_do_usuario %}
+                <span class="larp-registration-status">
+                  <span class="badge badge-success">Inscrição confirmada</span><br>
+                  Personagem: <strong>{{ evento.personagem_inscrito_usuario }}</strong>
+                </span>
+              {% elif not is_admin and evento.inscricoes_abertas %}
+                <a href="{% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Inscrever-se</a>
+              {% endif %}
+            {% elif evento.inscricoes_abertas %}
+<a href="{% url 'login' %}?next={% url 'inscricao_larp' evento.slug evento.inscricao_token %}" class="btn btn-primary btn-sm">Entrar para se inscrever</a>
+            {% endif %}
+          </div>
+        </div>
+      </article>

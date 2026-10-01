@@ -31,6 +31,14 @@
   </div>
   {% if component.kind == 'community' %}
     {% include 'core/includes/guildas_showcase.html' %}
+  {% elif component.kind == 'event' %}
+    {% if next_event %}
+      <div class="home-event">
+        {% include 'core/includes/larp_card.html' with evento=next_event compact=True %}
+      </div>
+    {% else %}
+      <p class="text-base-content/70">Nenhum próximo LARP anunciado. Em breve teremos novidades!</p>
+    {% endif %}
   {% elif component.kind == 'links' %}
     <div class="codex-home-actions">
       <a href="{% url 'meus_personagens' %}" class="btn btn-primary">Personagens</a>

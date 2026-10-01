@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const stage = frame.parentElement;
   let components = JSON.parse(document.getElementById('home-components-data').textContent);
   let width = 1366, timer, controller, version = 0, dirty = false;
-  const labels = {text: 'Texto', community: 'Comunidade / guildas', banner: 'Banner dividido', callout: 'Chamada centralizada', links: 'Atalhos'};
+  const labels = {text: 'Texto', community: 'Comunidade / guildas', banner: 'Banner dividido', callout: 'Chamada centralizada', links: 'Atalhos', event: 'Evento'};
   function fit() {
     const scale = Math.min(1, stage.clientWidth / width);
     frame.style.width = `${width}px`;
@@ -90,6 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
         controls.append(button);
       });
       card.append(controls);
+      if (component.kind === 'event') {
+        const hint = document.createElement('p');
+        hint.className = 'text-sm mt-3 text-base-content/70';
+        hint.textContent = 'Mostra automaticamente o próximo LARP publicado, com capa, data, local e inscrição. Os dados são atualizados na área de LARPs.';
+        card.append(hint);
+      }
       const fields = [['is_visible','Mostrar na home'], ['eyebrow','Texto acima do título'], ['title','Título'], ['content','Descrição / conteúdo']];
       if (['banner','callout'].includes(component.kind)) fields.push(
         ['button_label','Texto do botão principal'],['button_url','Destino principal (ex.: /personagens/)'],

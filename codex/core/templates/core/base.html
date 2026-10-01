@@ -979,8 +979,11 @@
       text-transform: none;
     }
 
-    .site-home-link.is-active {
-      background: var(--codex-elevated) !important;
+    .site-home-link,
+    .site-home-link.is-active,
+    .site-home-link:hover,
+    .site-home-link:focus-visible {
+      background: transparent !important;
       color: var(--codex-text) !important;
     }
 

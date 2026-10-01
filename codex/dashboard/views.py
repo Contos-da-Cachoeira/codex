@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.db import transaction
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -64,6 +64,20 @@ def home(request, components=None, preview=False):
         and not _is_admin(request.user)
         and not Personagem.objects.filter(usuario=request.user).exists()
     )
+    home_components = list(components if components is not None else HomeDynamicSection.objects.filter(is_visible=True))
+    next_event = None
+    registrations = set()
+    if any(component.kind == 'event' and component.is_visible for component in home_components):
+        next_event = LarpEvento.objects.filter(
+            visivel_publicamente=True, data_evento__gte=timezone.now(),
+        ).annotate(inscricoes_total=Count('inscricoes')).order_by('data_evento', 'id').first()
+        if next_event and request.user.is_authenticated:
+            registration = LarpInscricao.objects.select_related('personagem').filter(
+                evento=next_event, usuario=request.user,
+            ).first()
+            if registration:
+                registrations.add(next_event.pk)
+                next_event.personagem_inscrito_usuario = registration.personagem.nome
     return render(
         request,
         'dashboard/home.html',
@@ -71,7 +85,10 @@ def home(request, components=None, preview=False):
             'guildas_home': guildas_home,
             'guildas_showcase': guildas_home,
             'show_character_prompt': show_character_prompt and not preview,
-            'home_components': components if components is not None else HomeDynamicSection.objects.filter(is_visible=True),
+            'home_components': home_components,
+            'next_event': next_event,
+            'inscricoes_do_usuario': registrations,
+            'is_admin': _is_admin(request.user),
         },
     )
 

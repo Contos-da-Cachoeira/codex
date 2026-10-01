@@ -4,6 +4,7 @@
 {% block title %}Codex da Cachoeira{% endblock title %}
 
 {% block head_extra %}
+  {% include 'core/includes/larp_actions_style.html' %}
   <style>
     .codex-home { max-width: 76rem; margin: 0 auto; }
     .codex-home-hero { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr); gap: 3rem; align-items: end; padding: clamp(2rem, 6vw, 5rem) 0 3.5rem; border-bottom: 1px solid var(--codex-border-soft); }

@@ -17,4 +17,8 @@
 .home-callout { text-align:center; padding-block:clamp(2.5rem,6vw,5rem); }
 .home-callout .home-banner-copy { max-width:48rem; margin:auto; }
 .home-callout .home-banner-buttons { justify-content:center; }
+.home-event { max-width:48rem; }
+.home-event .card { overflow:hidden; min-width:0; }
+.home-event .card-body > .flex { flex-wrap:wrap; }
+.home-event .card-title, .home-event p { overflow-wrap:anywhere; }
 @media(max-width:767px) { .home-split-banner { grid-template-columns:1fr; } .home-split-banner > .home-banner-art { order:-1; } .home-banner-copy h2 { font-size:2.15rem; } .home-banner-buttons .btn { flex:1 1 auto; } }

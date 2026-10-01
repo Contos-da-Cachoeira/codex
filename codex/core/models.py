@@ -141,7 +141,7 @@ class HomePageConfig(SingletonBaseModel):
 
 class HomeDynamicSection(models.Model):
 	image_asset = models.ForeignKey(ImageAsset, null=True, blank=True, on_delete=models.SET_NULL)
-	kind = models.CharField(max_length=20, choices=[('text', 'Texto'), ('community', 'Comunidade / guildas'), ('banner', 'Banner dividido'), ('callout', 'Chamada centralizada'), ('links', 'Atalhos')], default='text')
+	kind = models.CharField(max_length=20, choices=[('text', 'Texto'), ('community', 'Comunidade / guildas'), ('banner', 'Banner dividido'), ('callout', 'Chamada centralizada'), ('links', 'Atalhos'), ('event', 'Evento')], default='text')
 	button_label = models.CharField(max_length=60, blank=True)
 	button_url = models.CharField(max_length=500, blank=True)
 	secondary_label = models.CharField(max_length=60, blank=True)
