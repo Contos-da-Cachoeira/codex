@@ -155,8 +155,34 @@ FIRST_DAY_OF_WEEK = 1
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "/media/"
+MEDIA_URL = os.environ.get("DJANGO_MEDIA_URL", "/media/")
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Local development can share the production media directory through SFTP.
+# Production keeps using its local disk, which Nginx serves at /media/.
+if os.environ.get("DJANGO_MEDIA_SFTP_HOST"):
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.sftpstorage.SFTPStorage",
+            "OPTIONS": {
+                "host": os.environ["DJANGO_MEDIA_SFTP_HOST"],
+                "root_path": os.environ["DJANGO_MEDIA_SFTP_ROOT"],
+                "base_url": MEDIA_URL,
+                "params": {
+                    "username": os.environ["DJANGO_MEDIA_SFTP_USER"],
+                    "port": int(os.environ.get("DJANGO_MEDIA_SFTP_PORT", "22")),
+                    "key_filename": os.path.expanduser(os.environ["DJANGO_MEDIA_SFTP_KEY"]),
+                    "timeout": 15,
+                },
+                "interactive": False,
+                "file_mode": 0o644,
+                "dir_mode": 0o755,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'

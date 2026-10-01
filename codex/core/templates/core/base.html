@@ -239,6 +239,12 @@
       height: 1.35rem;
     }
 
+    .site-account-initial {
+      font-size: 1.15rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+
     .site-footer-frame {
       position: relative;
       min-height: 12rem;
@@ -719,7 +725,7 @@
         align-items: center;
         justify-content: center;
         border: 1px solid rgb(79 215 255 / 0.55);
-        border-radius: 0.35rem;
+        border-radius: 50%;
         background: var(--site-surface);
         color: var(--site-text);
       }
@@ -980,10 +986,14 @@
         width: 2.75rem;
         height: 2.75rem;
         border: 1px solid var(--codex-border-soft);
-        border-radius: 0.55rem;
+        border-radius: 50%;
         background: var(--codex-elevated);
         color: var(--codex-text);
         box-shadow: none;
+      }
+
+      .site-shell:has(.site-header-frame.is-open) > .site-sidebar-toggle {
+        display: none;
       }
 
       .site-sidebar-toggle:hover,
@@ -993,7 +1003,7 @@
       }
 
       .site-header-frame {
-        width: 16rem;
+        width: max-content;
         height: 100dvh;
         max-height: 100dvh;
         border-right-color: var(--codex-border);
@@ -1004,11 +1014,12 @@
 
       .site-main-nav > .container {
         box-sizing: border-box;
+        width: max-content;
         gap: 1.5rem;
         height: 100%;
         min-height: 0;
         overflow: hidden;
-        padding: 4.75rem 1rem 1.25rem;
+        padding: 4.75rem 19px 1.25rem 1rem;
       }
 
       .site-header-frame .site-brand {
@@ -1085,6 +1096,13 @@
         font-size: .85rem;
         font-weight: 500;
         letter-spacing: normal;
+      }
+
+      .site-header-frame .site-brand,
+      .site-sidebar-links .site-nav-link,
+      .site-sidebar-tools > .items-center a {
+        padding-right: 0;
+        white-space: nowrap;
       }
 
       .site-sidebar-tools > .items-center a:hover,
@@ -1363,7 +1381,7 @@
     {% if layout_config.header_visible %}
     <button type="button" class="site-sidebar-toggle" data-sidebar-toggle aria-label="Abrir menu">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 15h9" />
       </svg>
     </button>
     <button type="button" class="site-sidebar-overlay" data-sidebar-close aria-label="Fechar menu"></button>
@@ -1421,10 +1439,7 @@
                     {% elif account_profile and account_profile.avatar %}
                       <img src="{{ account_profile.avatar.url }}" alt="Foto de perfil de {{ user.username }}" />
                     {% else %}
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                        <circle cx="12" cy="8" r="3.25"></circle>
-                        <path stroke-linecap="round" d="M5.5 20a6.5 6.5 0 0 1 13 0"></path>
-                      </svg>
+                      <span class="site-account-initial" aria-hidden="true">{{ account_profile.nome_completo_jogador|default:user.get_full_name|default:user.username|slice:':1'|upper }}</span>
                     {% endif %}
                   </button>
                   <ul tabindex="0" class="site-account-menu menu dropdown-content z-50 mt-3 w-56 rounded-box border border-base-300 bg-base-100 p-2 text-base-content shadow-xl" data-account-menu>

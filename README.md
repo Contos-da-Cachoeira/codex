@@ -64,6 +64,24 @@ Abra http://127.0.0.1:8000/ no navegador.
 
 ## Comandos úteis
 
+### Imagens compartilhadas com o servidor
+
+Uploads usam o armazenamento padrão do Django. No servidor, os arquivos ficam
+em `codex/media/`, publicado pelo Nginx em `/media/`. Para enviar imagens ao mesmo
+diretório ao executar o site no computador, configure as variáveis
+`DJANGO_MEDIA_SFTP_*` e a URL pública `DJANGO_MEDIA_URL` descritas em `.env.example`.
+A conexão usa a chave SSH local; ela não deve ser copiada para o repositório.
+O computador precisa conseguir acessar o servidor por SSH (incluindo a rede
+Tailscale, quando usada). Reinicie o servidor local após alterar o `.env`.
+
+Para copiar arquivos antigos, execute `python manage.py sync_media_to_storage`
+para conferir e acrescente `--apply` para transferir. O comando verifica SHA-256,
+preserva os arquivos locais e interrompe caso um caminho remoto tenha conteúdo
+diferente. Não configure SFTP no próprio servidor de produção: ele já usa o disco
+publicado pelo Nginx.
+
+Referência: [armazenamento SFTP do django-storages](https://django-storages.readthedocs.io/en/latest/backends/sftp.html).
+
 Com o ambiente virtual ativado e dentro da pasta `codex`:
 
 ```bash

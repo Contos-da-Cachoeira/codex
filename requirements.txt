@@ -3,3 +3,4 @@ psycopg==3.2.6
 Pillow==11.2.1
 gunicorn==26.2.0
 python-dotenv==1.2.3
+django-storages[sftp]==1.14.6
