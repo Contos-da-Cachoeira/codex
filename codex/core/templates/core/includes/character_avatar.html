@@ -1,0 +1,7 @@
+<span class="identity-avatar {{ avatar_class }}" role="img" aria-label="Foto de {{ character.nome }}">
+  {% if character.image_asset %}
+    {% include 'core/includes/image_asset.html' with asset=character.image_asset image_alt=character.nome %}
+  {% else %}
+    <span aria-hidden="true">{{ character.nome|slice:':1'|upper }}</span>
+  {% endif %}
+</span>

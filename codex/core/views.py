@@ -87,7 +87,7 @@ def detalhe_larp(request, slug):
             evento.delete()
             messages.success(request, 'Evento e inscrições excluídos.')
             return redirect(f"{reverse('admin_dashboard')}#larp_modal")
-        inscricoes = evento.inscricoes.select_related('usuario', 'personagem').order_by('nome_completo_jogador', 'id')
+        inscricoes = evento.inscricoes.select_related('usuario__profile__image_asset', 'personagem__image_asset').order_by('nome_completo_jogador', 'id')
 
         if request.method == 'POST' and request.POST.get('action') == 'edit_event':
             event_form = LarpEventoForm(request.POST, request.FILES, instance=evento)
@@ -183,7 +183,7 @@ def planilha_larp(request, slug):
     if not _is_admin(request.user):
         return redirect('home')
     evento = get_object_or_404(LarpEvento, slug=slug)
-    inscricoes = evento.inscricoes.select_related('usuario', 'personagem').order_by('nome_completo_jogador', 'id')
+    inscricoes = evento.inscricoes.select_related('usuario__profile__image_asset', 'personagem__image_asset').order_by('nome_completo_jogador', 'id')
     balance_rows = []
     editing_balances = request.method == 'POST' and request.POST.get('action') == 'update_balances'
     for registration in inscricoes:

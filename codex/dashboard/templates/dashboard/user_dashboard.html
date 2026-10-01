@@ -15,7 +15,7 @@
         <h2 class="card-title">Minha Conta</h2>
         <p>Visualize informacoes da sua sessao e dados basicos do perfil.</p>
         <ul class="list bg-base-200 rounded-box">
-          <li class="list-row"><span>Usuario:</span><strong>{{ request.user.username }}</strong></li>
+          <li class="list-row"><span>Usuario:</span><strong>{% include 'core/includes/user_avatar.html' with avatar_user=request.user %} {{ request.user.username }}</strong></li>
           <li class="list-row"><span>Email:</span><strong>{{ request.user.email|default:'Nao informado' }}</strong></li>
         </ul>
       </div>

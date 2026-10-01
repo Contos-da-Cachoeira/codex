@@ -1,0 +1,11 @@
+{% with avatar_profile=avatar_user.profile %}
+<span class="identity-avatar {{ avatar_class }}" role="img" aria-label="Foto de {{ avatar_user.username }}">
+  {% if avatar_profile.image_asset %}
+    {% include 'core/includes/image_asset.html' with asset=avatar_profile.image_asset image_alt=avatar_user.username %}
+  {% elif avatar_profile.avatar %}
+    <img src="{{ avatar_profile.avatar.url }}" alt="" loading="lazy">
+  {% else %}
+    <span aria-hidden="true">{{ avatar_profile.nome_completo_jogador|default:avatar_user.get_full_name|default:avatar_user.username|slice:':1'|upper }}</span>
+  {% endif %}
+</span>
+{% endwith %}

@@ -94,14 +94,14 @@ def home_preview(request):
 def admin_user_profile(request, user_id):
     if not _is_admin(request.user):
         return redirect('home')
-    account = get_object_or_404(User.objects.select_related('profile'), pk=user_id)
+    account = get_object_or_404(User.objects.select_related('profile__image_asset'), pk=user_id)
     profile = getattr(account, 'profile', None)
     return render(request, 'dashboard/admin_user_profile.html', {
         'account': account,
         'player_profile': profile,
         'account_is_admin': _is_admin(account),
-        'characters': account.personagens.all(),
-        'registrations': account.inscricoes_larp.select_related('evento', 'personagem'),
+        'characters': account.personagens.select_related('image_asset').all(),
+        'registrations': account.inscricoes_larp.select_related('evento', 'personagem__image_asset'),
     })
 
 
@@ -415,14 +415,14 @@ def admin_dashboard(request):
         'home_sections_visible': HomeDynamicSection.objects.filter(is_visible=True).count(),
     }
 
-    recent_users = User.objects.order_by('-date_joined', '-id')[:5]
-    recent_characters = Personagem.objects.select_related('usuario').order_by('-data_criacao', '-id')[:5]
+    recent_users = User.objects.select_related('profile__image_asset').order_by('-date_joined', '-id')[:5]
+    recent_characters = Personagem.objects.select_related('image_asset', 'usuario__profile__image_asset').order_by('-data_criacao', '-id')[:5]
     recent_larps = LarpEvento.objects.order_by('-data_criacao', '-id')[:5]
-    pending_characters = Personagem.objects.select_related('usuario').filter(
+    pending_characters = Personagem.objects.select_related('image_asset', 'usuario__profile__image_asset').filter(
         status_aprovacao=STATUS_APROVACAO.PENDENTE,
     ).order_by('-data_criacao', '-id')[:5]
 
-    users = User.objects.select_related('profile').all().order_by('username')
+    users = User.objects.select_related('profile__image_asset').all().order_by('username')
     if q_value:
         users = users.filter(Q(username__icontains=q_value) | Q(email__icontains=q_value))
 
@@ -452,6 +452,7 @@ def admin_dashboard(request):
             continue
 
         users_with_role.append({
+            'account': user,
             'id': user.id,
             'username': user.username,
             'email': user.email,
@@ -460,7 +461,7 @@ def admin_dashboard(request):
             'role_label': role_label,
         })
 
-    personagens_queryset = Personagem.objects.select_related('usuario').order_by('nome')
+    personagens_queryset = Personagem.objects.select_related('image_asset', 'usuario__profile__image_asset').order_by('nome')
     if character_q_value:
         query_lower = character_q_value.lower()
         matching_guildas = [
@@ -494,6 +495,7 @@ def admin_dashboard(request):
 
     personagens_data = [
         {
+            'character': personagem,
             'id': personagem.id,
             'nome': personagem.nome,
             'slug': personagem.slug,

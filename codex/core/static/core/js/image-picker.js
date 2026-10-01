@@ -154,11 +154,22 @@ document.addEventListener('DOMContentLoaded',()=>{
     };
     window.CodexImagePicker.open({fixedRatio:true,initial,onSelect:asset=>{
       button.dataset.selectedImage=JSON.stringify(asset);
-      document.querySelector('[name=image_asset]').value=asset.id;
-      const box=document.querySelector('[data-profile-image-preview]');
+      const scope=button.closest('form') || document;
+      scope.querySelector('[name=image_asset]').value=asset.id;
+      const box=scope.querySelector('[data-profile-image-preview]');
       box.replaceChildren();const img=document.createElement('img');img.src=asset.source;img.alt='Foto de perfil';
       img.style.cssText=`width:100%;height:100%;object-fit:cover;object-position:${asset.x}% ${asset.y}%;transform:scale(${asset.zoom});transform-origin:${asset.x}% ${asset.y}%`;
       box.append(img);
     }});
+  }));
+  document.querySelectorAll('[data-remove-character-image]').forEach(button=>button.addEventListener('click',()=>{
+    const field=button.closest('[data-character-image-field]');
+    field.querySelector('[name=image_asset]').value='';
+    const picker=field.querySelector('[data-profile-image-picker]');
+    delete picker.dataset.selectedImage;
+    picker.dataset.imageSource='';
+    const initial=document.createElement('span');
+    initial.textContent=(button.closest('form').querySelector('[name=nome]').value.trim()[0] || '?').toUpperCase();
+    field.querySelector('[data-profile-image-preview]').replaceChildren(initial);
   }));
 });

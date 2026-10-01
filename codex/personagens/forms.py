@@ -2,7 +2,7 @@ from django import forms
 from django.db import transaction
 from accounts.forms import birth_date_field
 
-from core.models import LarpInscricao, Profile
+from core.models import ImageAsset, LarpInscricao, Profile
 from wiki.constants.talentos import TALENTOS_WIKI
 
 from .consts import (
@@ -26,6 +26,7 @@ def _talentos_choices():
 
 
 class PersonagemCreateForm(forms.Form):
+    image_asset = forms.ModelChoiceField(queryset=ImageAsset.objects.none(), required=False, widget=forms.HiddenInput)
     nome = forms.CharField(max_length=120, required=True)
     descricao_personagem = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}), required=True)
     guilda = forms.ChoiceField(choices=GUILDAS_CHOICES, required=True)
@@ -47,6 +48,8 @@ class PersonagemCreateForm(forms.Form):
     def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.user = user
+
+        self.fields['image_asset'].queryset = ImageAsset.objects.filter(owner=user) if user else ImageAsset.objects.none()
 
         classe_value = self.data.get('classe') if self.is_bound else self.initial.get('classe')
         try:
@@ -93,6 +96,7 @@ class PersonagemCreateForm(forms.Form):
 
         personagem = Personagem.objects.create(
             usuario=self.user,
+            image_asset=self.cleaned_data.get('image_asset'),
             nome=self.cleaned_data['nome'].strip(),
             historia=self.cleaned_data['descricao_personagem'].strip(),
             aparencia='',
@@ -260,9 +264,16 @@ class LarpInscricaoEventoForm(forms.Form):
 
 
 class PersonagemUpdateForm(forms.ModelForm):
+    image_asset = forms.ModelChoiceField(queryset=ImageAsset.objects.none(), required=False, widget=forms.HiddenInput)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['image_asset'].queryset = ImageAsset.objects.filter(owner_id=self.instance.usuario_id)
+
     class Meta:
         model = Personagem
         fields = (
+            'image_asset',
             'nome',
             'historia',
             'aparencia',

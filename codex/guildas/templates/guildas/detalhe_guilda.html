@@ -150,6 +150,7 @@
                                 {% for personagem in personagens_guilda %}
                                     <tr>
                                         <td>
+                                            {% include 'core/includes/character_avatar.html' with character=personagem %}
                                             {% if personagem.usuario == user %}
                                                 <a class="link link-primary" href="{% url 'detalhe_personagem' personagem.slug %}">{{ personagem.nome }}</a>
                                             {% else %}
@@ -157,7 +158,7 @@
                                             {% endif %}
                                         </td>
                                         <td>{{ personagem.get_classe_display }}</td>
-                                        <td>{{ personagem.usuario.username }}</td>
+                                        <td>{% include 'core/includes/user_avatar.html' with avatar_user=personagem.usuario %} {{ personagem.usuario.username }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>

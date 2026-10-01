@@ -13,6 +13,7 @@
     <div class="card-body">
       <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {% csrf_token %}
+        {% include 'personagens/image_field.html' %}
 
         {% if form.non_field_errors %}
           <div class="md:col-span-2 alert alert-error">

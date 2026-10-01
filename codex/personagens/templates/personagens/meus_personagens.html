@@ -16,7 +16,7 @@
     {% for personagem in personagens %}
       <article class="card bg-base-100 shadow-md border border-base-300">
         <div class="card-body">
-          <h2 class="card-title">{{ personagem.nome }}</h2>
+          <h2 class="card-title">{% include 'core/includes/character_avatar.html' with character=personagem %} {{ personagem.nome }}</h2>
           <div class="text-sm text-base-content/70">{{ personagem.slug }}</div>
 
           <div class="mt-2 space-y-1 text-sm">

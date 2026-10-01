@@ -4,7 +4,7 @@
 <section class="space-y-6">
   <div class="flex flex-wrap items-center justify-between gap-4">
     <div class="flex items-center gap-4">
-      {% if player_profile.image_asset %}<div class="w-16 h-16 rounded-full overflow-hidden">{% include 'core/includes/image_asset.html' with asset=player_profile.image_asset %}</div>{% elif player_profile.avatar %}<img src="{{ player_profile.avatar.url }}" alt="Avatar de {{ account.username }}" class="w-16 h-16 rounded-full object-cover">{% endif %}
+      {% include 'core/includes/user_avatar.html' with avatar_user=account avatar_class='identity-avatar-large' %}
       <div><h1 class="text-2xl font-bold">{{ account.username }}</h1><p class="text-base-content/70">{% if account.is_superuser %}Superadministrador{% elif account_is_admin %}Administrador{% else %}Usuário comum{% endif %} · {% if account.is_active %}Conta ativa{% else %}Conta inativa{% endif %}</p></div>
     </div>
     <a href="{% url 'admin_dashboard' %}#user_roles_modal" class="btn btn-outline">← Voltar aos usuários</a>
@@ -28,7 +28,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       {% for character in characters %}
       <div class="rounded-box border border-base-300 p-4">
-        <h3 class="font-bold">{{ character.nome }}</h3>
+        <h3 class="font-bold">{% include 'core/includes/character_avatar.html' with character=character %} {{ character.nome }}</h3>
         <p class="text-sm mt-2">{{ character.get_classe_display|default:'Sem classe' }} · {{ character.get_guilda_display|default:'Sem guilda' }}</p>
         <p class="text-sm text-base-content/70">{{ character.get_status_display }} · {{ character.get_status_aprovacao_display }}</p>
       </div>

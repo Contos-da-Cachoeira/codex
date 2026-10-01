@@ -7,7 +7,8 @@
   <div class="bg-base-100 rounded-box p-6 shadow-lg border border-base-300">
     <div class="flex flex-wrap items-start justify-between gap-3">
       <div>
-        <h1 class="text-3xl font-bold">{{ personagem.nome }}</h1>
+        {% include 'core/includes/character_avatar.html' with character=personagem avatar_class='identity-avatar-large' %}
+        <h1 class="text-3xl font-bold mt-3">{{ personagem.nome }}</h1>
         <p class="mt-2 text-base-content/80">Slug: {{ personagem.slug }}</p>
       </div>
       <div class="flex gap-2">

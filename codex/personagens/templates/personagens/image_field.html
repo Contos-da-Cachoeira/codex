@@ -1,0 +1,16 @@
+<div class="md:col-span-2 space-y-3" data-character-image-field>
+  <p class="font-semibold">Foto do personagem</p>
+  <div class="identity-avatar identity-avatar-large" data-profile-image-preview>
+    {% if selected_image %}
+      {% include 'core/includes/image_asset.html' with asset=selected_image %}
+    {% else %}
+      <span>{{ form.nome.value|default:'?'|slice:':1'|upper }}</span>
+    {% endif %}
+  </div>
+  {{ form.image_asset }}
+  {{ form.image_asset.errors }}
+  <div class="flex flex-wrap gap-2">
+    <button type="button" class="btn btn-outline" data-profile-image-picker data-image-source="{{ selected_image.source }}" data-image-x="{{ selected_image.x|default_if_none:50|stringformat:'.6f' }}" data-image-y="{{ selected_image.y|default_if_none:50|stringformat:'.6f' }}" data-image-zoom="{{ selected_image.zoom|default_if_none:1|stringformat:'.4f' }}">Escolher imagem e enquadrar</button>
+    <button type="button" class="btn btn-ghost" data-remove-character-image>Remover foto</button>
+  </div>
+</div>

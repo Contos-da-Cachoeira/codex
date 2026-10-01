@@ -13,6 +13,7 @@ from .consts import (
 
 
 class Personagem(models.Model):
+	image_asset = models.ForeignKey('core.ImageAsset', null=True, blank=True, on_delete=models.SET_NULL)
 	usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='personagens')
 	nome = models.CharField(max_length=120)
 	slug = models.SlugField(max_length=140, unique=True, blank=True)

@@ -53,7 +53,7 @@
       <div class="mb-4 flex items-start justify-between gap-3"><div><p class="text-xs font-bold uppercase tracking-[0.16em] text-base-content/55">Acoes prioritarias</p><h2 class="mt-1 text-xl font-bold">Atencao do admin</h2></div><span class="badge badge-warning">{{ dashboard_stats.characters_pending }}</span></div>
       {% if pending_characters %}
         <div class="space-y-3">
-          {% for personagem in pending_characters %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ personagem.nome }}</p><p class="truncate text-xs text-base-content/60">{{ personagem.usuario.username }}</p></div><span class="badge badge-warning badge-sm">Pendente</span></div>{% endfor %}
+          {% for personagem in pending_characters %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{% include 'core/includes/character_avatar.html' with character=personagem %} {{ personagem.nome }}</p><p class="truncate text-xs text-base-content/60">{% include 'core/includes/user_avatar.html' with avatar_user=personagem.usuario %} {{ personagem.usuario.username }}</p></div><span class="badge badge-warning badge-sm">Pendente</span></div>{% endfor %}
         </div>
         <button type="button" class="btn btn-warning btn-sm mt-5 w-full" data-admin-target="character_modal">Revisar personagens</button>
       {% else %}<div class="rounded-box bg-success/10 p-4 text-sm text-success-content">Nenhuma aprovacao pendente no momento.</div>{% endif %}
@@ -61,8 +61,8 @@
   </div>
 
   <div class="grid grid-cols-1 gap-6 xl:grid-cols-3">
-    <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">Usuarios recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-admin-target="user_roles_modal">Ver todos</button></div><div class="space-y-3">{% for recent_user in recent_users %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ recent_user.username }}</p><p class="truncate text-xs text-base-content/60">{{ recent_user.email|default:'Sem email' }}</p></div>{% if recent_user.is_superuser %}<span class="badge badge-warning badge-sm">Super</span>{% elif recent_user.profile.role == 'ADMIN' %}<span class="badge badge-primary badge-sm">Admin</span>{% else %}<span class="badge badge-ghost badge-sm">User</span>{% endif %}</div>{% empty %}<p class="text-sm text-base-content/60">Nenhum usuario cadastrado.</p>{% endfor %}</div></div>
-    <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">Personagens recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-admin-target="character_modal">Ver todos</button></div><div class="space-y-3">{% for personagem in recent_characters %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ personagem.nome }}</p><p class="truncate text-xs text-base-content/60">{{ personagem.usuario.username }}</p></div><span class="badge badge-sm {% if personagem.status_aprovacao == 1 %}badge-warning{% elif personagem.status_aprovacao == 2 %}badge-success{% else %}badge-error{% endif %}">{{ personagem.get_status_aprovacao_display }}</span></div>{% empty %}<p class="text-sm text-base-content/60">Nenhum personagem cadastrado.</p>{% endfor %}</div></div>
+    <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">Usuarios recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-admin-target="user_roles_modal">Ver todos</button></div><div class="space-y-3">{% for recent_user in recent_users %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{% include 'core/includes/user_avatar.html' with avatar_user=recent_user %} {{ recent_user.username }}</p><p class="truncate text-xs text-base-content/60">{{ recent_user.email|default:'Sem email' }}</p></div>{% if recent_user.is_superuser %}<span class="badge badge-warning badge-sm">Super</span>{% elif recent_user.profile.role == 'ADMIN' %}<span class="badge badge-primary badge-sm">Admin</span>{% else %}<span class="badge badge-ghost badge-sm">User</span>{% endif %}</div>{% empty %}<p class="text-sm text-base-content/60">Nenhum usuario cadastrado.</p>{% endfor %}</div></div>
+    <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">Personagens recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-admin-target="character_modal">Ver todos</button></div><div class="space-y-3">{% for personagem in recent_characters %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{% include 'core/includes/character_avatar.html' with character=personagem %} {{ personagem.nome }}</p><p class="truncate text-xs text-base-content/60">{% include 'core/includes/user_avatar.html' with avatar_user=personagem.usuario %} {{ personagem.usuario.username }}</p></div><span class="badge badge-sm {% if personagem.status_aprovacao == 1 %}badge-warning{% elif personagem.status_aprovacao == 2 %}badge-success{% else %}badge-error{% endif %}">{{ personagem.get_status_aprovacao_display }}</span></div>{% empty %}<p class="text-sm text-base-content/60">Nenhum personagem cadastrado.</p>{% endfor %}</div></div>
     <div class="rounded-box border border-base-300 bg-base-100 p-5 shadow-md"><div class="mb-4 flex items-center justify-between gap-3"><h2 class="text-xl font-bold">LARPs recentes</h2><button type="button" class="btn btn-xs btn-ghost" data-admin-target="larp_modal">Ver todos</button></div><div class="space-y-3">{% for larp in recent_larps %}<div class="flex items-center justify-between gap-3 border-b border-base-300 pb-3 last:border-0 last:pb-0"><div class="min-w-0"><p class="truncate font-semibold">{{ larp.titulo }}</p><p class="truncate text-xs text-base-content/60">Evento: {{ larp.data_evento|date:'d/m/Y H:i' }}<br>Inscrições até: {{ larp.data_limite_inscricao|date:'d/m/Y H:i' }}</p></div>{% if larp.visivel_publicamente %}<span class="badge badge-success badge-sm">Publico</span>{% else %}<span class="badge badge-ghost badge-sm">Privado</span>{% endif %}</div>{% empty %}<p class="text-sm text-base-content/60">Nenhum LARP criado.</p>{% endfor %}</div></div>
   </div>
 
@@ -214,7 +214,7 @@
               {% for item in users_with_role %}
                 <tr>
                   <td>
-                    <div class="font-semibold">{{ item.username }}</div>
+                    <div class="font-semibold">{% include 'core/includes/user_avatar.html' with avatar_user=item.account %} {{ item.username }}</div>
                     {% if item.is_superuser %}
                       <span class="badge badge-warning badge-sm">superusuario</span>
                     {% endif %}
@@ -310,11 +310,11 @@
               {% for item in personagens_data %}
                 <tr>
                   <td>
-                    <div class="font-semibold">{{ item.nome }}</div>
+                    <div class="font-semibold">{% include 'core/includes/character_avatar.html' with character=item.character %} {{ item.nome }}</div>
                     <div class="text-xs text-base-content/70">{{ item.slug }}</div>
                     <input type="hidden" name="personagem_ids" value="{{ item.id }}" />
                   </td>
-                  <td>{{ item.usuario }}</td>
+                  <td>{% include 'core/includes/user_avatar.html' with avatar_user=item.character.usuario %} {{ item.usuario }}</td>
                   <td>
                     <select name="status_{{ item.id }}" class="select select-bordered select-sm w-full min-w-40" required>
                       {% for value, label in character_status_options %}

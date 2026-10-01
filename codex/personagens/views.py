@@ -42,9 +42,16 @@ CLASSE_IMAGEM_BY_ID = {
 }
 
 
+def _selected_image(form):
+	value = form['image_asset'].value()
+	if str(value).isdigit():
+		return form.fields['image_asset'].queryset.filter(pk=value).first()
+	return None
+
+
 @login_required
 def meus_personagens(request):
-	personagens = Personagem.objects.filter(usuario=request.user).order_by('-data_criacao')
+	personagens = Personagem.objects.select_related('image_asset').filter(usuario=request.user).order_by('-data_criacao')
 	context = {'personagens': personagens}
 	return render(request, 'personagens/meus_personagens.html', context)
 
@@ -64,6 +71,7 @@ def criar_personagem(request):
 
 	context = {
 		'form': form,
+		'selected_image': _selected_image(form),
 		'popup_mode': popup_mode,
 		'created_in_popup': request.GET.get('created', ''),
 		'guildas_personagem': [
@@ -108,6 +116,7 @@ def editar_personagem(request, slug):
 
 	context = {
 		'form': form,
+		'selected_image': _selected_image(form),
 		'personagem': personagem,
 	}
 	return render(request, 'personagens/editar_personagem.html', context)

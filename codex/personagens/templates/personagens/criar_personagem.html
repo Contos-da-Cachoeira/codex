@@ -112,6 +112,7 @@
     <div class="card-body">
       <form method="post" id="personagem-form" class="space-y-4">
         {% csrf_token %}
+        {% include 'personagens/image_field.html' %}
 
         {% if form.non_field_errors %}
           <div class="alert alert-error"><span>{{ form.non_field_errors|striptags }}</span></div>

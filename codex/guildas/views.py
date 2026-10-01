@@ -178,7 +178,7 @@ def detalhe_guilda(request, slug):
         )
     
     # Obtém lista de personagens na guilda para contagem
-    personagens_guilda = Personagem.objects.filter(
+    personagens_guilda = Personagem.objects.select_related('image_asset', 'usuario__profile__image_asset').filter(
         guilda=guilda.guilda_id,
         status_aprovacao=STATUS_APROVACAO.APROVADO,
         status=STATUS_PERSONAGEM.ATIVO,
