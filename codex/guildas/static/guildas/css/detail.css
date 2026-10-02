@@ -1,0 +1,16 @@
+.guild-page { --guild-accent: #c9c9c9; max-width: 1280px; margin-inline: auto; }
+.guild-hero { display: grid; grid-template-columns: minmax(200px, .7fr) minmax(0, 1.5fr); align-items: center; gap: clamp(1.5rem, 4vw, 4rem); padding: clamp(1.5rem, 5vw, 4rem); border: 1px solid #ffffff24; border-radius: 1.5rem; background: radial-gradient(ellipse at 15% 40%, #ffffff10, transparent 65%), var(--color-base-100); position: relative; overflow: hidden; }
+.guild-hero::after { content: ''; position: absolute; top: 0; right: 3rem; width: 3rem; height: 5rem; background: #ffffff08; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%); }
+.guild-crest { display: grid; place-items: center; aspect-ratio: 1; border: 1px solid #ffffff18; border-radius: 50%; background: #c9c9c9; padding: 1.5rem; }
+.guild-crest img { width: 100%; height: 100%; max-height: 290px; object-fit: contain; filter: grayscale(1); }
+.guild-eyebrow { font-size: .7rem; letter-spacing: .25em; text-transform: uppercase; opacity: .65; margin-bottom: 1rem; }
+.guild-heading h1 { font-family: Georgia, serif; font-size: clamp(2.2rem, 4.5vw, 4rem); font-weight: 700; line-height: 1.1; text-wrap: balance; }
+.guild-subtitle { margin-top: 1.25rem; opacity: .7; line-height: 1.8; max-width: 40rem; }
+.guild-motto { font-family: Georgia, serif; font-style: italic; font-size: clamp(1.15rem, 2vw, 1.5rem); border-left: 2px solid var(--guild-accent); padding-left: 1rem; margin-block: 1.75rem; }
+.guild-heading > .badge { margin-top: 1rem; }
+.guild-page .card { border-radius: 1rem; }
+.guild-page .card-title { font-family: Georgia, serif; font-size: 1.4rem; margin-bottom: .5rem; }
+.guild-page .card-body { padding: clamp(1.25rem, 3vw, 2rem); }
+.guild-page .table td { white-space: normal; }
+.guild-page a:focus-visible { outline: 2px solid var(--guild-accent); outline-offset: 4px; }
+@media (max-width: 700px) { .guild-hero { grid-template-columns: 1fr; } .guild-crest { width: 180px; margin-inline: auto; } .guild-heading { text-align: center; } .guild-motto { text-align: left; } }

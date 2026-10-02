@@ -1,0 +1,193 @@
+﻿{
+    "prefix":  "Create one fantasy RPG wiki illustration matching the provided class illustration reference\u0027s minimalist cartoon ink style. Reference is STYLE ONLY; do not reproduce its wizard. Subject: ",
+    "suffix":  ". Bold smooth black outlines, flat white fills, a few solid black shapes, cute chunky proportions, extremely simple details readable at 120px. ONLY pure black and white. Transparent background. Center isolated whole symbol with generous clear margins. No scene, texture, realistic shading, gradients, glow, charcoal, 3D, text or letters. Square asset.",
+    "reference":  "codex/core/static/core/img/classes/Mago-ink.png",
+    "mode":  "built-in image_gen",
+    "jobs":  [
+                 {
+                     "section":  "magias",
+                     "slug":  "antidoto-magico",
+                     "subject":  "a small sprouting seed above an open healing palm, one tiny sparkle"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "barreira-magica",
+                     "subject":  "a simple domed magical barrier around a tiny wizard hat"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "bola-de-fogo",
+                     "subject":  "a round fireball with three bold curling flames and a short trailing tail"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "comunhao-com-a-natureza",
+                     "subject":  "two simple leaves surrounding a small open hand"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "contramagica",
+                     "subject":  "an open palm stopping a small star shaped magical projectile"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "exorcismo",
+                     "subject":  "a small harmless ghost leaving a circular protective sun symbol"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "lentidao",
+                     "subject":  "a simple hourglass beside a small snail"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "raio-eletrico",
+                     "subject":  "a single bold lightning bolt with two tiny electric sparks"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "silenciar",
+                     "subject":  "a simple closed mouth with one finger in a shushing gesture"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "toque-da-cura",
+                     "subject":  "two simplified hands surrounding a small heart"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "versos-de-protecao",
+                     "subject":  "an open little songbook with a musical note inside a shield"
+                 },
+                 {
+                     "section":  "magias",
+                     "slug":  "vigor-do-touro",
+                     "subject":  "a bold friendly bull head emblem with strong curved horns"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "armadura-adicional",
+                     "subject":  "a simple chest armor breastplate with one extra shoulder plate"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "arremesso-extra",
+                     "subject":  "two short throwing daggers arranged side by side"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "beneficios-de-patente",
+                     "subject":  "a simple guild rank medal with ribbon and three chevrons"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "flechas-adicionais",
+                     "subject":  "a small quiver containing exactly three arrows"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "esferas-adicionais",
+                     "subject":  "three round magic spheres with a tiny star symbol on each"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "magia-extra-classe",
+                     "subject":  "an open spellbook with a single star rising above the pages"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "usar-cajado",
+                     "subject":  "a simple curved wizard staff with one round orb at its tip"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "usar-dual",
+                     "subject":  "two crossed swords, one noticeably shorter than the other"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "recursos-financeiros",
+                     "subject":  "a small coin pouch with three round coins"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "equipamento-adicional",
+                     "subject":  "a small adventurer backpack with an extra rolled blanket"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "magia-outra-classe",
+                     "subject":  "two small open spellbooks connected by one curved arrow"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "usar-manopla",
+                     "subject":  "a simple armored glove with three short curved claws"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "armas-curtas",
+                     "subject":  "a single short broad dagger in a diagonal pose"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "armas-medias",
+                     "subject":  "a single medium one handed sword in a diagonal pose"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "armas-longas",
+                     "subject":  "a single long two handed greatsword with an extended grip"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "usar-esferas",
+                     "subject":  "one open palm holding a simple round magic sphere"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "usar-escudo",
+                     "subject":  "a simple broad medieval shield with a central boss"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "usar-arremesso",
+                     "subject":  "a small throwing knife with two simple motion strokes"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "usar-arco",
+                     "subject":  "a simple curved bow with a single arrow ready to shoot"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "conjurar",
+                     "subject":  "a small wizard hat above an open palm and one magic star"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "feitico-antigo",
+                     "subject":  "an old rolled spell scroll with one large abstract spiral rune"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "forma-selvagem",
+                     "subject":  "a simple animal paw print within two leaves"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "uso-extra",
+                     "subject":  "a small star surrounded by a circular arrow"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "multiclasse",
+                     "subject":  "a simple sword crossed with a wizard staff behind a small shield"
+                 },
+                 {
+                     "section":  "talentos",
+                     "slug":  "alquimista",
+                     "subject":  "two small potion flasks and one droplet moving between them"
+                 }
+             ]
+}

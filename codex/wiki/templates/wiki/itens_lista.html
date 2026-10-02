@@ -1,55 +1,40 @@
-{% extends 'core/base.html' %}
-
-{% block title %}Wiki | Itens{% endblock title %}
-
-{% block content %}
-  <section class="mb-8">
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div>
-        <h1 class="text-4xl font-black tracking-tight">Wiki de Itens</h1>
-        <p class="mt-2 text-base-content/70 max-w-3xl">
-          Catalogo de itens, consumiveis e utilitarios com valor, tipo, raridade e observacoes de uso.
-        </p>
-      </div>
-      <div class="flex gap-2">
-        <a href="{% url 'wiki_classes_lista' %}" class="btn btn-outline btn-sm">Ver Classes</a>
-        <a href="{% url 'wiki_magias_lista' %}" class="btn btn-outline btn-sm">Ver Magias</a>
-        <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-outline btn-sm">Ver Talentos</a>
-        <a href="{% url 'wiki_regras_lista' %}" class="btn btn-outline btn-sm">Ver Regras</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+﻿{% extends 'wiki/base.html' %}
+{% load static %}
+{% block title %}Wiki | Itens{% endblock %}
+{% block wiki_content %}
+  <header class="wiki-intro">
+    <p class="wiki-eyebrow">Equipamentos & alquimia · {{ itens|length }} itens</p>
+    <h1>O inventário da aventura</h1>
+    <p>De pequenos preparados a relíquias lendárias. Explore os itens, descubra seus efeitos e prepare seu próximo passo.</p>
+  </header>
+  <div class="wiki-toolbar">
+    <label class="wiki-search" for="wiki-item-search">Buscar no inventário
+      <input id="wiki-item-search" type="search" placeholder="Nome, tipo ou raridade…" data-wiki-search aria-controls="wiki-items">
+    </label>
+    <p class="text-sm opacity-70" data-wiki-count role="status" aria-live="polite">{{ itens|length }} itens</p>
+  </div>
+  <section class="wiki-item-grid" id="wiki-items" aria-label="Catálogo de itens">
     {% for item in itens %}
-      <article class="card bg-base-100 border border-base-300">
+      <article class="wiki-item-card card bg-base-100 border border-base-300" data-wiki-item="{{ item.nome }} {{ item.tipo }} {{ item.raridade }} {% if item.alquimico %}alquímico{% endif %}">
+        <a class="wiki-item-art" href="{% url 'wiki_item_detalhe' item.slug %}" tabindex="-1" aria-hidden="true">
+          <img src="{% static item.imagem %}" alt="" width="1024" height="1024" loading="lazy" decoding="async">
+        </a>
         <div class="card-body">
-          <div class="flex items-center justify-between gap-2">
-            <h2 class="card-title text-lg">{{ item.nome }}</h2>
-            <span class="badge badge-outline">{{ item.tipo }}</span>
+          <p class="wiki-eyebrow">{{ item.tipo }}</p>
+          <h2 class="card-title"><a href="{% url 'wiki_item_detalhe' item.slug %}">{{ item.nome }}</a></h2>
+          <div class="flex flex-wrap gap-2">
+            <span class="badge badge-outline">{{ item.valor }}</span>
+            <span class="badge {% if item.raridade == 'Lendário' %}badge-error{% elif item.raridade == 'Raro' %}badge-warning{% else %}badge-ghost{% endif %}">{{ item.raridade }}</span>
+            {% if item.alquimico %}<span class="badge badge-outline">Alquímico</span>{% endif %}
           </div>
-
-          <div class="flex flex-wrap gap-2 text-xs">
-            <span class="badge badge-neutral">{{ item.valor }}</span>
-            <span class="badge {% if item.raridade == 'Lendario' %}badge-error{% elif item.raridade == 'Raro' %}badge-warning{% else %}badge-ghost{% endif %}">
-              {{ item.raridade }}
-            </span>
-            {% if item.alquimico %}
-              <span class="badge badge-success">Alquimico</span>
-            {% endif %}
-          </div>
-
           <p class="text-sm text-base-content/70">{{ item.descricao }}</p>
-
-          <div class="card-actions justify-end mt-2">
-            <a href="{% url 'wiki_item_detalhe' item.slug %}" class="btn btn-primary btn-sm">Detalhes do item</a>
-          </div>
+          <div class="card-actions"><a href="{% url 'wiki_item_detalhe' item.slug %}" class="btn btn-outline btn-sm" aria-label="Detalhes de {{ item.nome }}">Explorar item <span aria-hidden="true">↗</span></a></div>
         </div>
       </article>
     {% empty %}
-      <div class="alert alert-info">
-        <span>Nenhum item cadastrado ainda.</span>
-      </div>
+      <p class="wiki-empty">Nenhum item cadastrado ainda.</p>
     {% endfor %}
   </section>
-{% endblock content %}
+  <p class="wiki-empty" data-wiki-empty hidden>Nenhum item encontrado. Tente outro nome, tipo ou raridade.</p>
+  <script src="{% static 'wiki/js/items.js' %}" defer></script>
+{% endblock %}

@@ -1,8 +1,8 @@
-{% extends 'core/base.html' %}
+{% extends 'wiki/base.html' %}
 
 {% block title %}Wiki | {{ regra.titulo }}{% endblock title %}
 
-{% block content %}
+{% block wiki_content %}
   <nav class="breadcrumbs text-sm mb-6">
     <ul>
       <li><a href="{% url 'home' %}">Home</a></li>
@@ -46,4 +46,4 @@
       </div>
     </div>
   </article>
-{% endblock content %}
+{% endblock wiki_content %}

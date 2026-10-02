@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block head_extra %}
+  <link rel="stylesheet" href="{% static 'guildas/css/detail.css' %}">
   {% if info_publica.imagem %}
     <link rel="icon" type="image/png" href="{% static info_publica.imagem %}">
   {% endif %}
@@ -10,35 +11,24 @@
 {% block title %}{{ info_publica.nome|default:guilda }}{% endblock %}
 
 {% block content %}
-<section class="space-y-6">
-    <div class="hero rounded-box border border-base-300 bg-base-100">
-        <div class="hero-content text-center py-10">
-            <div class="max-w-3xl space-y-3">
-                {% if info_publica.imagem %}
-                    <div class="mx-auto w-36 h-36 md:w-44 md:h-44 rounded-box bg-base-200/60 border border-base-300 p-3 flex items-center justify-center">
-                        <img
-                            src="{% static info_publica.imagem %}"
-                            alt="Brasao da guilda {{ info_publica.nome }}"
-                            class="max-w-full max-h-full object-contain"
-                            loading="lazy"
-                        >
-                    </div>
-                {% endif %}
-                <h1 class="text-4xl md:text-5xl font-bold">{{ info_publica.nome }}</h1>
-                <p class="text-base-content/70">{% block guilda_subtitulo %}Informacoes publicas para todos e area restrita para membros da guilda.{% endblock %}</p>
-                {% if eh_membro %}
-                    <span class="badge badge-success badge-lg">Acesso de membro ativo</span>
-                {% else %}
-                    <span class="badge badge-outline">Acesso publico</span>
-                {% endif %}
-            </div>
+<section class="guild-page space-y-6">
+    <nav class="breadcrumbs text-sm" aria-label="Localização"><ul><li><a href="{% url 'listar_guildas' %}">Guildas</a></li><li>{{ info_publica.nome }}</li></ul></nav>
+    <header class="guild-hero">
+        {% if info_publica.imagem %}
+        <figure class="guild-crest"><img src="{% static info_publica.imagem %}" alt="Brasão de {{ info_publica.nome }}" width="320" height="320" fetchpriority="high"></figure>
+        {% endif %}
+        <div class="guild-heading">
+            <p class="guild-eyebrow">Alianças do Codex</p>
+            <h1>{{ info_publica.nome }}</h1>
+            <p class="guild-subtitle">{% block guilda_subtitulo %}Conheça os ideais, a origem e os caminhos desta guilda.{% endblock %}</p>
+            {% if info_publica.lema %}<blockquote class="guild-motto">“{{ info_publica.lema }}”</blockquote>{% endif %}
+            {% if eh_membro %}<span class="badge badge-outline">Membro da guilda</span>{% elif pode_ver_privado %}<span class="badge badge-outline">Acesso administrativo</span>{% else %}<span class="badge badge-outline">Conheça a guilda</span>{% endif %}
         </div>
-    </div>
-
+    </header>
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
         <article class="card bg-base-100 border border-base-300 shadow-lg lg:col-span-2">
             <div class="card-body space-y-4">
-                <h2 class="card-title">Informacoes publicas</h2>
+                <h2 class="card-title">Identidade da guilda</h2>
 
                 <div class="grid sm:grid-cols-2 gap-4">
                     {% if info_publica.divindade %}
@@ -55,7 +45,7 @@
                     {% endif %}
                     {% if info_publica.lideranca %}
                         <div class="rounded-box bg-base-200 p-4">
-                            <p class="text-xs uppercase tracking-wide opacity-70">Lideranca</p>
+                            <p class="text-xs uppercase tracking-wide opacity-70">Liderança</p>
                             <p class="font-medium">{{ info_publica.lideranca }}</p>
                         </div>
                     {% endif %}
@@ -66,12 +56,6 @@
                         </div>
                     {% endif %}
                 </div>
-
-                {% if info_publica.lema %}
-                    <blockquote class="text-lg italic border-l-4 border-primary pl-4">
-                        "{{ info_publica.lema }}"
-                    </blockquote>
-                {% endif %}
 
                 {% if info_publica.marca_nome %}
                     <div role="alert" class="alert alert-error alert-soft">
@@ -93,7 +77,9 @@
 
             <div class="card bg-base-100 border border-base-300">
                 <div class="card-body">
-                    <h3 class="card-title text-base">Navegacao</h3>
+                    <h3 class="card-title text-base">Explore o Codex</h3>
+                    <p class="text-sm opacity-70">Descubra outras alianças e os caminhos que seu personagem pode seguir.</p>
+                    <a href="{% url 'wiki_classes_lista' %}" class="btn btn-ghost btn-sm">Conhecer as classes</a>
                     <a href="{% url 'listar_guildas' %}" class="btn btn-outline btn-sm">Voltar para todas as guildas</a>
                 </div>
             </div>
@@ -112,7 +98,7 @@
     {% if pode_ver_privado %}
         <article class="card bg-base-100 border border-base-300 shadow-md">
             <div class="card-body">
-                <h2 class="card-title">Noticias internas</h2>
+                <h2 class="card-title">Notícias internas</h2>
                 {% if noticias %}
                     <ul class="list bg-base-100 rounded-box">
                         {% for noticia in noticias %}
@@ -126,12 +112,13 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="text-sm opacity-70">Nenhuma noticia interna publicada.</p>
+                    <p class="text-sm opacity-70">Nenhuma notícia interna publicada.</p>
                 {% endif %}
             </div>
         </article>
     {% endif %}
 
+    {% if pode_ver_privado %}
     <article class="card bg-base-100 border border-base-300 shadow-md">
         <div class="card-body">
             <h2 class="card-title">Personagens aprovados</h2>
@@ -170,5 +157,6 @@
             {% endif %}
         </div>
     </article>
+    {% endif %}
 </section>
 {% endblock %}

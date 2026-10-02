@@ -1,23 +1,18 @@
-{% extends 'core/base.html' %}
+{% extends 'wiki/base.html' %}
 
 {% block title %}Wiki | Regras{% endblock title %}
 
-{% block content %}
+{% block wiki_content %}
   <section class="mb-8">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div>
         <h1 class="text-4xl font-black tracking-tight">Wiki de Regras</h1>
         <p class="mt-2 text-base-content/70 max-w-3xl">
-          Regras oficiais do jogo em formato de Wiki. Este conteudo e estatico e pode ser alterado
-          facilmente em arquivos de constantes.
+          Consulte as regras do jogo e encontre orientações para sua próxima aventura.
+
         </p>
       </div>
-      <div class="flex gap-2">
-        <a href="{% url 'wiki_classes_lista' %}" class="btn btn-outline btn-sm">Ver Classes</a>
-        <a href="{% url 'wiki_magias_lista' %}" class="btn btn-outline btn-sm">Ver Magias</a>
-        <a href="{% url 'wiki_itens_lista' %}" class="btn btn-outline btn-sm">Ver Itens</a>
-        <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-outline btn-sm">Ver Talentos</a>
-      </div>
+
     </div>
   </section>
 
@@ -41,4 +36,4 @@
       </div>
     {% endfor %}
   </section>
-{% endblock content %}
+{% endblock wiki_content %}

@@ -1,7 +1,7 @@
 CLASSES_WIKI = {
     "BARBARO": {
         "nome": "Bárbaro",
-        "imagem": "core/img/classes/Barbaro.png",
+        "imagem": "core/img/classes/Barbaro-ink.png",
         "tipo": "Combatente corpo a corpo",
         "descricao": "Guerreiro tribal, normalmente selvagem, que ganha poder de sua fúria e instinto de luta.",
         "sabe_usar": "Armas corpo-a-corpo curtas, médias ou longas.",
@@ -17,7 +17,7 @@ CLASSES_WIKI = {
 
     "BARDO": {
         "nome": "Bardo",
-        "imagem": "core/img/classes/Bardo.png",
+        "imagem": "core/img/classes/Bardo-ink.png",
         "tipo": "Conjurador de suporte e manipulação",
         "descricao": "Artista de ruas ou cortes, capaz de fazer magia pelo poder da sua música.",
         "sabe_usar": "Armas corpo-a-corpo curtas e de arremesso.",
@@ -34,7 +34,7 @@ CLASSES_WIKI = {
 
     "CACADOR": {
         "nome": "Caçador",
-        "imagem": "core/img/classes/Caçador.png",
+        "imagem": "core/img/classes/Cacador-ink.png",
         "tipo": "Combatente tático e rastreador",
         "descricao": "Mestres da selva ou caçadores de recompensa, experts em encontrar e eliminar suas presas.",
         "sabe_usar": "Armas corpo-a-corpo médias e curtas e armas à distância.",
@@ -51,7 +51,7 @@ CLASSES_WIKI = {
 
     "CLERIGO": {
         "nome": "Clérigo",
-        "imagem": "core/img/classes/Clérigo.png",
+        "imagem": "core/img/classes/Clerigo-ink.png",
         "tipo": "Conjurador divino e curandeiro",
         "descricao": "Sacerdote mágico que consegue poder através da fé em sua divindade.",
         "sabe_usar": "Armas corpo-a-corpo curtas ou médias (não usa dual); cajado.",
@@ -69,7 +69,7 @@ CLASSES_WIKI = {
 
     "DRUIDA": {
         "nome": "Druida",
-        "imagem": "core/img/classes/Druida.png",
+        "imagem": "core/img/classes/Druida-ink.png",
         "tipo": "Conjurador natural e transformista",
         "descricao": "Sacerdote das matas, ligado ao poder da natureza e de seus espíritos.",
         "sabe_usar": "Armas corpo-a-corpo curtas, médias ou longas; manopla de garras; cajado.",
@@ -86,7 +86,7 @@ CLASSES_WIKI = {
 
     "GUERREIRO": {
         "nome": "Guerreiro",
-        "imagem": "core/img/classes/Guerreiro.png",
+        "imagem": "core/img/classes/Guerreiro-ink.png",
         "tipo": "Combatente marcial resistente",
         "descricao": "Soldado treinado para vencer missões perigosas apenas com suas armas e estratégia.",
         "sabe_usar": "Armas corpo-a-corpo curtas, médias e longas.",
@@ -103,7 +103,7 @@ CLASSES_WIKI = {
 
     "LADINO": {
         "nome": "Ladino",
-        "imagem": "core/img/classes/Ladino.png",
+        "imagem": "core/img/classes/Ladino-ink.png",
         "tipo": "Furtividade, roubo e mobilidade",
         "descricao": "Ladrões e espiões de ações sorrateiras e movimentos ágeis, prontos a agir nas sombras.",
         "sabe_usar": "Armas corpo-a-corpo curtas; armas de arremesso; armas à distância.",
@@ -120,7 +120,7 @@ CLASSES_WIKI = {
 
     "MAGO": {
         "nome": "Mago",
-        "imagem": "core/img/classes/Mago.png",
+        "imagem": "core/img/classes/Mago-ink.png",
         "tipo": "Conjurador arcano ofensivo e utilitário",
         "descricao": "Alguém que se conectou com o poder da Cachoeira e aprendeu a manipular a magia.",
         "sabe_usar": "Adaga (mas não sabe usar dual); esferas de magia; cajado ou varinha.",
@@ -137,7 +137,7 @@ CLASSES_WIKI = {
 
     "PALADINO": {
         "nome": "Paladino",
-        "imagem": "core/img/classes/Paladino.png",
+        "imagem": "core/img/classes/Paladino-ink.png",
         "tipo": "Combatente sagrado",
         "descricao": "Guerreiro sagrado que leva a palavra de sua divindade, exemplo de honra e justiça.",
         "sabe_usar": "Armas corpo-a-corpo curtas, médias e longas.",

@@ -1,44 +1,24 @@
-{% extends 'core/base.html' %}
-
-{% block title %}Wiki | {{ item.nome }}{% endblock title %}
-
-{% block content %}
-  <nav class="breadcrumbs text-sm mb-6">
-    <ul>
-      <li><a href="{% url 'home' %}">Home</a></li>
-      <li><a href="{% url 'wiki_itens_lista' %}">Itens</a></li>
-      <li>{{ item.nome }}</li>
-    </ul>
+﻿{% extends 'wiki/base.html' %}
+{% load static %}
+{% block title %}Wiki | {{ item.nome }}{% endblock %}
+{% block wiki_content %}
+  <nav class="breadcrumbs text-sm mb-6" aria-label="Localização">
+    <ul><li><a href="{% url 'home' %}">Início</a></li><li><a href="{% url 'wiki_itens_lista' %}">Itens</a></li><li>{{ item.nome }}</li></ul>
   </nav>
-
-  <article class="card bg-base-100 border border-base-300">
+  <article class="wiki-item-detail card bg-base-100 border border-base-300">
+    <figure class="wiki-item-art"><img src="{% static item.imagem %}" alt="Ilustração de {{ item.nome }} em preto e branco" width="1024" height="1024" fetchpriority="high"></figure>
     <div class="card-body gap-5">
-      <header>
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <h1 class="text-3xl font-black tracking-tight">{{ item.nome }}</h1>
-          <span class="badge badge-outline">{{ item.tipo }}</span>
-        </div>
-
-        <div class="flex flex-wrap gap-2 mt-3 text-xs">
-          <span class="badge badge-neutral">Valor: {{ item.valor }}</span>
-          <span class="badge {% if item.raridade == 'Lendario' %}badge-error{% elif item.raridade == 'Raro' %}badge-warning{% else %}badge-ghost{% endif %}">
-            {{ item.raridade }}
-          </span>
-          {% if item.alquimico %}
-            <span class="badge badge-success">Alquimico</span>
-          {% endif %}
-        </div>
-      </header>
-
-      <section class="rounded-xl border border-base-300 p-4 bg-base-200/50">
-        <h2 class="font-bold">Descricao</h2>
-        <p class="mt-2 text-base-content/85">{{ item.descricao }}</p>
-      </section>
-
-      <div class="card-actions justify-between mt-2">
-        <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-ghost btn-sm">Ver Talentos</a>
-        <a href="{% url 'wiki_itens_lista' %}" class="btn btn-primary btn-sm">Voltar para Itens</a>
+      <header><p class="wiki-eyebrow">Inventário do Codex · {{ item.tipo }}</p><h1>{{ item.nome }}</h1></header>
+      <dl class="wiki-item-facts">
+        <div><dt>Valor</dt><dd>{{ item.valor }}</dd></div>
+        <div><dt>Raridade</dt><dd>{{ item.raridade }}</dd></div>
+        {% if item.alquimico %}<div><dt>Preparo</dt><dd>Alquímico</dd></div>{% endif %}
+      </dl>
+      <section><h2 class="font-bold mb-3">Efeitos e uso</h2><p class="leading-relaxed text-base-content/85">{{ item.descricao }}</p></section>
+      <div class="card-actions gap-3">
+        <a href="{% url 'wiki_itens_lista' %}" class="btn btn-outline btn-sm">← Todos os itens</a>
+        <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-ghost btn-sm">Explorar talentos</a>
       </div>
     </div>
   </article>
-{% endblock content %}
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block head_extra %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'wiki/css/wiki.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="wiki-shell">
+  <nav class="wiki-nav" aria-label="Seções da wiki">
+    <span class="wiki-brand">CODEX <span>/</span> WIKI</span>
+    {% with current=request.resolver_match.url_name %}
+    <div class="wiki-nav-links">
+      <a href="{% url 'wiki_classes_lista' %}" {% if current == 'wiki_classes_lista' or current == 'wiki_classe_detalhe' %}aria-current="page"{% endif %}>Classes</a>
+      <a href="{% url 'wiki_itens_lista' %}" {% if current == 'wiki_itens_lista' or current == 'wiki_item_detalhe' %}aria-current="page"{% endif %}>Itens</a>
+      <a href="{% url 'wiki_magias_lista' %}" {% if current == 'wiki_magias_lista' or current == 'wiki_magia_detalhe' %}aria-current="page"{% endif %}>Magias</a>
+      <a href="{% url 'wiki_talentos_lista' %}" {% if current == 'wiki_talentos_lista' or current == 'wiki_talento_detalhe' %}aria-current="page"{% endif %}>Talentos</a>
+      <a href="{% url 'wiki_regras_lista' %}" {% if current == 'wiki_regras_lista' or current == 'wiki_regra_detalhe' %}aria-current="page"{% endif %}>Regras</a>
+    </div>
+    {% endwith %}
+  </nav>
+  {% block wiki_content %}{% endblock %}
+</div>
+{% endblock %}

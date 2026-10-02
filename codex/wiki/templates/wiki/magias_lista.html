@@ -1,9 +1,9 @@
-{% extends 'core/base.html' %}
+{% extends 'wiki/base.html' %}
 
 {% block title %}Wiki | Magias{% endblock title %}
 
-{% block content %}
-  <section class="mb-8 space-y-4">
+{% block wiki_content %}
+  <section class="wiki-list-intro mb-8 space-y-4">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div>
         <h1 class="text-4xl font-black tracking-tight">Wiki de Magias</h1>
@@ -11,11 +11,7 @@
           Catalogo das magias jogaveis com invocacao, classes que usam e efeitos em jogo.
         </p>
       </div>
-      <div class="flex gap-2">
-        <a href="{% url 'wiki_classes_lista' %}" class="btn btn-outline btn-sm">Ver Classes</a>
-        <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-outline btn-sm">Ver Talentos</a>
-        <a href="{% url 'wiki_itens_lista' %}" class="btn btn-outline btn-sm">Ver Itens</a>
-      </div>
+
     </div>
 
     <article class="card bg-base-100 border border-base-300">
@@ -30,11 +26,12 @@
     </article>
   </section>
 
-  <section class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+  <section class="wiki-entry-grid">
     {% for magia in magias %}
-      <article class="card bg-base-100 border border-base-300">
+      <article class="wiki-entry-card card bg-base-100 border border-base-300">
+        {% include 'wiki/includes/entry_art.html' with entry=magia %}
         <div class="card-body">
-          <div class="flex items-center justify-between gap-2">
+          <div class="flex flex-wrap items-center justify-between gap-2">
             <h2 class="card-title text-lg">{{ magia.nome }}</h2>
             <span class="badge badge-outline">{{ magia.tipo }}</span>
           </div>
@@ -57,4 +54,4 @@
       </div>
     {% endfor %}
   </section>
-{% endblock content %}
+{% endblock wiki_content %}

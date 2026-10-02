@@ -30,6 +30,7 @@ def _itens_ordenados():
         item = dados.copy()
         item['chave'] = chave
         item['slug'] = dados.get('slug') or slugify(chave.replace('_', '-'))
+        item['imagem'] = 'wiki/img/itens/{}.png'.format(item['slug'])
         item['raridade'] = dados.get('raridade', 'Comum')
         item['alquimico'] = bool(dados.get('alquimico', False))
         itens.append(item)
@@ -43,6 +44,7 @@ def _talentos_ordenados():
         talento = dados.copy()
         talento['chave'] = chave
         talento['slug'] = dados.get('slug') or slugify(chave.replace('_', '-'))
+        talento['imagem'] = 'wiki/img/talentos/{}.png'.format(talento['slug'])
         talento['custo_xp'] = dados.get('custo_xp', 0)
         talento['stackavel'] = bool(dados.get('stackavel', False))
         talentos.append(talento)
@@ -56,6 +58,7 @@ def _magias_ordenadas():
         magia = dados.copy()
         magia['chave'] = chave
         magia['slug'] = dados.get('slug') or slugify(chave.replace('_', '-'))
+        magia['imagem'] = 'wiki/img/magias/{}.png'.format(magia['slug'])
         magia['quem_usa'] = dados.get('quem_usa', [])
         magia['tipo'] = dados.get('tipo', 'Geral')
         magias.append(magia)
