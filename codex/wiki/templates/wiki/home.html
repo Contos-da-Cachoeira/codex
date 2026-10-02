@@ -1,0 +1,35 @@
+{% extends 'wiki/base.html' %}
+{% block title %}Wiki | Codex{% endblock %}
+{% block wiki_content %}
+<header class="wiki-intro wiki-home-intro">
+  <p class="wiki-eyebrow">O guia da sua aventura</p>
+  <h1>Todo grande feito começa com conhecimento.</h1>
+  <p>Explore as regras, descubra sua classe e prepare seu personagem. O universo de Codex, reunido em um só lugar.</p>
+  <a class="btn btn-primary mt-6" href="{% url 'wiki_regras_lista' %}">Comece pelas regras <span aria-hidden="true">→</span></a>
+</header>
+<section aria-labelledby="wiki-sections-title">
+  <div class="wiki-section-heading"><h2 id="wiki-sections-title">Explore a wiki</h2><p>Cinco caminhos para conhecer o jogo.</p></div>
+  <div class="wiki-section-grid">
+    {% for section in sections %}
+    <a class="wiki-section-card" href="{{ section.url }}">
+      <span class="wiki-eyebrow">0{{ forloop.counter }} / {{ section.count }} registros</span>
+      <h3>{{ section.name }} <span aria-hidden="true">↗</span></h3>
+      <p>{{ section.description }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+<section class="wiki-index" aria-labelledby="wiki-index-title">
+  <div class="wiki-section-heading"><h2 id="wiki-index-title">Encontre o que precisa</h2><p>Busque em todas as seções da wiki.</p></div>
+  {% include 'wiki/includes/search.html' with search_label='Buscar na wiki' %}
+  <div class="wiki-index-grid" id="wiki-results">
+    {% for entry in entries %}
+    <a class="wiki-index-entry" href="{{ entry.url }}" data-wiki-item="{{ entry.name }} {{ entry.section }} {{ entry.description }}">
+      <span class="wiki-eyebrow">{{ entry.section }}</span>
+      <h3>{{ entry.name }} <span aria-hidden="true">→</span></h3>
+      <p>{{ entry.description|truncatewords:20 }}</p>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -12,7 +12,7 @@
       card.hidden = !normalize(card.dataset.wikiItem).includes(query);
       if (!card.hidden) visible += 1;
     });
-    count.textContent = `${visible} ${visible === 1 ? 'item encontrado' : 'itens encontrados'}`;
+    count.textContent = `${visible} ${visible === 1 ? 'resultado encontrado' : 'resultados encontrados'}`;
     empty.hidden = visible !== 0;
   };
   input.addEventListener('input', filter);

@@ -1,5 +1,6 @@
 from django.http import Http404
-from django.shortcuts import redirect, render
+from django.shortcuts import render
+from django.urls import reverse
 from django.utils.text import slugify
 
 from .constants.classes import CLASSES_WIKI
@@ -67,7 +68,22 @@ def _magias_ordenadas():
 
 
 def wiki_home(request):
-    return redirect('wiki_classes_lista')
+    sections = []
+    entries = []
+    for name, plural, singular, description, items in [
+        ('Regras', 'regras', 'regra', 'Entenda o jogo, os combates e as possibilidades da sua aventura.', _regras_ordenadas()),
+        ('Classes', 'classes', 'classe', 'Encontre seu estilo de jogo e conheça as habilidades de cada classe.', _classes_ordenadas()),
+        ('Talentos', 'talentos', 'talento', 'Explore novas habilidades e planeje a evolução do personagem.', _talentos_ordenados()),
+        ('Magias', 'magias', 'magia', 'Consulte invocações, efeitos e quem pode usar cada magia.', _magias_ordenadas()),
+        ('Itens', 'itens', 'item', 'Prepare seu inventário com equipamentos e recursos alquímicos.', _itens_ordenados()),
+    ]:
+        sections.append({'name': name, 'description': description, 'count': len(items),
+                         'url': reverse(f'wiki_{plural}_lista')})
+        for item in items:
+            entries.append({'name': item.get('nome') or item.get('titulo'), 'section': name,
+                            'description': item.get('resumo') or item.get('descricao', ''),
+                            'url': reverse(f'wiki_{singular}_detalhe', args=[item['slug']])})
+    return render(request, 'wiki/home.html', {'sections': sections, 'entries': entries})
 
 
 def regras_lista(request):

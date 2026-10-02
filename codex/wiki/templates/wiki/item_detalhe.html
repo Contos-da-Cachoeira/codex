@@ -1,9 +1,9 @@
-﻿{% extends 'wiki/base.html' %}
+{% extends 'wiki/base.html' %}
 {% load static %}
 {% block title %}Wiki | {{ item.nome }}{% endblock %}
 {% block wiki_content %}
   <nav class="breadcrumbs text-sm mb-6" aria-label="Localização">
-    <ul><li><a href="{% url 'home' %}">Início</a></li><li><a href="{% url 'wiki_itens_lista' %}">Itens</a></li><li>{{ item.nome }}</li></ul>
+    <ul><li><a href="{% url 'wiki_home' %}">Wiki</a></li><li><a href="{% url 'wiki_itens_lista' %}">Itens</a></li><li>{{ item.nome }}</li></ul>
   </nav>
   <article class="wiki-item-detail card bg-base-100 border border-base-300">
     <figure class="wiki-item-art"><img src="{% static item.imagem %}" alt="Ilustração de {{ item.nome }} em preto e branco" width="1024" height="1024" fetchpriority="high"></figure>

@@ -1,7 +1,7 @@
 window.CodexImagePicker = {
   open({ratio = 1, fixedRatio = false, initial = {}, onSelect}) {
     const dialog = document.createElement('dialog');
-    dialog.className = 'modal';
+    dialog.className = 'modal image-picker-dialog';
     dialog.innerHTML = `<div class="modal-box" style="max-width:46rem"><h2 class="text-xl font-bold">Escolher e enquadrar imagem</h2>
       <p class="text-sm my-3">Escolha um arquivo ou cole uma URL. A área abaixo mostra exatamente o recorte; o restante ficará fora da imagem.</p>
       <label style="display:block">Galeria / computador<input type="file" accept="image/*" class="file-input file-input-bordered w-full" data-file></label>

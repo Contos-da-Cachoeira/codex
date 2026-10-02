@@ -734,7 +734,7 @@
 
     @media (max-width: 900px) {
       .site-sidebar-toggle {
-        position: fixed;
+        position: absolute;
         top: 1rem;
         left: 1rem;
         z-index: 70;
@@ -1017,6 +1017,9 @@
       .site-shell:has(.site-header-frame.is-open) > .site-sidebar-toggle {
         display: none;
       }
+
+      .site-shell.has-sidebar { padding-top: 4.5rem; }
+      .site-main-with-sidebar { padding-top: 1rem; }
 
       .site-sidebar-toggle:hover,
       .site-sidebar-toggle:focus-visible {
@@ -1396,9 +1399,11 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="{% static 'core/css/responsive-pages.css' %}">
+  <script src="{% static 'core/js/responsive-pages.js' %}" defer></script>
   {% block head_extra %}{% endblock %}
 </head>
-<body class="min-h-screen text-base-content" data-image-upload-url="{% url 'upload_image' %}">
+<body class="min-h-screen text-base-content" data-image-upload-url="{% url 'upload_image' %}" data-image-fallback="{% static 'core/img/tesseract.svg' %}">
   <div class="site-shell{% if layout_config.header_visible %} has-sidebar sidebar-collapsed{% endif %}">
     {% if layout_config.header_visible %}
     <button type="button" class="site-sidebar-toggle" data-sidebar-toggle aria-label="Abrir menu">

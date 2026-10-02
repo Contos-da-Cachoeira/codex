@@ -3,7 +3,7 @@
 {% block title %}Wiki | Regras{% endblock title %}
 
 {% block wiki_content %}
-  <section class="mb-8">
+  <section class="wiki-list-intro mb-8">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div>
         <h1 class="text-4xl font-black tracking-tight">Wiki de Regras</h1>
@@ -16,9 +16,10 @@
     </div>
   </section>
 
-  <section class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+  {% include 'wiki/includes/search.html' %}
+  <section class="wiki-entry-grid" id="wiki-results">
     {% for regra in regras %}
-      <article class="card bg-base-100 border border-base-300">
+      <article class="wiki-entry-card card bg-base-100 border border-base-300" data-wiki-item="{{ regra.titulo }} {{ regra.categoria }} {{ regra.resumo }}">
         <div class="card-body">
           <div class="flex items-center justify-between gap-2">
             <h2 class="card-title text-lg">{{ regra.titulo }}</h2>

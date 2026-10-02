@@ -12,6 +12,10 @@
     .admin-tabs [role="tab"] { flex-shrink: 0; padding: .7rem 1rem; border-radius: .5rem; cursor: pointer; color: var(--site-muted); }
     .admin-tabs [aria-selected="true"] { background: var(--site-accent); color: var(--site-accent-content); }
     .admin-tabs [role="tab"]:focus-visible { outline: 2px solid var(--site-text); outline-offset: 2px; }
+    @media (max-width: 640px) {
+      .admin-tabs { flex-wrap: wrap; }
+      .admin-tabs [role="tab"] { flex: 1 1 40%; white-space: normal; padding: .7rem .5rem; }
+    }
   </style>
 <div class="admin-tabs" role="tablist" aria-label="Seções administrativas">
     <button type="button" role="tab" id="tab-overview" aria-controls="overview" aria-selected="true" tabindex="0" data-admin-tab="overview">Visão geral</button>

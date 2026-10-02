@@ -26,9 +26,10 @@
     </article>
   </section>
 
-  <section class="wiki-entry-grid">
+  {% include 'wiki/includes/search.html' %}
+  <section class="wiki-entry-grid" id="wiki-results">
     {% for magia in magias %}
-      <article class="wiki-entry-card card bg-base-100 border border-base-300">
+      <article class="wiki-entry-card card bg-base-100 border border-base-300" data-wiki-item="{{ magia.nome }} {{ magia.tipo }} {{ magia.descricao }} {{ magia.quem_usa|join:' ' }}">
         {% include 'wiki/includes/entry_art.html' with entry=magia %}
         <div class="card-body">
           <div class="flex flex-wrap items-center justify-between gap-2">

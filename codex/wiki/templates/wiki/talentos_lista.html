@@ -23,9 +23,10 @@
     </div>
   </section>
 
-  <section class="wiki-entry-grid">
+  {% include 'wiki/includes/search.html' %}
+  <section class="wiki-entry-grid" id="wiki-results">
     {% for talento in talentos %}
-      <article class="wiki-entry-card card bg-base-100 border border-base-300">
+      <article class="wiki-entry-card card bg-base-100 border border-base-300" data-wiki-item="{{ talento.nome }} {{ talento.descricao }}">
         {% include 'wiki/includes/entry_art.html' with entry=talento %}
         <div class="card-body">
           <div class="flex flex-wrap items-center justify-between gap-2">

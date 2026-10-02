@@ -90,6 +90,9 @@
       .character-create-page .guildas-carousel-prev::before { transform: translate(-25%, -50%) rotate(-135deg); }
       .character-create-page .guildas-carousel-next::before { transform: translate(-75%, -50%) rotate(45deg); }
       .character-action-row { gap: .5rem; padding-top: .75rem; }
+      .character-action-row { flex-wrap: wrap; }
+      .character-action-row > div { display: flex; flex-wrap: wrap; width: 100%; }
+      .character-action-row > div > .btn { flex: 1 1 auto; }
       .character-action-row .btn { min-height: 2.75rem; height: auto; padding: .5rem .65rem; font-size: .75rem; }
     }
   </style>

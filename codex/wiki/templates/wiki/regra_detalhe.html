@@ -5,8 +5,8 @@
 {% block wiki_content %}
   <nav class="breadcrumbs text-sm mb-6">
     <ul>
-      <li><a href="{% url 'home' %}">Home</a></li>
-      <li><a href="{% url 'wiki_regras_lista' %}">Wiki</a></li>
+      <li><a href="{% url 'wiki_home' %}">Wiki</a></li>
+      <li><a href="{% url 'wiki_regras_lista' %}">Regras</a></li>
       <li>{{ regra.titulo }}</li>
     </ul>
   </nav>
@@ -36,13 +36,13 @@
       </div>
 
       <div class="card-actions justify-between mt-6">
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
           <a href="{% url 'wiki_classes_lista' %}" class="btn btn-ghost btn-sm">Classes</a>
           <a href="{% url 'wiki_magias_lista' %}" class="btn btn-ghost btn-sm">Magias</a>
           <a href="{% url 'wiki_itens_lista' %}" class="btn btn-ghost btn-sm">Itens</a>
           <a href="{% url 'wiki_talentos_lista' %}" class="btn btn-ghost btn-sm">Talentos</a>
         </div>
-        <a href="{% url 'wiki_regras_lista' %}" class="btn btn-ghost btn-sm">Voltar para Wiki</a>
+        <a href="{% url 'wiki_regras_lista' %}" class="btn btn-ghost btn-sm">Voltar para Regras</a>
       </div>
     </div>
   </article>
