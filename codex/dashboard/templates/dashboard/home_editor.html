@@ -4,6 +4,17 @@
   .home-editor-card { padding:1rem; margin:1rem 0; border:1px solid var(--codex-border); border-radius:.75rem; background:var(--codex-surface); }
   .home-editor-card label { display:flex; flex-direction:column; gap:.4rem; margin-top:.8rem; }
   .home-editor-card input:not([type=checkbox]), .home-editor-card textarea { width:100%; max-width:none; }
+  .home-component-dialog { width:min(1280px, calc(100vw - 2rem)); max-width:calc(100vw - 2rem); max-height:85dvh; overflow-y:auto; margin:auto; padding:1.5rem; border:1px solid var(--codex-border); border-radius:1rem; background:var(--codex-surface); color:inherit; }
+  .home-component-layout { display:grid; grid-template-columns:minmax(0, 1.4fr) minmax(0, 1fr); align-items:start; gap:1.5rem; margin-top:1rem; }
+  .home-component-preview-panel { min-width:0; position:sticky; top:0; }
+  .home-component-settings { min-width:0; }
+  .home-component-preview { display:block; box-sizing:border-box; background:var(--codex-background); }
+  @media(max-width:767px) {
+    .home-component-layout { grid-template-columns:minmax(0, 1fr); }
+    .home-component-preview-panel { position:static; }
+  }
+  .home-component-dialog::backdrop { background:rgb(0 0 0 / .6); }
+  html:has(.home-component-dialog[open]) { overflow:hidden; }
   .home-preview-box { overflow:hidden; border:1px solid var(--codex-border); border-radius:.75rem; background:var(--codex-background); }
   .home-preview-stage { position:relative; width:100%; overflow:hidden; }
   .home-preview-stage iframe { position:absolute; top:0; left:50%; border:0; transform-origin:top left; }
