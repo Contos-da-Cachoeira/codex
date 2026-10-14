@@ -1,5 +1,6 @@
 from django.http import Http404
 from django.shortcuts import render
+from django.templatetags.static import static
 from django.urls import reverse
 
 from .models import WikiEntry
@@ -32,6 +33,10 @@ def _magias_ordenadas():
 def wiki_home(request):
     sections = []
     entries = []
+
+    def image_url(item):
+        return item.get('image_url') or (static(item['imagem']) if item.get('imagem') else '')
+
     for name, plural, singular, description, items in [
         ('Regras', 'regras', 'regra', 'Entenda o jogo, os combates e as possibilidades da sua aventura.', _regras_ordenadas()),
         ('Classes', 'classes', 'classe', 'Encontre seu estilo de jogo e conheça as habilidades de cada classe.', _classes_ordenadas()),
@@ -39,13 +44,22 @@ def wiki_home(request):
         ('Magias', 'magias', 'magia', 'Consulte invocações, efeitos e quem pode usar cada magia.', _magias_ordenadas()),
         ('Itens', 'itens', 'item', 'Prepare seu inventário com equipamentos e recursos alquímicos.', _itens_ordenados()),
     ]:
-        sections.append({'name': name, 'description': description, 'count': len(items),
+        images = [image_url(item) for item in items]
+        sections.append({'key': plural, 'name': name, 'description': description, 'count': len(items),
+                         'image_url': next((url for url in images if url), ''),
                          'url': reverse(f'wiki_{plural}_lista')})
-        for item in items:
+        for item, image in zip(items, images):
             entries.append({'name': item.get('nome') or item.get('titulo'), 'section': name,
+                            'category': plural, 'image_url': image,
+                            'detail': item.get('tipo') or item.get('categoria') or item.get('raridade', ''),
+                            'keywords': ' '.join(str(item.get(key, '')) for key in ('tipo', 'categoria', 'raridade', 'quem_usa')),
                             'description': item.get('resumo') or item.get('descricao', ''),
                             'url': reverse(f'wiki_{singular}_detalhe', args=[item['slug']])})
-    return render(request, 'wiki/home.html', {'sections': sections, 'entries': entries})
+    hero_image = next((entry['image_url'] for entry in entries
+                       if entry['category'] == 'classes' and entry['image_url']), '')
+    return render(request, 'wiki/home.html', {
+        'sections': sections, 'entries': entries, 'hero_image': hero_image,
+    })
 
 
 def regras_lista(request):

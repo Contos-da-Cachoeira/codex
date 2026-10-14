@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Página não encontrada · Codex{% endblock %}
+
+{% block head_extra %}
+  <meta name="robots" content="noindex" />
+  <link rel="stylesheet" href="{% static 'core/css/not-found.css' %}" />
+{% endblock %}
+
+{% block content %}
+  <section class="not-found" aria-labelledby="not-found-title">
+    <div class="not-found-art" aria-hidden="true">
+      <span class="not-found-code">404</span>
+      <svg class="not-found-compass" viewBox="0 0 180 180" fill="none">
+        <circle cx="90" cy="90" r="73" stroke="currentColor" stroke-width="1" stroke-dasharray="3 9" />
+        <circle cx="90" cy="90" r="56" stroke="currentColor" stroke-width="2" />
+        <path d="M90 17V30M90 150V163M17 90H30M150 90H163" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        <path d="M109 59L99 99L59 109L69 69L109 59Z" fill="var(--site-surface)" stroke="currentColor" stroke-width="2" stroke-linejoin="round" />
+        <path d="M109 59L69 69L90 90L109 59Z" fill="currentColor" />
+        <path d="M59 109L99 99L90 90L59 109Z" fill="currentColor" opacity=".3" />
+        <circle cx="90" cy="90" r="4" fill="currentColor" />
+      </svg>
+      <span class="not-found-star not-found-star-one">✦</span>
+      <span class="not-found-star not-found-star-two">✧</span>
+    </div>
+
+    <p class="not-found-eyebrow">Um desvio na aventura</p>
+    <h1 id="not-found-title">Página não encontrada</h1>
+    <p class="not-found-description">Este caminho não leva a lugar algum. O endereço pode estar incorreto ou o conteúdo não está mais disponível.</p>
+
+    <div class="not-found-actions">
+      <a class="not-found-home" href="{% url 'home' %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="m3 10 9-7 9 7M5 9v11h14V9M9 20v-7h6v7" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        Ir para o início
+      </a>
+      <a class="not-found-back" href="{% url 'home' %}" data-not-found-back>Voltar à página anterior</a>
+    </div>
+
+    <p class="not-found-hint">Procurando regras, classes ou itens? <a href="{% url 'wiki_home' %}">Explore a Wiki <span aria-hidden="true">→</span></a></p>
+  </section>
+  <script src="{% static 'core/js/not-found.js' %}" defer></script>
+{% endblock %}

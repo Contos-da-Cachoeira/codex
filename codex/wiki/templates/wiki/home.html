@@ -1,35 +1,110 @@
 {% extends 'wiki/base.html' %}
-{% block title %}Wiki | Codex{% endblock %}
+{% load static %}
+
+{% block title %}Wiki · Codex{% endblock %}
+{% block wiki_shell_class %}wiki-home{% endblock %}
+
+{% block head_extra %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'wiki/css/home.css' %}">
+{% endblock %}
+
 {% block wiki_content %}
-<header class="wiki-intro wiki-home-intro">
-  <p class="wiki-eyebrow">O guia da sua aventura</p>
-  <h1>Todo grande feito começa com conhecimento.</h1>
-  <p>Explore as regras, descubra sua classe e prepare seu personagem. O universo de Codex, reunido em um só lugar.</p>
-  <a class="btn btn-primary mt-6" href="{% url 'wiki_regras_lista' %}">Comece pelas regras <span aria-hidden="true">→</span></a>
+<header class="wh-hero">
+  <div class="wh-hero-copy">
+    <p class="wh-eyebrow">Guia do jogador</p>
+    <h1>Conheça o mundo.<br><span>Prepare sua aventura.</span></h1>
+    <p class="wh-hero-description">Das primeiras regras à próxima habilidade. Explore as possibilidades do seu personagem e encontre o que precisa para jogar.</p>
+    <div class="wh-hero-footer">
+      <a class="wh-primary" href="{% url 'wiki_regras_lista' %}">Começar pelas regras <span aria-hidden="true">→</span></a>
+      <span class="wh-hero-stat"><strong>{{ entries|length }}</strong> conteúdos para explorar</span>
+    </div>
+  </div>
+  <div class="wh-hero-art" aria-hidden="true">
+    {% if hero_image %}<img src="{{ hero_image }}" alt="" width="256" height="256" fetchpriority="high" decoding="async">
+    {% else %}{% include 'wiki/includes/home_icon.html' with kind='regras' %}{% endif %}
+    <span class="wh-spark wh-spark-one">✦</span>
+    <span class="wh-spark wh-spark-two">✧</span>
+  </div>
 </header>
-<section aria-labelledby="wiki-sections-title">
-  <div class="wiki-section-heading"><h2 id="wiki-sections-title">Explore a wiki</h2><p>Cinco caminhos para conhecer o jogo.</p></div>
-  <div class="wiki-section-grid">
+
+<section class="wh-sections" aria-labelledby="wiki-sections-title">
+  <div class="wh-heading">
+    <h2 id="wiki-sections-title">Explore por seção</h2>
+    <p>Cada escolha abre um novo caminho.</p>
+  </div>
+  <div class="wh-section-grid">
     {% for section in sections %}
-    <a class="wiki-section-card" href="{{ section.url }}">
-      <span class="wiki-eyebrow">0{{ forloop.counter }} / {{ section.count }} registros</span>
+    <a class="wh-section" href="{{ section.url }}">
+      <div class="wh-section-top">
+        <span class="wh-section-art" aria-hidden="true">
+          {% if section.image_url %}<img src="{{ section.image_url }}" alt="" width="56" height="56" loading="lazy" decoding="async">
+          {% else %}{% include 'wiki/includes/home_icon.html' with kind=section.key %}{% endif %}
+        </span>
+        <span class="wh-section-count">{{ section.count }} {% if section.count == 1 %}conteúdo{% else %}conteúdos{% endif %}</span>
+      </div>
       <h3>{{ section.name }} <span aria-hidden="true">↗</span></h3>
       <p>{{ section.description }}</p>
     </a>
     {% endfor %}
   </div>
 </section>
-<section class="wiki-index" aria-labelledby="wiki-index-title">
-  <div class="wiki-section-heading"><h2 id="wiki-index-title">Encontre o que precisa</h2><p>Busque em todas as seções da wiki.</p></div>
-  {% include 'wiki/includes/search.html' with search_label='Buscar na wiki' %}
-  <div class="wiki-index-grid" id="wiki-results">
+
+<section class="wh-catalog" aria-labelledby="wiki-index-title" data-wiki-catalog>
+  <div class="wh-catalog-top">
+    <div>
+      <h2 id="wiki-index-title">Encontre o que precisa</h2>
+      <p>Uma consulta rápida para o seu próximo passo.</p>
+    </div>
+    <label class="wh-search" for="wiki-search">
+      <span class="sr-only">Buscar na Wiki</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5" stroke-linecap="round"/></svg>
+      <input id="wiki-search" type="search" placeholder="Busque por nome, habilidade, efeito…" data-wiki-search aria-controls="wiki-results" {% if not entries %}disabled{% endif %}>
+    </label>
+  </div>
+  <div class="wh-filter-bar">
+    <div class="wh-filters" role="group" aria-label="Filtrar conteúdos por seção" data-wiki-controls hidden>
+      <button class="wh-filter" type="button" data-wiki-filter="all" aria-pressed="true" aria-controls="wiki-results">Tudo <span>{{ entries|length }}</span></button>
+      {% for section in sections %}
+      <button class="wh-filter" type="button" data-wiki-filter="{{ section.key }}" aria-pressed="false" aria-controls="wiki-results">{{ section.name }} <span>{{ section.count }}</span></button>
+      {% endfor %}
+    </div>
+    <p class="wh-result-count" data-wiki-count role="status" aria-live="polite" aria-atomic="true">{{ entries|length }} conteúdos disponíveis</p>
+  </div>
+
+  <div class="wh-empty" data-wiki-empty hidden>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5M8.5 10.5h4" stroke-linecap="round"/></svg>
+    <h3>Nenhum conteúdo encontrado</h3>
+    <p>Tente outro termo ou escolha uma seção diferente.</p>
+    <button type="button" data-wiki-reset>Limpar filtros</button>
+  </div>
+
+  <div class="wh-results" id="wiki-results" data-wiki-page-size="12">
     {% for entry in entries %}
-    <a class="wiki-index-entry" href="{{ entry.url }}" data-wiki-item="{{ entry.name }} {{ entry.section }} {{ entry.description }}">
-      <span class="wiki-eyebrow">{{ entry.section }}</span>
-      <h3>{{ entry.name }} <span aria-hidden="true">→</span></h3>
-      <p>{{ entry.description|truncatewords:20 }}</p>
+    <a class="wh-entry" href="{{ entry.url }}" data-wiki-category="{{ entry.category }}" data-wiki-item="{{ entry.name }} {{ entry.section }} {{ entry.description }} {{ entry.keywords }}">
+      <span class="wh-entry-art" aria-hidden="true">
+        {% if entry.image_url %}<img src="{{ entry.image_url }}" alt="" width="60" height="60" loading="lazy" decoding="async">
+        {% else %}{% include 'wiki/includes/home_icon.html' with kind=entry.category %}{% endif %}
+      </span>
+      <div class="wh-entry-text">
+        <span class="wh-entry-section">{{ entry.section }}</span>
+        <h3>{{ entry.name }}</h3>
+        <p>{{ entry.description|default:entry.detail|truncatewords:18 }}</p>
+      </div>
+      <span class="wh-entry-arrow" aria-hidden="true">↗</span>
     </a>
+    {% empty %}
+    <div class="wh-empty wh-empty-library">
+      <h3>Conteúdos em preparação</h3>
+      <p>A Wiki está recebendo novos conhecimentos. Volte em breve para explorar.</p>
+    </div>
     {% endfor %}
   </div>
+  <div class="wh-more-wrap"><button class="wh-more" type="button" data-wiki-more hidden>Ver mais conteúdos <span aria-hidden="true">↓</span></button></div>
 </section>
+
+<div class="wh-guide-note">
+  {% include 'wiki/includes/home_icon.html' with kind='regras' %}
+  <p>Primeira vez por aqui? <a href="{% url 'wiki_regras_lista' %}">Conheça as regras</a> e depois <a href="{% url 'wiki_classes_lista' %}">escolha sua classe</a> para começar.</p>
+</div>
 {% endblock %}

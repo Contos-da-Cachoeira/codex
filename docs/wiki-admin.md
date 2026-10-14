@@ -32,3 +32,15 @@ codex/.venv/Scripts/python.exe tools/wiki_selection_smoke.py
 ```
 
 Essa verificação cobre cliques rápidos, seleção entre seções, preservação da lista e envio das ações para o item correto, confirmando uma única carga do documento e um endereço limpo.
+
+## Página pública
+
+Em `/wiki/`, os cartões de seção mostram a quantidade e uma ilustração dos conteúdos publicados. As imagens enviadas pelo editor têm preferência sobre as imagens originais. Conteúdos ocultos ficam fora das capas, contagens e resultados de busca.
+
+A consulta combina busca sem distinção de acentos e filtros por seção, sem recarregar a página ou alterar o endereço. O catálogo começa com 12 entradas; **Ver mais conteúdos** revela as próximas. Sem JavaScript, todos os links publicados continuam disponíveis. O layout usa cartões compactos no celular e uma grade maior no computador.
+
+Verificação da busca, filtros, navegação e layout em navegador isolado:
+
+```powershell
+codex/.venv/Scripts/python.exe tools/wiki_home_smoke.py
+```

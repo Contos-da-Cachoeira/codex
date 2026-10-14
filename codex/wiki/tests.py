@@ -16,6 +16,38 @@ from wiki.editor import panel_url
 
 
 class WikiPresentationTests(TestCase):
+    def test_home_covers_counts_and_search_catalog_only_use_published_content(self):
+        WikiEntry.objects.update(visible=False)
+        visible = WikiEntry.objects.create(
+            category='classes', slug='classe-publica', name='Classe pública', visible=True,
+            image='wiki/capa-publica.png',
+            data={'imagem': 'core/img/classes/Mago-ink.png', 'descricao': 'Descrição pública', 'tipo': 'Suporte'},
+        )
+        hidden = WikiEntry.objects.create(
+            category='classes', slug='classe-secreta', name='Classe secreta',
+            image='wiki/capa-secreta.png', data={'descricao': 'Descrição secreta'},
+        )
+        response = self.client.get(reverse('wiki_home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([entry['name'] for entry in response.context['entries']], [visible.name])
+        section = next(section for section in response.context['sections'] if section['key'] == 'classes')
+        self.assertEqual(section['count'], 1)
+        self.assertEqual(section['image_url'], visible.image.url)
+        self.assertEqual(response.context['hero_image'], visible.image.url)
+        self.assertContains(response, visible.image.url)
+        self.assertNotContains(response, hidden.name)
+        self.assertNotContains(response, hidden.image.url)
+        self.assertNotContains(response, 'Descrição secreta')
+
+    def test_home_handles_an_empty_library_without_broken_images(self):
+        WikiEntry.objects.update(visible=False)
+        response = self.client.get(reverse('wiki_home'))
+        self.assertContains(response, 'Conteúdos em preparação')
+        self.assertEqual(response.context['entries'], [])
+        self.assertEqual(response.context['hero_image'], '')
+        self.assertTrue(all(section['count'] == 0 for section in response.context['sections']))
+        self.assertNotContains(response, 'src=""')
+
     def test_every_item_has_art_in_catalog_and_detail(self):
         items = _itens_ordenados()
         catalog = render_to_string('wiki/itens_lista.html', {'itens': items})

@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="wiki-shell">
+<div class="wiki-shell {% block wiki_shell_class %}{% endblock %}">
   <nav class="wiki-nav" aria-label="Seções da wiki">
     <a class="wiki-brand" href="{% url 'wiki_home' %}">CODEX <span>/</span> WIKI</a>
     {% with current=request.resolver_match.url_name %}
