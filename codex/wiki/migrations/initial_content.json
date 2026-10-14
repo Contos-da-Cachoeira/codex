@@ -1,0 +1,1253 @@
+[
+  {
+    "category": "regras",
+    "slug": "personagem-e-ficha",
+    "name": "Personagem e Ficha",
+    "data": {
+      "slug": "personagem-e-ficha",
+      "titulo": "Personagem e Ficha",
+      "categoria": "Base",
+      "resumo": "Define como o personagem deve ser criado, aprovado e mantido no sistema.",
+      "ordem": 1,
+      "secoes": [
+        {
+          "titulo": "Diretrizes Gerais",
+          "itens": [
+            "Cada conta pode ter multiplos personagens.",
+            "Toda ficha precisa de nome, historia, classe e guilda (quando aplicavel).",
+            "Personagens devem seguir o lore e o tom do cenario."
+          ]
+        },
+        {
+          "titulo": "Aprovacao",
+          "itens": [
+            "Personagens novos entram como pendentes de avaliacao.",
+            "A equipe de administracao pode aprovar, pedir ajustes ou recusar.",
+            "Apenas personagens aprovados contam para estatisticas oficiais."
+          ]
+        }
+      ]
+    },
+    "visible": true
+  },
+  {
+    "category": "regras",
+    "slug": "conduta-e-convivencia",
+    "name": "Conduta e Convivencia",
+    "data": {
+      "slug": "conduta-e-convivencia",
+      "titulo": "Conduta e Convivencia",
+      "categoria": "Comportamento",
+      "resumo": "Padrao minimo de respeito e seguranca para interacoes dentro e fora de jogo.",
+      "ordem": 2,
+      "secoes": [
+        {
+          "titulo": "Respeito",
+          "itens": [
+            "Ataques pessoais, assedio e discriminacao nao sao tolerados.",
+            "Conflitos IC (in character) nao justificam desrespeito OOC (out of character).",
+            "A moderacao pode intervir sempre que necessario para manter seguranca do grupo."
+          ]
+        },
+        {
+          "titulo": "Postura da Comunidade",
+          "itens": [
+            "Priorize colaboracao e jogo responsavel.",
+            "Reporte condutas problematicas para admin ou mestres.",
+            "Decisoes administrativas sobre convivio e seguranca sao finais."
+          ]
+        }
+      ]
+    },
+    "visible": true
+  },
+  {
+    "category": "regras",
+    "slug": "interacoes-ic-e-ooc",
+    "name": "Interacoes IC e OOC",
+    "data": {
+      "slug": "interacoes-ic-e-ooc",
+      "titulo": "Interacoes IC e OOC",
+      "categoria": "Interpretacao",
+      "resumo": "Separa acao de personagem e pessoa jogadora para evitar confusoes e conflitos.",
+      "ordem": 3,
+      "secoes": [
+        {
+          "titulo": "IC (In Character)",
+          "itens": [
+            "Acoes IC devem respeitar as limitacoes do cenario e da propria ficha.",
+            "Consequencias narrativas podem ocorrer durante eventos e tramas.",
+            "Informacoes IC nao devem ser usadas como vantagem OOC."
+          ]
+        },
+        {
+          "titulo": "OOC (Out of Character)",
+          "itens": [
+            "Use canais OOC para combinados, duvidas e alinhamentos de cena.",
+            "Evite spoilers de trama em ambientes IC.",
+            "Sempre alinhe limites e consentimento antes de cenas sensiveis."
+          ]
+        }
+      ]
+    },
+    "visible": true
+  },
+  {
+    "category": "regras",
+    "slug": "eventos-e-presenca",
+    "name": "Eventos e Presenca",
+    "data": {
+      "slug": "eventos-e-presenca",
+      "titulo": "Eventos e Presenca",
+      "categoria": "Eventos",
+      "resumo": "Regras basicas para participacao em LARPs, pontualidade e comunicacao de ausencia.",
+      "ordem": 4,
+      "secoes": [
+        {
+          "titulo": "Participacao",
+          "itens": [
+            "Inscricoes devem ser feitas com personagem valido e dentro do prazo.",
+            "Chegue com antecedencia para check-in e alinhamentos iniciais.",
+            "Em caso de ausencia, avise a organizacao com antecedencia."
+          ]
+        },
+        {
+          "titulo": "No Dia do Evento",
+          "itens": [
+            "Respeite orientacoes de seguranca da equipe organizadora.",
+            "Materiais de cena e espaco fisico devem ser preservados.",
+            "Condutas de risco podem resultar em retirada imediata da atividade."
+          ]
+        }
+      ]
+    },
+    "visible": true
+  },
+  {
+    "category": "classes",
+    "slug": "bardo",
+    "name": "Bardo",
+    "data": {
+      "nome": "Bardo",
+      "imagem": "core/img/classes/Bardo-ink.png",
+      "tipo": "Conjurador de suporte e manipulação",
+      "descricao": "Artista de ruas ou cortes, capaz de fazer magia pelo poder da sua música.",
+      "sabe_usar": "Armas corpo-a-corpo curtas e de arremesso.",
+      "defesas": "Pode usar até 2 peças de armadura. Não sabe usar escudo.",
+      "magia": "Escolha 3: Antídoto Mágico, Contramágica, Lentidão, Silenciar, Versos de Proteção, Vigor do Touro.",
+      "item_inicial": "2 DO adicionais.",
+      "habilidade_especial": "Truques de Bardo (habilidade de uso único, efeito mental).",
+      "habilidade_detalhes": [
+        "Carisma: convence um alvo de que uma afirmação é verdadeira até que algo prove o contrário.",
+        "Libertar: grita 'LIBERTAR ALIADOS' para libertar seu grupo de um efeito mental ou possessão."
+      ],
+      "extra": "Dom de Bardo: pode cantar no lugar de tocar um instrumento como foco.",
+      "chave": "BARDO",
+      "slug": "bardo"
+    },
+    "visible": true
+  },
+  {
+    "category": "classes",
+    "slug": "barbaro",
+    "name": "Bárbaro",
+    "data": {
+      "nome": "Bárbaro",
+      "imagem": "core/img/classes/Barbaro-ink.png",
+      "tipo": "Combatente corpo a corpo",
+      "descricao": "Guerreiro tribal, normalmente selvagem, que ganha poder de sua fúria e instinto de luta.",
+      "sabe_usar": "Armas corpo-a-corpo curtas, médias ou longas.",
+      "defesas": "Pode usar até 3 peças de armadura ou 1 peça de armadura + escudo.",
+      "magia": "Não sabe conjurar naturalmente.",
+      "item_inicial": "Duas sementes dos deuses ou uma semente e um antídoto.",
+      "habilidade_especial": "Fúria ou Intimidação (habilidade de uso único).",
+      "habilidade_detalhes": [
+        "Fúria: grita 'FÚRIA', ganha 3 PVs adicionais, imunidade a desmembramento e intimidação, e pode atacar com BRUTAL usando arma média ou longa com ambas as mãos.",
+        "Intimidação: fora de combate, grita 'INTIMIDAÇÃO' e dá um comando simples ou faz uma pergunta; o alvo obedece dentro dos limites da habilidade."
+      ],
+      "chave": "BARBARO",
+      "slug": "barbaro"
+    },
+    "visible": true
+  },
+  {
+    "category": "classes",
+    "slug": "cacador",
+    "name": "Caçador",
+    "data": {
+      "nome": "Caçador",
+      "imagem": "core/img/classes/Cacador-ink.png",
+      "tipo": "Combatente tático e rastreador",
+      "descricao": "Mestres da selva ou caçadores de recompensa, experts em encontrar e eliminar suas presas.",
+      "sabe_usar": "Armas corpo-a-corpo médias e curtas e armas à distância.",
+      "defesas": "Pode usar até 3 peças de armadura. Não sabe usar escudo.",
+      "magia": "Não sabe conjurar naturalmente.",
+      "item_inicial": "Duas sementes dos deuses ou dois antídotos ou uma semente e um antídoto.",
+      "habilidade_especial": "Técnicas de Caça (habilidade de uso único).",
+      "habilidade_detalhes": [
+        "Armadilha: ao atingir um alvo com ataque, diga 'ARMADILHA' e ele não pode sair do lugar por 15 segundos.",
+        "Marcar a presa: escolhe um inimigo e pode usar 5 ataques com BRUTAL ou VENENO contra ele até o final do LARP.",
+        "Percepção: revela alguém furtivo próximo ao gritar 'PERCEPÇÃO'."
+      ],
+      "chave": "CACADOR",
+      "slug": "cacador"
+    },
+    "visible": true
+  },
+  {
+    "category": "classes",
+    "slug": "clerigo",
+    "name": "Clérigo",
+    "data": {
+      "nome": "Clérigo",
+      "imagem": "core/img/classes/Clerigo-ink.png",
+      "tipo": "Conjurador divino e curandeiro",
+      "descricao": "Sacerdote mágico que consegue poder através da fé em sua divindade.",
+      "sabe_usar": "Armas corpo-a-corpo curtas ou médias (não usa dual); cajado.",
+      "defesas": "2 peças de armadura OU um escudo.",
+      "magia": "Escolha 3: Barreira Mágica, Antídoto Mágico, Exorcismo, Lentidão, Toque da Cura ou Versos da Proteção.",
+      "item_inicial": "1 água benta ou 1 antídoto e 1 semente dos deuses.",
+      "habilidade_especial": "Milagres.",
+      "habilidade_detalhes": [
+        "Recupera todos os PVs e cura todos os desmembramentos de um alvo.",
+        "Se o alvo estiver morto, ele é ressuscitado seguindo as regras de ressurreição.",
+        "Pode ser usado quantas vezes quiser por sessão, mas não durante combates.",
+        "Não cura veneno."
+      ],
+      "chave": "CLERIGO",
+      "slug": "clerigo"
+    },
+    "visible": true
+  },
+  {
+    "category": "classes",
+    "slug": "druida",
+    "name": "Druida",
+    "data": {
+      "nome": "Druida",
+      "imagem": "core/img/classes/Druida-ink.png",
+      "tipo": "Conjurador natural e transformista",
+      "descricao": "Sacerdote das matas, ligado ao poder da natureza e de seus espíritos.",
+      "sabe_usar": "Armas corpo-a-corpo curtas, médias ou longas; manopla de garras; cajado.",
+      "defesas": "Nenhuma.",
+      "magia": "Antídoto Mágico, Comunhão com a Natureza e Toque da Cura (as três).",
+      "item_inicial": "Duas sementes dos deuses ou dois antídotos ou uma semente e um antídoto.",
+      "habilidade_especial": "Forma Selvagem (habilidade de uso único).",
+      "habilidade_detalhes": [
+        "Transforma-se em um aspecto da natureza por 5 minutos, até o fim do combate ou até cancelar a forma.",
+        "A forma possui três características definidas pela comissão e um defeito."
+      ],
+      "extra": "Dom de Druida: pode usar mato, flores ou folhas como foco.",
+      "chave": "DRUIDA",
+      "slug": "druida"
+    },
+    "visible": true
+  },
+  {
+    "category": "classes",
+    "slug": "guerreiro",
+    "name": "Guerreiro",
+    "data": {
+      "nome": "Guerreiro",
+      "imagem": "core/img/classes/Guerreiro-ink.png",
+      "tipo": "Combatente marcial resistente",
+      "descricao": "Soldado treinado para vencer missões perigosas apenas com suas armas e estratégia.",
+      "sabe_usar": "Armas corpo-a-corpo curtas, médias e longas.",
+      "defesas": "4 peças de armadura OU 2 peças de armadura + escudo.",
+      "magia": "Não sabe conjurar naturalmente.",
+      "item_inicial": "Duas sementes dos deuses ou duas doses de veneno ou um veneno e uma semente.",
+      "habilidade_especial": "Determinação (habilidade de uso único).",
+      "habilidade_detalhes": [
+        "Depois de cair incapacitado, pode gritar 'DETERMINAÇÃO' e voltar com 1 PV.",
+        "Não fica sofrendo desmembramento, mas não pode correr até ser completamente curado.",
+        "Também cancela envenenamento."
+      ],
+      "chave": "GUERREIRO",
+      "slug": "guerreiro"
+    },
+    "visible": true
+  },
+  {
+    "category": "classes",
+    "slug": "ladino",
+    "name": "Ladino",
+    "data": {
+      "nome": "Ladino",
+      "imagem": "core/img/classes/Ladino-ink.png",
+      "tipo": "Furtividade, roubo e mobilidade",
+      "descricao": "Ladrões e espiões de ações sorrateiras e movimentos ágeis, prontos a agir nas sombras.",
+      "sabe_usar": "Armas corpo-a-corpo curtas; armas de arremesso; armas à distância.",
+      "defesas": "Até 3 peças de armadura; não sabe usar escudo.",
+      "magia": "Não sabe conjurar naturalmente.",
+      "item_inicial": "2 DO adicionais.",
+      "habilidade_especial": "Furtividade (habilidade de uso único).",
+      "habilidade_detalhes": [
+        "Ao gritar 'FURTIVIDADE' e colocar os braços atrás da cabeça, o personagem fica escondido.",
+        "Também pode ser usada para roubar fora de combate.",
+        "Também pode ser usada para fugir de amarras."
+      ],
+      "chave": "LADINO",
+      "slug": "ladino"
+    },
+    "visible": true
+  },
+  {
+    "category": "classes",
+    "slug": "mago",
+    "name": "Mago",
+    "data": {
+      "nome": "Mago",
+      "imagem": "core/img/classes/Mago-ink.png",
+      "tipo": "Conjurador arcano ofensivo e utilitário",
+      "descricao": "Alguém que se conectou com o poder da Cachoeira e aprendeu a manipular a magia.",
+      "sabe_usar": "Adaga (mas não sabe usar dual); esferas de magia; cajado ou varinha.",
+      "defesas": "Nenhuma.",
+      "magia": "Escolha 4: Barreira Mágica, Bola de Fogo, Contramágica, Exorcismo, Lentidão, Raio Elétrico, Silenciar e Vigor do Touro.",
+      "item_inicial": "2 balões de bola de fogo ou um amuleto de proteção espiritual.",
+      "habilidade_especial": "Feitiços de Magia Antiga (habilidade de uso único).",
+      "habilidade_detalhes": [
+        "Controle Mental: dá uma ordem ao alvo por 30 segundos.",
+        "Necromancia: transforma um incapacitado ou morto em zumbi, ou invoca o espectro para responder perguntas.",
+        "Petrificação: petrifica um alvo enquanto mantiver a magia."
+      ],
+      "chave": "MAGO",
+      "slug": "mago"
+    },
+    "visible": true
+  },
+  {
+    "category": "classes",
+    "slug": "paladino",
+    "name": "Paladino",
+    "data": {
+      "nome": "Paladino",
+      "imagem": "core/img/classes/Paladino-ink.png",
+      "tipo": "Combatente sagrado",
+      "descricao": "Guerreiro sagrado que leva a palavra de sua divindade, exemplo de honra e justiça.",
+      "sabe_usar": "Armas corpo-a-corpo curtas, médias e longas.",
+      "defesas": "Até 2 peças de armadura + um escudo.",
+      "magia": "Toque da Cura e Exorcismo (as duas).",
+      "item_inicial": "Duas sementes dos deuses ou uma água benta.",
+      "habilidade_especial": "Proteção Divina (habilidade de uso único).",
+      "habilidade_detalhes": [
+        "Grita 'PROTEÇÃO' e fica imune a desmembramento até o fim do combate.",
+        "Também fica imune a efeitos mentais, espirituais e intimidação até o fim do combate ou por 5 minutos.",
+        "Contra zumbis, possuídos e seres das trevas, seus ataques podem usar BRUTAL."
+      ],
+      "extra": "Dom de Paladino: se o símbolo da divindade estiver na frente do escudo, o escudo conta como foco de magia.",
+      "chave": "PALADINO",
+      "slug": "paladino"
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "armadura-adicional",
+    "name": "Armadura adicional",
+    "data": {
+      "nome": "Armadura adicional",
+      "slug": "armadura-adicional",
+      "custo_xp": 25,
+      "descricao": "Permite usar +1 peça de armadura além do limite da classe.",
+      "stackavel": true,
+      "chave": "ARMADURA_ADICIONAL",
+      "imagem": "wiki/img/talentos/armadura-adicional.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "arremesso-extra",
+    "name": "Arremesso extra",
+    "data": {
+      "nome": "Arremesso extra",
+      "slug": "arremesso-extra",
+      "custo_xp": 25,
+      "descricao": "Permite carregar +1 arma de arremesso adicional.",
+      "stackavel": true,
+      "requisito": "Já saber usar arremesso",
+      "chave": "ARREMESSO_EXTRA",
+      "imagem": "wiki/img/talentos/arremesso-extra.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "beneficios-de-patente",
+    "name": "Benefícios de patente",
+    "data": {
+      "nome": "Benefícios de patente",
+      "slug": "beneficios-de-patente",
+      "custo_xp": 25,
+      "descricao": "Ganha vantagens adicionais da guilda.",
+      "requisito": "Participar de pelo menos 2 sessões com o personagem + aprovação do mestre",
+      "chave": "BENEFICIOS_DE_PATENTE",
+      "imagem": "wiki/img/talentos/beneficios-de-patente.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "esferas-adicionais",
+    "name": "Esferas de magia adicionais",
+    "data": {
+      "nome": "Esferas de magia adicionais",
+      "slug": "esferas-adicionais",
+      "custo_xp": 25,
+      "descricao": "Permite carregar +3 esferas de magia.",
+      "stackavel": true,
+      "requisito": "Saber usar esferas de magia",
+      "chave": "ESFERAS_ADICIONAIS",
+      "imagem": "wiki/img/talentos/esferas-adicionais.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "flechas-adicionais",
+    "name": "Flechas adicionais",
+    "data": {
+      "nome": "Flechas adicionais",
+      "slug": "flechas-adicionais",
+      "custo_xp": 25,
+      "descricao": "Permite carregar +3 flechas.",
+      "stackavel": true,
+      "requisito": "Saber usar armas à distância",
+      "chave": "FLECHAS_ADICIONAIS",
+      "imagem": "wiki/img/talentos/flechas-adicionais.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "magia-extra-classe",
+    "name": "Magia extra da classe",
+    "data": {
+      "nome": "Magia extra da classe",
+      "slug": "magia-extra-classe",
+      "custo_xp": 25,
+      "descricao": "Aprende uma magia adicional da sua classe.",
+      "stackavel": true,
+      "chave": "MAGIA_EXTRA_CLASSE",
+      "imagem": "wiki/img/talentos/magia-extra-classe.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "usar-cajado",
+    "name": "Usar cajado",
+    "data": {
+      "nome": "Usar cajado",
+      "slug": "usar-cajado",
+      "custo_xp": 25,
+      "descricao": "Permite usar cajado como foco de magia.",
+      "restricao": "Não pode usar escudo",
+      "chave": "USAR_CAJADO",
+      "imagem": "wiki/img/talentos/usar-cajado.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "usar-dual",
+    "name": "Usar dual",
+    "data": {
+      "nome": "Usar dual",
+      "slug": "usar-dual",
+      "custo_xp": 25,
+      "descricao": "Permite lutar com duas armas (uma deve ser curta).",
+      "chave": "USAR_DUAL",
+      "imagem": "wiki/img/talentos/usar-dual.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "equipamento-adicional",
+    "name": "Equipamento adicional",
+    "data": {
+      "nome": "Equipamento adicional",
+      "slug": "equipamento-adicional",
+      "custo_xp": 30,
+      "descricao": "Permite carregar +1 equipamento (exceto armas médias/longas).",
+      "stackavel": true,
+      "chave": "EQUIPAMENTO_ADICIONAL",
+      "imagem": "wiki/img/talentos/equipamento-adicional.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "recursos-financeiros",
+    "name": "Recursos financeiros",
+    "data": {
+      "nome": "Recursos financeiros",
+      "slug": "recursos-financeiros",
+      "custo_xp": 30,
+      "descricao": "Recebe +3 DO no início de cada sessão.",
+      "stackavel": true,
+      "chave": "RECURSOS_FINANCEIROS",
+      "imagem": "wiki/img/talentos/recursos-financeiros.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "magia-outra-classe",
+    "name": "Magia de outra classe",
+    "data": {
+      "nome": "Magia de outra classe",
+      "slug": "magia-outra-classe",
+      "custo_xp": 35,
+      "descricao": "Aprende uma magia de outra classe.",
+      "stackavel": true,
+      "requisito": "Ser conjurador",
+      "chave": "MAGIA_OUTRA_CLASSE",
+      "imagem": "wiki/img/talentos/magia-outra-classe.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "usar-manopla",
+    "name": "Usar manopla de garras",
+    "data": {
+      "nome": "Usar manopla de garras",
+      "slug": "usar-manopla",
+      "custo_xp": 35,
+      "descricao": "Permite usar manopla de garras.",
+      "chave": "USAR_MANOPLA",
+      "imagem": "wiki/img/talentos/usar-manopla.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "usar-esferas",
+    "name": "Usar esferas de magia",
+    "data": {
+      "nome": "Usar esferas de magia",
+      "slug": "usar-esferas",
+      "custo_xp": 40,
+      "descricao": "Permite usar até 6 esferas de magia.",
+      "requisito": "Ser conjurador e não ser mago",
+      "chave": "USAR_ESFERAS",
+      "imagem": "wiki/img/talentos/usar-esferas.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "armas-curtas",
+    "name": "Armas curtas",
+    "data": {
+      "nome": "Armas curtas",
+      "slug": "armas-curtas",
+      "custo_xp": 45,
+      "descricao": "Permite usar armas corpo-a-corpo curtas.",
+      "chave": "ARMAS_CURTAS",
+      "imagem": "wiki/img/talentos/armas-curtas.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "armas-longas",
+    "name": "Armas longas",
+    "data": {
+      "nome": "Armas longas",
+      "slug": "armas-longas",
+      "custo_xp": 45,
+      "descricao": "Permite usar armas longas.",
+      "requisito": "Saber usar armas médias",
+      "chave": "ARMAS_LONGAS",
+      "imagem": "wiki/img/talentos/armas-longas.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "armas-medias",
+    "name": "Armas médias",
+    "data": {
+      "nome": "Armas médias",
+      "slug": "armas-medias",
+      "custo_xp": 45,
+      "descricao": "Permite usar armas médias.",
+      "requisito": "Saber usar armas curtas",
+      "chave": "ARMAS_MEDIAS",
+      "imagem": "wiki/img/talentos/armas-medias.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "usar-arco",
+    "name": "Usar arco ou besta",
+    "data": {
+      "nome": "Usar arco ou besta",
+      "slug": "usar-arco",
+      "custo_xp": 50,
+      "descricao": "Permite usar armas à distância e até 10 flechas.",
+      "chave": "USAR_ARCO",
+      "imagem": "wiki/img/talentos/usar-arco.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "usar-arremesso",
+    "name": "Usar arremesso",
+    "data": {
+      "nome": "Usar arremesso",
+      "slug": "usar-arremesso",
+      "custo_xp": 50,
+      "descricao": "Permite usar armas de arremesso.",
+      "chave": "USAR_ARREMESSO",
+      "imagem": "wiki/img/talentos/usar-arremesso.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "usar-escudo",
+    "name": "Usar escudo",
+    "data": {
+      "nome": "Usar escudo",
+      "slug": "usar-escudo",
+      "custo_xp": 50,
+      "descricao": "Permite usar escudo.",
+      "chave": "USAR_ESCUDO",
+      "imagem": "wiki/img/talentos/usar-escudo.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "conjurar",
+    "name": "Conjurar",
+    "data": {
+      "nome": "Conjurar",
+      "slug": "conjurar",
+      "custo_xp": 55,
+      "descricao": "Permite conjurar magias e aprender 1 magia inicial.",
+      "chave": "CONJURAR",
+      "imagem": "wiki/img/talentos/conjurar.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "alquimista",
+    "name": "Alquimista",
+    "data": {
+      "nome": "Alquimista",
+      "slug": "alquimista",
+      "custo_xp": 70,
+      "descricao": "Permite transformar poções em outras de valor equivalente.",
+      "extra": "Pode usar componentes alquímicos para aumentar valor",
+      "chave": "ALQUIMISTA",
+      "imagem": "wiki/img/talentos/alquimista.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "feitico-antigo",
+    "name": "Feitiço antigo adicional",
+    "data": {
+      "nome": "Feitiço antigo adicional",
+      "slug": "feitico-antigo",
+      "custo_xp": 70,
+      "descricao": "Mago aprende um novo feitiço de magia antiga.",
+      "chave": "FEITICO_ANTIGO",
+      "imagem": "wiki/img/talentos/feitico-antigo.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "forma-selvagem",
+    "name": "Forma selvagem adicional",
+    "data": {
+      "nome": "Forma selvagem adicional",
+      "slug": "forma-selvagem",
+      "custo_xp": 70,
+      "descricao": "Druida ganha uma nova forma selvagem.",
+      "chave": "FORMA_SELVAGEM",
+      "imagem": "wiki/img/talentos/forma-selvagem.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "multiclasse",
+    "name": "Multiclasse",
+    "data": {
+      "nome": "Multiclasse",
+      "slug": "multiclasse",
+      "custo_xp": 70,
+      "descricao": "Permite adquirir uma segunda classe.",
+      "requisito": "Ter pelo menos 2 talentos relacionados + aprovação do mestre",
+      "chave": "MULTICLASSE",
+      "imagem": "wiki/img/talentos/multiclasse.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "talentos",
+    "slug": "uso-extra",
+    "name": "Uso extra de habilidade",
+    "data": {
+      "nome": "Uso extra de habilidade",
+      "slug": "uso-extra",
+      "custo_xp": 70,
+      "descricao": "Ganha um uso adicional da habilidade de classe.",
+      "chave": "USO_EXTRA",
+      "imagem": "wiki/img/talentos/uso-extra.png",
+      "stackavel": false
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "antidoto-magico",
+    "name": "Antídoto Mágico",
+    "data": {
+      "nome": "Antídoto Mágico",
+      "slug": "antidoto-magico",
+      "quem_usa": [
+        "Bardo",
+        "Clérigo",
+        "Druida"
+      ],
+      "invocacao": "Força da Cachoeira, me ajude a NEUTRALIZAR ESSE VENENO!",
+      "descricao": "O conjurador abençoa uma semente dos deuses e faz um alvo comê-la imediatamente. Além dos efeitos normais da semente, o alvo fica curado de efeitos de veneno.",
+      "tipo": "Cura",
+      "chave": "ANTIDOTO_MAGICO",
+      "imagem": "wiki/img/magias/antidoto-magico.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "barreira-magica",
+    "name": "Barreira Mágica",
+    "data": {
+      "nome": "Barreira Mágica",
+      "slug": "barreira-magica",
+      "quem_usa": [
+        "Clérigo",
+        "Mago"
+      ],
+      "invocacao": "BARREIRA!",
+      "descricao": "O conjurador segura o foco com as duas mãos e fica imune a todo tipo de dano por 4 segundos. Se soltar uma mão do foco ou se mover, o efeito se desfaz.",
+      "tipo": "Defesa",
+      "extra": "Após usar Barreira, é preciso esperar ao menos 10 segundos para usar novamente. Não pode ser usada se o conjurador estiver portando um escudo em qualquer mão.",
+      "chave": "BARREIRA_MAGICA",
+      "imagem": "wiki/img/magias/barreira-magica.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "bola-de-fogo",
+    "name": "Bola de Fogo",
+    "data": {
+      "nome": "Bola de Fogo",
+      "slug": "bola-de-fogo",
+      "quem_usa": [
+        "Mago"
+      ],
+      "invocacao": "BOLA DE FOGO!",
+      "descricao": "Um balão d’água é arremessado. Todas as regiões atingidas recebem dano, ignorando armadura. Se atingir simultaneamente peito e braço ou perna, o alvo sofre 3 de dano.",
+      "tipo": "Ofensiva",
+      "extra": "Se a água atingir um escudo, o dono deve soltá-lo, considerando que o escudo está pegando fogo por alguns minutos.",
+      "chave": "BOLA_DE_FOGO",
+      "imagem": "wiki/img/magias/bola-de-fogo.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "comunhao-com-a-natureza",
+    "name": "Comunhão com a Natureza",
+    "data": {
+      "nome": "Comunhão com a Natureza",
+      "slug": "comunhao-com-a-natureza",
+      "quem_usa": [
+        "Druida"
+      ],
+      "invocacao": "Faça uma pequena oração em voz alta, clamando o poder da Terra e prometendo não fazer mal à natureza.",
+      "descricao": "Criaturas sobrenaturais ligadas à natureza percebem a energia sagrada do conjurador e tendem a se tornar mais amigáveis ou menos hostis, desde que ele não represente risco.",
+      "tipo": "Interação",
+      "extra": "É um efeito interpretativo e não envolve o restante do grupo.",
+      "chave": "COMUNHAO_COM_A_NATUREZA",
+      "imagem": "wiki/img/magias/comunhao-com-a-natureza.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "contramagica",
+    "name": "Contramágica",
+    "data": {
+      "nome": "Contramágica",
+      "slug": "contramagica",
+      "quem_usa": [
+        "Bardo",
+        "Mago"
+      ],
+      "invocacao": "CONTRA MÁGICA!",
+      "descricao": "Se o conjurador conseguir pegar uma bolinha de magia no ar antes dela atingir o alvo, a magia não faz efeito e a bolinha pode ser devolvida imediatamente com outra magia.",
+      "tipo": "Defesa",
+      "chave": "CONTRAMAGICA",
+      "imagem": "wiki/img/magias/contramagica.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "exorcismo",
+    "name": "Exorcismo",
+    "data": {
+      "nome": "Exorcismo",
+      "slug": "exorcismo",
+      "quem_usa": [
+        "Clérigo",
+        "Mago",
+        "Paladino"
+      ],
+      "invocacao": "EXORCISMO! UM… DOIS… TRÊS… QUATRO… CINCO!",
+      "descricao": "O conjurador toca um alvo possuído por espíritos por 5 segundos, contando em voz alta. Se completar a contagem, o alvo é libertado. Em zumbis, o efeito transforma o alvo em corpo morto.",
+      "tipo": "Espiritual",
+      "chave": "EXORCISMO",
+      "imagem": "wiki/img/magias/exorcismo.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "lentidao",
+    "name": "Lentidão",
+    "data": {
+      "nome": "Lentidão",
+      "slug": "lentidao",
+      "quem_usa": [
+        "Bardo",
+        "Clérigo",
+        "Mago"
+      ],
+      "invocacao": "LENTIDÃO!",
+      "descricao": "O alvo atingido por toque ou bolinha de magia não pode correr por 1 minuto. Deve caminhar devagar e não pode andar e lutar ao mesmo tempo.",
+      "tipo": "Controle",
+      "chave": "LENTIDAO",
+      "imagem": "wiki/img/magias/lentidao.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "raio-eletrico",
+    "name": "Raio Elétrico",
+    "data": {
+      "nome": "Raio Elétrico",
+      "slug": "raio-eletrico",
+      "quem_usa": [
+        "Mago"
+      ],
+      "invocacao": "RAIO ELÉTRICO!",
+      "descricao": "O conjurador toca ou arremessa a bolinha no alvo. A magia causa o mesmo dano de uma arma e ignora armadura.",
+      "tipo": "Ofensiva",
+      "chave": "RAIO_ELETRICO",
+      "imagem": "wiki/img/magias/raio-eletrico.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "silenciar",
+    "name": "Silenciar",
+    "data": {
+      "nome": "Silenciar",
+      "slug": "silenciar",
+      "quem_usa": [
+        "Bardo",
+        "Mago"
+      ],
+      "invocacao": "SILENCIAR!",
+      "descricao": "O alvo atingido por toque ou bolinha de magia não pode falar ou conjurar magias por 30 segundos ou até receber qualquer cura.",
+      "tipo": "Controle",
+      "chave": "SILENCIAR",
+      "imagem": "wiki/img/magias/silenciar.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "toque-da-cura",
+    "name": "Toque da Cura",
+    "data": {
+      "nome": "Toque da Cura",
+      "slug": "toque-da-cura",
+      "quem_usa": [
+        "Clérigo",
+        "Paladino",
+        "Druida"
+      ],
+      "invocacao": "Força ancestral da cachoeira, RECUPERAI este aliado!",
+      "descricao": "O conjurador toca o alvo por 5 segundos e, ao fim da invocação, recupera 1 PV e o desmembramento de um braço ou perna. Se o alvo estiver incapacitado, ele se levanta desmembrado do peito.",
+      "tipo": "Cura",
+      "extra": "Não recupera mais do que braços, pernas ou o PV perdido por um acerto no peito.",
+      "chave": "TOQUE_DA_CURA",
+      "imagem": "wiki/img/magias/toque-da-cura.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "versos-de-protecao",
+    "name": "Versos de Proteção",
+    "data": {
+      "nome": "Versos de Proteção",
+      "slug": "versos-de-protecao",
+      "quem_usa": [
+        "Bardo",
+        "Clérigo"
+      ],
+      "invocacao": "VERSOS DE PROTEÇÃO!",
+      "descricao": "O personagem que já estava cantando, declamando ou orando antes do efeito fica imune a efeitos mentais ou espirituais.",
+      "tipo": "Defesa",
+      "extra": "Só funciona se o personagem já estiver cantando ou orando antes de ser afetado.",
+      "chave": "VERSOS_DE_PROTECAO",
+      "imagem": "wiki/img/magias/versos-de-protecao.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "magias",
+    "slug": "vigor-do-touro",
+    "name": "Vigor do Touro",
+    "data": {
+      "nome": "Vigor do Touro",
+      "slug": "vigor-do-touro",
+      "quem_usa": [
+        "Bardo",
+        "Mago"
+      ],
+      "invocacao": "Diga o nome do alvo e 'VIGOR DO TOURO'. Depois não pare de cantar ou entoar palavras mágicas.",
+      "descricao": "O alvo ignora o primeiro desmembramento sofrido naquele combate enquanto o conjurador não parar de cantar ou falar alto palavras mágicas.",
+      "tipo": "Buff",
+      "chave": "VIGOR_DO_TOURO",
+      "imagem": "wiki/img/magias/vigor-do-touro.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "amuleto-protecao-espiritual",
+    "name": "Amuleto de Proteção Espiritual",
+    "data": {
+      "nome": "Amuleto de Proteção Espiritual",
+      "slug": "amuleto-protecao-espiritual",
+      "valor": "1.5 DO",
+      "descricao": "Imunidade a efeitos espirituais como possessão e necromancia. Não protege contra efeitos mentais.",
+      "tipo": "Equipamento",
+      "chave": "AMULETO_PROTECAO_ESPIRITUAL",
+      "imagem": "wiki/img/itens/amuleto-protecao-espiritual.png",
+      "raridade": "Comum",
+      "alquimico": false
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "amuleto-protecao-mental",
+    "name": "Amuleto de Proteção Mental",
+    "data": {
+      "nome": "Amuleto de Proteção Mental",
+      "slug": "amuleto-protecao-mental",
+      "valor": "10 DO",
+      "descricao": "Imunidade a efeitos mentais como controle e carisma. Não protege contra efeitos espirituais.",
+      "tipo": "Equipamento",
+      "chave": "AMULETO_PROTECAO_MENTAL",
+      "imagem": "wiki/img/itens/amuleto-protecao-mental.png",
+      "raridade": "Comum",
+      "alquimico": false
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "antidoto",
+    "name": "Antídoto",
+    "data": {
+      "nome": "Antídoto",
+      "slug": "antidoto",
+      "valor": "1 DO",
+      "descricao": "Cura os efeitos de venenos, mas não cura os PVs perdidos.",
+      "tipo": "Consumível",
+      "alquimico": true,
+      "chave": "ANTIDOTO",
+      "imagem": "wiki/img/itens/antidoto.png",
+      "raridade": "Comum"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "balao-de-fogo",
+    "name": "Balão de Fogo",
+    "data": {
+      "nome": "Balão de Fogo",
+      "slug": "balao-de-fogo",
+      "valor": "1 DO",
+      "descricao": "Preparado alquímico (balão d’água) usado para conjurar a magia \"Bola de Fogo\".",
+      "tipo": "Consumível",
+      "alquimico": false,
+      "chave": "BALAO_DE_FOGO",
+      "imagem": "wiki/img/itens/balao-de-fogo.png",
+      "raridade": "Comum"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "componente-alquimico",
+    "name": "Componente Alquímico",
+    "data": {
+      "nome": "Componente Alquímico",
+      "slug": "componente-alquimico",
+      "valor": "1 DO",
+      "descricao": "Usado para complementar o valor de poções no talento Alquimista.",
+      "tipo": "Material",
+      "alquimico": false,
+      "chave": "COMPONENTE_ALQUIMICO",
+      "imagem": "wiki/img/itens/componente-alquimico.png",
+      "raridade": "Comum"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "laco-da-verdade",
+    "name": "Laço da Verdade",
+    "data": {
+      "nome": "Laço da Verdade",
+      "slug": "laco-da-verdade",
+      "valor": "8 DO",
+      "descricao": "Prende o alvo e impede mentiras. Uso único.",
+      "tipo": "Item mágico",
+      "chave": "LACO_DA_VERDADE",
+      "imagem": "wiki/img/itens/laco-da-verdade.png",
+      "raridade": "Comum",
+      "alquimico": false
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "mapa-local",
+    "name": "Mapa Local",
+    "data": {
+      "nome": "Mapa Local",
+      "slug": "mapa-local",
+      "valor": "2 DO",
+      "descricao": "Mostra pontos importantes da região.",
+      "tipo": "Utilitário",
+      "chave": "MAPA_LOCAL",
+      "imagem": "wiki/img/itens/mapa-local.png",
+      "raridade": "Comum",
+      "alquimico": false
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "pocao-da-salamandra",
+    "name": "Poção da Salamandra",
+    "data": {
+      "nome": "Poção da Salamandra",
+      "slug": "pocao-da-salamandra",
+      "valor": "3.5 DO",
+      "descricao": "Imunidade a fogo por 5 minutos. Não sofre efeitos de bolas de fogo.",
+      "tipo": "Consumível",
+      "alquimico": true,
+      "chave": "POCAO_SALAMANDRA",
+      "imagem": "wiki/img/itens/pocao-da-salamandra.png",
+      "raridade": "Comum"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "po-do-morto-falso",
+    "name": "Pó do Morto Falso",
+    "data": {
+      "nome": "Pó do Morto Falso",
+      "slug": "po-do-morto-falso",
+      "valor": "4 DO",
+      "descricao": "Cura 1 PV, mas mantém o alvo inconsciente por 10 minutos com aparência de morto.",
+      "tipo": "Consumível",
+      "alquimico": true,
+      "chave": "PO_DO_MORTO_FALSO",
+      "imagem": "wiki/img/itens/po-do-morto-falso.png",
+      "raridade": "Comum"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "sangue-de-dragao",
+    "name": "Sangue de Dragão",
+    "data": {
+      "nome": "Sangue de Dragão",
+      "slug": "sangue-de-dragao",
+      "valor": "10 DO",
+      "descricao": "Ganha 7 PV temporários, imunidade a desmembramento e ataques BRUTAL por 5 minutos. Após o efeito, o usuário morre lentamente.",
+      "tipo": "Consumível",
+      "alquimico": true,
+      "raridade": "Lendário",
+      "chave": "SANGUE_DRAGAO",
+      "imagem": "wiki/img/itens/sangue-de-dragao.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "sangue-de-unicornio",
+    "name": "Sangue de Unicórnio",
+    "data": {
+      "nome": "Sangue de Unicórnio",
+      "slug": "sangue-de-unicornio",
+      "valor": "5 DO",
+      "descricao": "Evita a morte uma vez, retornando com 1 PV. Não acumula.",
+      "tipo": "Consumível",
+      "alquimico": true,
+      "raridade": "Raro",
+      "chave": "SANGUE_UNICORNIO",
+      "imagem": "wiki/img/itens/sangue-de-unicornio.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "sementes-dos-deuses",
+    "name": "Sementes dos Deuses",
+    "data": {
+      "nome": "Sementes dos Deuses",
+      "slug": "sementes-dos-deuses",
+      "valor": "1 DO",
+      "descricao": "Cura 3 pontos de vida e recupera desmembramentos.",
+      "tipo": "Consumível",
+      "alquimico": true,
+      "chave": "SEMENTES_DOS_DEUSES",
+      "imagem": "wiki/img/itens/sementes-dos-deuses.png",
+      "raridade": "Comum"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "veneno",
+    "name": "Veneno (dose)",
+    "data": {
+      "nome": "Veneno (dose)",
+      "slug": "veneno",
+      "valor": "1.5 DO",
+      "descricao": "Aplica veneno na arma. O primeiro alvo atingido será envenenado. Se não tratado, morre após o tempo de efeito.",
+      "tipo": "Consumível",
+      "alquimico": true,
+      "chave": "VENENO",
+      "imagem": "wiki/img/itens/veneno.png",
+      "raridade": "Comum"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "agua-benta",
+    "name": "Água Benta",
+    "data": {
+      "nome": "Água Benta",
+      "slug": "agua-benta",
+      "valor": "2 DO",
+      "descricao": "Causa dano em mortos-vivos, demônios e possuídos como uma Bola de Fogo. Ao usar, deve-se gritar 'ÁGUA BENTA!'.",
+      "tipo": "Consumível",
+      "alquimico": false,
+      "chave": "AGUA_BENTA",
+      "imagem": "wiki/img/itens/agua-benta.png",
+      "raridade": "Comum"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "agua-primordial",
+    "name": "Água Primordial",
+    "data": {
+      "nome": "Água Primordial",
+      "slug": "agua-primordial",
+      "valor": "15 DO",
+      "descricao": "Concede os efeitos de um descanso longo. Se usada em um morto, ressuscita completamente sem penalidades.",
+      "tipo": "Consumível",
+      "alquimico": false,
+      "raridade": "Raro",
+      "chave": "AGUA_PRIMORDIAL",
+      "imagem": "wiki/img/itens/agua-primordial.png"
+    },
+    "visible": true
+  },
+  {
+    "category": "itens",
+    "slug": "oleo-de-mandragora",
+    "name": "Óleo de Mandrágora",
+    "data": {
+      "nome": "Óleo de Mandrágora",
+      "slug": "oleo-de-mandragora",
+      "valor": "3 DO",
+      "descricao": "Os próximos 3 golpes ignoram armadura (BRUTAL), desde que declarado.",
+      "tipo": "Consumível",
+      "alquimico": true,
+      "chave": "OLEO_DE_MANDRAGORA",
+      "imagem": "wiki/img/itens/oleo-de-mandragora.png",
+      "raridade": "Comum"
+    },
+    "visible": true
+  },
+  {
+    "category": "magia_geral",
+    "slug": "regras-gerais",
+    "name": "Regras Gerais de Magia",
+    "data": {
+      "titulo": "Regras Gerais de Magia",
+      "itens": [
+        "Quem faz magia é chamado de conjurador.",
+        "As magias escolhidas pela classe não podem ser mudadas depois.",
+        "Para usar magia, é preciso dizer a invocação em voz alta e usar um foco de magia.",
+        "O foco deve ser segurado e manipulado com uma das mãos.",
+        "Se uma mão estiver ocupada com escudo ou arma, ela não pode usar foco ao mesmo tempo.",
+        "Focos não podem ser armas.",
+        "A invocação pode ser alterada, desde que não fique menor, não mude o sentido e mantenha as palavras principais em caixa alta."
+      ]
+    },
+    "visible": true
+  }
+]

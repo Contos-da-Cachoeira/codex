@@ -1,0 +1,66 @@
+<div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
+      <h3 class="font-bold text-xl">Cores do site</h3>
+      <p class="text-sm text-base-content/70 mt-1 mb-4">As cores salvas aqui serao aplicadas para todos os usuarios em todo o site.</p>
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_theme_config" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <label class="form-control">
+            <span class="label-text">Cor principal</span>
+            <input type="color" name="primary_color" value="{{ layout_config.primary_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
+          </label>
+          <label class="form-control">
+            <span class="label-text">Conteudo da cor principal</span>
+            <input type="color" name="primary_content_color" value="{{ layout_config.primary_content_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
+          </label>
+          <label class="form-control">
+            <span class="label-text">Cor secundaria</span>
+            <input type="color" name="secondary_color" value="{{ layout_config.secondary_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
+          </label>
+          <label class="form-control">
+            <span class="label-text">Conteudo da cor secundaria</span>
+            <input type="color" name="secondary_content_color" value="{{ layout_config.secondary_content_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
+          </label>
+          <label class="form-control">
+            <span class="label-text">Fundo principal</span>
+            <input type="color" name="site_background_color" value="{{ layout_config.site_background_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
+          </label>
+          <label class="form-control">
+            <span class="label-text">Superfície dos painéis</span>
+            <input type="color" name="site_surface_color" value="{{ layout_config.site_surface_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
+          </label>
+          <label class="form-control">
+            <span class="label-text">Cor de destaque</span>
+            <input type="color" name="site_accent_color" value="{{ layout_config.site_accent_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
+          </label>
+          <label class="form-control">
+            <span class="label-text">Texto do destaque</span>
+            <input type="color" name="site_accent_content_color" value="{{ layout_config.site_accent_content_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
+          </label>
+          <label class="form-control">
+            <span class="label-text">Texto claro</span>
+            <input type="color" name="site_text_color" value="{{ layout_config.site_text_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
+          </label>
+          <label class="form-control">
+            <span class="label-text">Texto secundario</span>
+            <input type="color" name="site_muted_text_color" value="{{ layout_config.site_muted_text_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
+          </label>
+        </div>
+        <div class="rounded-box border border-base-300 p-4 bg-base-200">
+          <p class="text-sm font-semibold">Pre-visualizacao</p>
+          <div class="flex flex-wrap gap-2 mt-3">
+            <span class="badge badge-primary">Principal</span>
+            <span class="badge badge-secondary">Secundaria</span>
+            <button type="button" class="btn btn-primary btn-sm">Acao principal</button>
+          </div>
+        </div>
+        <div class="modal-action">
+          <button type="submit" class="btn btn-primary">Salvar cores</button>
+        </div>
+      </form>
+      <form method="post" class="mt-4 flex justify-end">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="reset_theme_config" />
+        <button type="submit" class="btn btn-outline">Restaurar cores padrão</button>
+      </form>
+    </div>

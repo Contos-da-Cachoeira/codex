@@ -1,0 +1,26 @@
+<div class="admin-records" data-record-manager="{{ manager.kind }}" data-record-parameter="{{ manager.parameter }}" data-record-tab="{{ manager.tab }}">
+  <header class="admin-records-heading"><div><h2>{{ manager.title }}</h2><p>{{ manager.description }}</p></div>{% if manager.kind == 'larps' %}<a href="{{ new_larp_url }}" class="btn btn-primary btn-sm" data-record-new>Criar</a>{% endif %}</header>
+  <div class="admin-records-columns">
+    <aside class="admin-records-catalog" aria-label="Lista de {{ manager.title|lower }}">
+      {% include 'dashboard/includes/record_filters.html' %}
+      <p class="admin-records-count">{{ manager.count }} registro{{ manager.count|pluralize:'s' }}</p>
+      <div class="admin-records-groups" data-record-scroll>
+        {% for group in manager.groups %}<details class="admin-records-group"{% if group.open %} open{% endif %}>
+          <summary>{% include 'dashboard/includes/record_photo.html' with record=group.cover %}<h3>{{ group.label }}</h3><span>{{ group.rows|length }}</span><span class="admin-records-chevron" aria-hidden="true">⌄</span></summary>
+          {% for row in group.rows %}<a href="{{ row.select_url }}" class="admin-records-row{% if row.selected and not manager.new %} is-selected{% endif %}" data-record-select="{{ row.id }}"{% if row.selected and not manager.new %} aria-current="true"{% endif %}>
+            {% include 'dashboard/includes/record_photo.html' with record=row %}<span class="admin-records-row-copy"><strong>{{ row.title }}</strong><span>{{ row.subtitle }}</span><small>{{ row.status_label }}</small></span><span aria-hidden="true">›</span>
+          </a>{% endfor %}
+        </details>{% empty %}<p class="admin-records-empty">Nenhum registro encontrado. Ajuste os filtros.</p>{% endfor %}
+      </div>
+    </aside>
+    <section class="admin-records-detail" data-record-detail aria-label="Detalhes de {{ manager.title|lower }}">
+      {% if manager.new %}{% include 'dashboard/includes/larp_create_record.html' %}
+      {% elif manager.selected %}{% include manager.detail_template with record=manager.selected %}
+      {% else %}<p class="admin-records-empty">Selecione um registro na lista ou ajuste os filtros.</p>{% endif %}
+    </section>
+  </div>
+  <p role="status" aria-live="polite" class="sr-only" data-record-announcement></p>
+  <template data-record-preview="empty"><p class="admin-records-empty">Selecione um registro na lista ou ajuste os filtros.</p></template>
+  {% for record in manager.rows %}<template data-record-preview="{{ record.id }}">{% include manager.detail_template %}</template>{% endfor %}
+  {% if manager.kind == 'larps' %}<template data-record-preview="new">{% include 'dashboard/includes/larp_create_record.html' %}</template>{% endif %}
+</div>

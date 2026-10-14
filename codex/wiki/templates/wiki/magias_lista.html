@@ -14,7 +14,8 @@
 
     </div>
 
-    <article class="card bg-base-100 border border-base-300">
+    {% if regras_gerais_magia %}<article class="card bg-base-100 border border-base-300">
+      {% include 'wiki/includes/entry_art.html' with entry=regras_gerais_magia %}
       <div class="card-body">
         <h2 class="card-title">{{ regras_gerais_magia.titulo }}</h2>
         <ul class="list-disc pl-6 space-y-1 text-base-content/85">
@@ -23,7 +24,7 @@
           {% endfor %}
         </ul>
       </div>
-    </article>
+    </article>{% endif %}
   </section>
 
   {% include 'wiki/includes/search.html' %}

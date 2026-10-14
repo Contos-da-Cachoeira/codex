@@ -1,8 +1,10 @@
 from django.urls import path
+from django.views.generic import RedirectView
 
 from . import views
 
 urlpatterns = [
+    path('gerenciar/', RedirectView.as_view(url='/area-admin/#wiki_panel'), name='wiki_admin_list'),
     path('', views.wiki_home, name='wiki_home'),
     path('regras/', views.regras_lista, name='wiki_regras_lista'),
     path('regras/<slug:slug>/', views.regra_detalhe, name='wiki_regra_detalhe'),

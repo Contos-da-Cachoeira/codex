@@ -1,0 +1,30 @@
+<article data-record-id="{{ record.id }}">
+  <header class="admin-records-item-header">
+    {% include 'dashboard/includes/record_photo.html' with large=True %}
+    <div><p class="admin-records-eyebrow">{{ record.status_aprovacao_display }}</p><h3>{{ record.nome }}</h3><p class="admin-records-subtitle">{{ record.classe_display|default:'Sem classe' }} · {{ record.guilda_display|default:'Sem guilda' }}</p><div class="admin-records-actions"><button class="btn btn-primary btn-sm" type="button" data-record-edit>Editar personagem</button><a class="btn btn-outline btn-sm" href="{% url 'admin_user_profile' record.character.usuario_id %}">Perfil do jogador</a></div></div>
+  </header>
+  <div class="admin-records-body" data-record-edit-fields hidden>
+    <h4>Editar personagem</h4>
+    <form method="post" action="{{ record.save_url }}" class="admin-records-form">
+      {% csrf_token %}{% include 'dashboard/includes/record_return_filters.html' %}<input type="hidden" name="action" value="bulk_update_personagens"><input type="hidden" name="personagem_ids" value="{{ record.id }}">
+      <div class="admin-records-form-grid">
+        <label for="record-status-{{ record.id }}">Status<select id="record-status-{{ record.id }}" name="status_{{ record.id }}" class="select select-bordered">{% for value, label in character_status_options %}{% if value != 'ALL' %}<option value="{{ value }}"{% if record.status|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endif %}{% endfor %}</select></label>
+        <label for="record-approval-{{ record.id }}">Aprovação<select id="record-approval-{{ record.id }}" name="status_aprovacao_{{ record.id }}" class="select select-bordered">{% for value, label in character_approval_options %}{% if value != 'ALL' %}<option value="{{ value }}"{% if record.status_aprovacao|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endif %}{% endfor %}</select></label>
+        <label for="record-class-{{ record.id }}">Classe<select id="record-class-{{ record.id }}" name="classe_{{ record.id }}" class="select select-bordered"><option value="">Sem classe</option>{% for value, label in character_class_options %}<option value="{{ value }}"{% if record.classe|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+        <label for="record-guild-{{ record.id }}">Guilda<select id="record-guild-{{ record.id }}" name="guilda_{{ record.id }}" class="select select-bordered"><option value="">Sem guilda</option>{% for value, label in character_guild_options %}<option value="{{ value }}"{% if record.guilda|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+        <label for="record-xp-{{ record.id }}">XP<input id="record-xp-{{ record.id }}" class="input input-bordered" type="number" min="0" name="xp_atual_{{ record.id }}" value="{{ record.xp_atual }}"></label>
+        <label for="record-gold-{{ record.id }}">Ouro<input id="record-gold-{{ record.id }}" class="input input-bordered" type="number" min="0" name="ouro_{{ record.id }}" value="{{ record.ouro }}"></label>
+      </div>
+      <div class="admin-records-form-actions"><button class="btn btn-primary btn-sm" type="submit">Salvar personagem</button><button class="btn btn-ghost btn-sm" type="button" data-record-cancel>Cancelar</button></div>
+    </form>
+  </div>
+  <div class="admin-records-body" data-record-read-fields>
+    <dl class="admin-records-facts"><div><dt>Jogador</dt><dd>{{ record.usuario }}</dd></div><div><dt>Status</dt><dd>{{ record.status_display }}</dd></div><div><dt>XP</dt><dd>{{ record.xp_atual }}</dd></div><div><dt>Ouro</dt><dd>{{ record.ouro }}</dd></div><div><dt>Criado em</dt><dd>{{ record.character.data_criacao|date:'d/m/Y H:i' }}</dd></div><div><dt>Atualizado em</dt><dd>{{ record.character.data_atualizacao|date:'d/m/Y H:i' }}</dd></div></dl>
+    <section class="admin-records-section"><h4>História</h4><p>{{ record.character.historia|default:'Não informada.' }}</p></section>
+    <section class="admin-records-section"><h4>Aparência</h4><p>{{ record.character.aparencia|default:'Não informada.' }}</p></section>
+    <section class="admin-records-section"><h4>Personalidade</h4><p>{{ record.character.personalidade|default:'Não informada.' }}</p></section>
+    <section class="admin-records-section"><h4>Objetivos</h4><p>{{ record.character.objetivos|default:'Não informados.' }}</p></section>
+    {% if record.character.magias_pretendidas %}<section class="admin-records-section"><h4>Magias pretendidas</h4><ul>{% for item in record.character.magias_pretendidas %}<li>{{ item }}</li>{% endfor %}</ul></section>{% endif %}
+    {% if record.character.talentos_iniciais %}<section class="admin-records-section"><h4>Talentos iniciais</h4><ul>{% for item in record.character.talentos_iniciais %}<li>{{ item }}</li>{% endfor %}</ul></section>{% endif %}
+  </div>
+</article>

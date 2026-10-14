@@ -12,6 +12,7 @@
   </nav>
 
   <article class="card bg-base-100 border border-base-300">
+    {% include 'wiki/includes/entry_art.html' with entry=regra detail=True %}
     <div class="card-body">
       <div class="flex flex-wrap items-center justify-between gap-2">
         <h1 class="text-3xl font-black tracking-tight">{{ regra.titulo }}</h1>

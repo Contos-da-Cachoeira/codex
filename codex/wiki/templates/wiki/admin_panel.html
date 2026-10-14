@@ -1,0 +1,62 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'wiki/css/admin-editor.css' %}">
+<div class="wiki-manager" data-wiki-manager>
+  <header class="wiki-manager-heading">
+    <div><h2 class="text-2xl font-bold">Gerenciar Wiki</h2><p class="text-sm text-base-content/65">Selecione um conteúdo para consultar ou editar. Somente os publicados aparecem para os jogadores.</p></div>
+    <a class="btn btn-primary btn-sm" href="{{ wiki_create_url }}" data-wiki-create>Criar</a>
+  </header>
+  <div class="wiki-manager-columns">
+    <aside class="wiki-manager-catalog" aria-label="Conteúdos da wiki">
+      <form method="get" action="{% url 'admin_dashboard' %}#wiki_panel" class="wiki-manager-filters">
+        <input class="input input-bordered w-full" name="wiki_q" value="{{ wiki_q }}" placeholder="Buscar por nome" aria-label="Buscar na wiki por nome">
+        <div><select class="select select-bordered" name="wiki_section" aria-label="Seção da wiki"><option value="">Todas as seções</option>{% for key, label in wiki_categories %}<option value="{{ key }}" {% if wiki_section == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="btn" type="submit">Filtrar</button></div>
+      </form>
+      <p class="wiki-manager-count">{{ wiki_count }} conteúdo{{ wiki_count|pluralize:"s" }}</p>
+      <div class="wiki-manager-groups" data-wiki-catalog-scroll>
+        {% for group in wiki_groups %}
+          <details class="wiki-manager-group" data-wiki-group="{{ group.key }}" {% if group.open %}open{% endif %}>
+            <summary>
+              {% if group.image_url %}<img src="{{ group.image_url }}" alt="" width="36" height="36" loading="lazy">{% else %}<span class="wiki-manager-section-icon" aria-hidden="true">§</span>{% endif %}
+              <h3>{{ group.label }}</h3><span class="wiki-manager-group-count">{{ group.rows|length }}</span><span class="wiki-manager-chevron" aria-hidden="true">⌄</span>
+            </summary>
+            <div class="wiki-manager-rows">{% for row in group.rows %}
+              <a class="wiki-manager-row{% if row.selected %} is-selected{% endif %}" href="{{ row.select_url }}" {% if row.selected %}aria-current="true"{% endif %} data-wiki-select="{{ row.entry.pk }}">
+                {% if row.image_url %}<img src="{{ row.image_url }}" alt="" width="48" height="48" loading="lazy">{% else %}<span class="wiki-manager-no-image" aria-hidden="true">{{ row.entry.name|first }}</span>{% endif %}
+                <span class="wiki-manager-row-copy"><strong>{{ row.entry.name }}</strong><span class="wiki-manager-status{% if row.entry.visible %} is-published{% endif %}">{% if row.entry.visible %}Publicado{% else %}Oculto{% endif %}</span></span>
+                <span class="wiki-manager-row-arrow" aria-hidden="true">›</span>
+              </a>
+            {% endfor %}</div>
+          </details>
+        {% empty %}<p class="wiki-manager-empty">Nenhum conteúdo encontrado. Ajuste a busca ou a seção.</p>{% endfor %}
+      </div>
+    </aside>
+    <section class="wiki-manager-detail" aria-label="Informações do conteúdo selecionado" data-wiki-detail>
+      {% if wiki_mode == 'new' %}
+        {% include 'wiki/includes/admin_create.html' %}
+      {% elif wiki_mode == 'edit' %}
+        {% include 'wiki/includes/admin_edit_form.html' %}
+      {% elif wiki_mode == 'delete' %}
+        <div class="wiki-manager-delete">
+          <h3 class="text-2xl font-bold">Excluir {{ wiki_entry.name }}?</h3>
+          <p>O conteúdo será removido da wiki. Esta ação não pode ser desfeita.</p>
+          <form method="post" action="{{ wiki_list_url }}" class="flex flex-wrap gap-3">
+            {% csrf_token %}<input type="hidden" name="action" value="wiki_delete"><input type="hidden" name="wiki_id" value="{{ wiki_entry.pk }}">
+            {% include 'wiki/includes/admin_filters.html' %}
+            <button class="btn btn-error" type="submit">Confirmar exclusão</button><a class="btn btn-ghost" href="{{ wiki_back_url }}">Cancelar</a>
+          </form>
+        </div>
+      {% elif wiki_selected %}
+        {% include 'wiki/includes/admin_item_detail.html' %}
+      {% else %}
+        <div class="wiki-manager-empty"><h3 class="text-xl font-bold">Selecione um conteúdo</h3><p>As informações e a imagem aparecerão aqui. Você também pode criar uma nova entrada pelo botão Criar.</p></div>
+      {% endif %}
+    </section>
+    <p class="sr-only" role="status" aria-live="polite" data-wiki-selection-status></p>
+  </div>
+  {% for row in wiki_rows %}
+    <template data-wiki-detail-template="{{ row.entry.pk }}">
+      {% include 'wiki/includes/admin_item_detail.html' with wiki_selected=row.entry wiki_image_url=row.image_url wiki_information=row.information wiki_edit_url=row.edit_url wiki_delete_url=row.delete_url %}
+    </template>
+  {% endfor %}
+</div>
+<script src="{% static 'wiki/js/admin-editor.js' %}" defer></script>

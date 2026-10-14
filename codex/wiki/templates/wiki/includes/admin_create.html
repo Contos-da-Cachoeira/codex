@@ -1,0 +1,11 @@
+<div class="wiki-manager-create-pane">
+  <a class="btn btn-ghost btn-sm" href="{{ wiki_list_url }}">Voltar aos conteúdos</a>
+  <h3 class="text-2xl font-bold">Criar conteúdo</h3>
+  <p class="text-sm text-base-content/65">Escolha a seção do novo conteúdo.</p>
+  <nav class="wiki-manager-category-options" aria-label="Seção do novo conteúdo">
+    {% for key, label, url in wiki_creation_sections %}
+      <a class="wiki-manager-category-option{% if wiki_entry.category == key %} is-selected{% endif %}" href="{{ url }}"{% if wiki_entry.category == key %} aria-current="true"{% endif %}>{{ label }}</a>
+    {% endfor %}
+  </nav>
+</div>
+{% if wiki_form %}{% include 'wiki/includes/admin_edit_form.html' %}{% endif %}

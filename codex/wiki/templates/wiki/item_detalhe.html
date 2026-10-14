@@ -6,7 +6,7 @@
     <ul><li><a href="{% url 'wiki_home' %}">Wiki</a></li><li><a href="{% url 'wiki_itens_lista' %}">Itens</a></li><li>{{ item.nome }}</li></ul>
   </nav>
   <article class="wiki-item-detail card bg-base-100 border border-base-300">
-    <figure class="wiki-item-art"><img src="{% static item.imagem %}" alt="Ilustração de {{ item.nome }} em preto e branco" width="1024" height="1024" fetchpriority="high"></figure>
+    {% if item.imagem or item.image_url %}<figure class="wiki-item-art"><img src="{% if item.image_url %}{{ item.image_url }}{% else %}{% static item.imagem %}{% endif %}" alt="Ilustração de {{ item.nome }} em preto e branco" width="1024" height="1024" fetchpriority="high"></figure>{% endif %}
     <div class="card-body gap-5">
       <header><p class="wiki-eyebrow">Inventário do Codex · {{ item.tipo }}</p><h1>{{ item.nome }}</h1></header>
       <dl class="wiki-item-facts">

@@ -1,6 +1,6 @@
 {% load static %}
-{% if entry.imagem %}
+{% if entry.imagem or entry.image_url %}
   <figure class="wiki-entry-art{% if detail %} wiki-entry-art-detail{% endif %}">
-    <img src="{% static entry.imagem %}" alt="Ilustração de {{ entry.nome }}" width="1024" height="1024" {% if detail %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async">
+    <img src="{% if entry.image_url %}{{ entry.image_url }}{% else %}{% static entry.imagem %}{% endif %}" alt="Ilustração de {{ entry.nome }}" width="1024" height="1024" {% if detail %}fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async">
   </figure>
 {% endif %}

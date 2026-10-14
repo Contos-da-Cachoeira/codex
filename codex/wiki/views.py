@@ -1,70 +1,32 @@
 from django.http import Http404
 from django.shortcuts import render
 from django.urls import reverse
-from django.utils.text import slugify
 
-from .constants.classes import CLASSES_WIKI
-from .constants.itens import ITENS_WIKI
-from .constants.magias import MAGIAS_WIKI, REGRAS_GERAIS_MAGIA
-from .constants.regras import REGRAS
-from .constants.talentos import TALENTOS_WIKI
+from .models import WikiEntry
+
+
+def _published(category):
+    return [entry.as_content() for entry in WikiEntry.objects.filter(category=category, visible=True)]
 
 
 def _regras_ordenadas():
-    return sorted(REGRAS, key=lambda item: (item.get('ordem', 999), item.get('titulo', '')))
+    return sorted(_published('regras'), key=lambda item: (item.get('ordem', 999), item.get('titulo', '')))
 
 
 def _classes_ordenadas():
-    classes = []
-    for chave, dados in CLASSES_WIKI.items():
-        classe = dados.copy()
-        classe['chave'] = chave
-        classe['slug'] = slugify(chave.replace('_', '-'))
-        classes.append(classe)
-
-    return sorted(classes, key=lambda item: item.get('nome', ''))
+    return _published('classes')
 
 
 def _itens_ordenados():
-    itens = []
-    for chave, dados in ITENS_WIKI.items():
-        item = dados.copy()
-        item['chave'] = chave
-        item['slug'] = dados.get('slug') or slugify(chave.replace('_', '-'))
-        item['imagem'] = 'wiki/img/itens/{}.png'.format(item['slug'])
-        item['raridade'] = dados.get('raridade', 'Comum')
-        item['alquimico'] = bool(dados.get('alquimico', False))
-        itens.append(item)
-
-    return sorted(itens, key=lambda item: item.get('nome', ''))
+    return _published('itens')
 
 
 def _talentos_ordenados():
-    talentos = []
-    for chave, dados in TALENTOS_WIKI.items():
-        talento = dados.copy()
-        talento['chave'] = chave
-        talento['slug'] = dados.get('slug') or slugify(chave.replace('_', '-'))
-        talento['imagem'] = 'wiki/img/talentos/{}.png'.format(talento['slug'])
-        talento['custo_xp'] = dados.get('custo_xp', 0)
-        talento['stackavel'] = bool(dados.get('stackavel', False))
-        talentos.append(talento)
-
-    return sorted(talentos, key=lambda item: (item.get('custo_xp', 0), item.get('nome', '')))
+    return sorted(_published('talentos'), key=lambda item: (item.get('custo_xp', 0), item.get('nome', '')))
 
 
 def _magias_ordenadas():
-    magias = []
-    for chave, dados in MAGIAS_WIKI.items():
-        magia = dados.copy()
-        magia['chave'] = chave
-        magia['slug'] = dados.get('slug') or slugify(chave.replace('_', '-'))
-        magia['imagem'] = 'wiki/img/magias/{}.png'.format(magia['slug'])
-        magia['quem_usa'] = dados.get('quem_usa', [])
-        magia['tipo'] = dados.get('tipo', 'Geral')
-        magias.append(magia)
-
-    return sorted(magias, key=lambda item: item.get('nome', ''))
+    return _published('magias')
 
 
 def wiki_home(request):
@@ -94,7 +56,7 @@ def regras_lista(request):
 
 
 def regra_detalhe(request, slug):
-    regra = next((item for item in REGRAS if item.get('slug') == slug), None)
+    regra = next((item for item in _regras_ordenadas() if item.get('slug') == slug), None)
     if not regra:
         raise Http404('Regra nao encontrada.')
 
@@ -161,7 +123,7 @@ def talento_detalhe(request, slug):
 def magias_lista(request):
     context = {
         'magias': _magias_ordenadas(),
-        'regras_gerais_magia': REGRAS_GERAIS_MAGIA,
+        'regras_gerais_magia': next(iter(_published('magia_geral')), {}),
     }
     return render(request, 'wiki/magias_lista.html', context)
 

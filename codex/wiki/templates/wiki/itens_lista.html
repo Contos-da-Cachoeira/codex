@@ -16,9 +16,9 @@
   <section class="wiki-item-grid" id="wiki-items" aria-label="Catálogo de itens">
     {% for item in itens %}
       <article class="wiki-item-card card bg-base-100 border border-base-300" data-wiki-item="{{ item.nome }} {{ item.tipo }} {{ item.raridade }} {% if item.alquimico %}alquímico{% endif %}">
-        <a class="wiki-item-art" href="{% url 'wiki_item_detalhe' item.slug %}" tabindex="-1" aria-hidden="true">
-          <img src="{% static item.imagem %}" alt="" width="1024" height="1024" loading="lazy" decoding="async">
-        </a>
+        {% if item.imagem or item.image_url %}<a class="wiki-item-art" href="{% url 'wiki_item_detalhe' item.slug %}" tabindex="-1" aria-hidden="true">
+          <img src="{% if item.image_url %}{{ item.image_url }}{% else %}{% static item.imagem %}{% endif %}" alt="" width="1024" height="1024" loading="lazy" decoding="async">
+        </a>{% endif %}
         <div class="card-body">
           <p class="wiki-eyebrow">{{ item.tipo }}</p>
           <h2 class="card-title"><a href="{% url 'wiki_item_detalhe' item.slug %}">{{ item.nome }}</a></h2>

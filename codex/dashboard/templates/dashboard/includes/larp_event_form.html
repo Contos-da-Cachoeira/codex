@@ -1,0 +1,6 @@
+<form method="post" action="{% url 'admin_dashboard' %}#larp_modal" enctype="multipart/form-data" class="admin-records-form">
+  {% csrf_token %}{% include 'dashboard/includes/record_return_filters.html' %}<input type="hidden" name="action" value="save_admin_larp"><input type="hidden" name="event_id" value="{{ event_form.instance.pk|default:'' }}">
+  <div class="text-error">{{ event_form.non_field_errors }}</div>
+  <div class="admin-records-form-grid">{% for field in event_form %}<div class="admin-records-form-field{% if field.name == 'titulo' or field.name == 'capa' or field.name == 'historia' or field.name == 'visivel_publicamente' %} admin-records-wide{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}<div class="text-error">{{ field.errors }}</div></div>{% endfor %}</div>
+  <div class="admin-records-form-actions"><button type="submit" class="btn btn-primary btn-sm">{% if event_form.instance.pk %}Salvar evento{% else %}Criar evento{% endif %}</button><button type="button" class="btn btn-ghost btn-sm" data-record-cancel>Cancelar</button></div>
+</form>

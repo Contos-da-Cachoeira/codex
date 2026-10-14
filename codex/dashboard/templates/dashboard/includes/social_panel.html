@@ -1,0 +1,29 @@
+<div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
+      <h3 class="font-bold text-xl">Redes sociais do cabeçalho</h3>
+      <p class="text-sm text-base-content/70 mt-1 mb-4">
+        Informe os links que devem aparecer no cabeçalho. Deixe um campo vazio para esconder o respectivo botão.
+      </p>
+      <form method="post" class="space-y-4">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="update_social_links" />
+        <label class="form-control w-full">
+          <span class="label-text">Instagram</span>
+          <input type="url" name="social_instagram_url" value="{{ layout_config.social_instagram_url }}" class="input input-bordered w-full" placeholder="https://instagram.com/sua-conta" />
+        </label>
+        <label class="form-control w-full">
+          <span class="label-text">WhatsApp</span>
+          <input type="url" name="social_whatsapp_url" value="{{ layout_config.social_whatsapp_url }}" class="input input-bordered w-full" placeholder="https://wa.me/5511999999999" />
+        </label>
+        <label class="form-control w-full">
+          <span class="label-text">X / Twitter</span>
+          <input type="url" name="social_x_url" value="{{ layout_config.social_x_url }}" class="input input-bordered w-full" placeholder="https://x.com/sua-conta" />
+        </label>
+        <label class="form-control w-full">
+          <span class="label-text">YouTube</span>
+          <input type="url" name="social_youtube_url" value="{{ layout_config.social_youtube_url }}" class="input input-bordered w-full" placeholder="https://youtube.com/@seu-canal" />
+        </label>
+        <div class="modal-action">
+          <button type="submit" class="btn btn-primary">Salvar redes sociais</button>
+        </div>
+      </form>
+    </div>

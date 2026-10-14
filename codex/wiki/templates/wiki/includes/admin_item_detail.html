@@ -1,0 +1,29 @@
+<article data-wiki-item="{{ wiki_selected.pk }}">
+  <header class="wiki-manager-item-header">
+    {% if wiki_image_url %}<figure class="wiki-manager-item-image"><img src="{{ wiki_image_url }}" alt="Imagem de {{ wiki_selected.name }}" width="240" height="240" decoding="async"></figure>{% endif %}
+    <div class="wiki-manager-item-title">
+      <p class="wiki-manager-eyebrow">{{ wiki_selected.get_category_display }}</p>
+      <h3>{{ wiki_selected.name }}</h3>
+      <span class="wiki-manager-status{% if wiki_selected.visible %} is-published{% endif %}">{% if wiki_selected.visible %}Publicado para os jogadores{% else %}Oculto para os jogadores{% endif %}</span>
+      <div class="wiki-manager-actions">
+        <a class="btn btn-primary btn-sm" href="{{ wiki_edit_url }}">Editar</a>
+        <form method="post" action="{{ wiki_list_url }}">
+          {% csrf_token %}<input type="hidden" name="action" value="wiki_visibility"><input type="hidden" name="wiki_id" value="{{ wiki_selected.pk }}">
+          {% include 'wiki/includes/admin_filters.html' %}
+          <button class="btn btn-sm btn-outline" type="submit">{% if wiki_selected.visible %}Ocultar{% else %}Publicar{% endif %}</button>
+        </form>
+        <a class="btn btn-sm btn-error btn-outline" href="{{ wiki_delete_url }}">Excluir</a>
+      </div>
+    </div>
+  </header>
+  <div class="wiki-manager-information">
+    {% for field in wiki_information %}
+      <section class="wiki-manager-field{% if field.wide %} wiki-manager-field-wide{% endif %}">
+        <h4>{{ field.label }}</h4>
+        {% if field.kind == 'sections' %}{% for section in field.value %}<div class="wiki-manager-rule-section"><h5>{{ section.titulo }}</h5><ul>{% for item in section.itens %}<li>{{ item }}</li>{% endfor %}</ul></div>{% endfor %}
+        {% elif field.kind == 'list' %}<ul>{% for item in field.value %}<li>{{ item }}</li>{% endfor %}</ul>
+        {% else %}<p>{{ field.value }}</p>{% endif %}
+      </section>
+    {% empty %}<p class="text-base-content/60">Este conteúdo ainda não tem informações adicionais.</p>{% endfor %}
+  </div>
+</article>

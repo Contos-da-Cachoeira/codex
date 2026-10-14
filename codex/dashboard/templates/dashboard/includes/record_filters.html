@@ -1,0 +1,17 @@
+<form method="get" action="{% url 'admin_dashboard' %}#{{ manager.tab }}" class="admin-records-filters">
+  {% if manager.kind == 'users' %}
+    <input type="hidden" name="open_users_modal" value="1">
+    <label>Buscar usuário<input class="input input-bordered" type="search" name="q" value="{{ q_value }}" placeholder="Nome de usuário ou e-mail"></label>
+    <label>Tipo de conta<select class="select select-bordered" name="role_filter">{% for value, label in filter_role_options %}<option value="{{ value }}"{% if role_filter == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+  {% elif manager.kind == 'characters' %}
+    <input type="hidden" name="open_personagens_modal" value="1">
+    <label>Buscar personagem<input class="input input-bordered" type="search" name="character_q" value="{{ character_q_value }}" placeholder="Nome, jogador, classe ou guilda"></label>
+    <label>Status<select class="select select-bordered" name="character_status_filter">{% for value, label in character_status_options %}<option value="{{ value }}"{% if character_status_filter|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+    <label>Aprovação<select class="select select-bordered" name="character_approval_filter">{% for value, label in character_approval_options %}<option value="{{ value }}"{% if character_approval_filter|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+  {% else %}
+    <input type="hidden" name="open_larps_modal" value="1">
+    <label>Buscar LARP<input class="input input-bordered" type="search" name="larp_q" value="{{ larp_q_value }}" placeholder="Título ou local"></label>
+    <label>Visibilidade<select class="select select-bordered" name="larp_visibility_filter"><option value="ALL">Todos</option><option value="public"{% if larp_visibility_filter == 'public' %} selected{% endif %}>Publicados</option><option value="private"{% if larp_visibility_filter == 'private' %} selected{% endif %}>Ocultos</option></select></label>
+  {% endif %}
+  <div class="flex gap-2"><button type="submit" class="btn btn-sm btn-primary">Filtrar</button><a href="{{ manager.clear_url }}" class="btn btn-sm btn-ghost">Limpar</a></div>
+</form>

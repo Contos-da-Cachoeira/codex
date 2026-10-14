@@ -5,7 +5,9 @@
 
 {% block content %}
 {% include 'core/includes/larp_actions_style.html' %}
-<section class="space-y-6" data-admin-dashboard>
+<link rel="stylesheet" href="{% static 'dashboard/admin-records.css' %}">
+<script src="{% static 'dashboard/admin-shell.js' %}" defer></script>
+<section class="space-y-6" data-admin-dashboard data-admin-base-url="{% url 'admin_dashboard' %}" data-admin-user-id="{{ request.user.pk }}"{% if record_initial_tab %} data-admin-initial-tab="{{ record_initial_tab }}"{% elif wiki_active %} data-admin-initial-tab="wiki_panel"{% endif %}>
   <style>
     [data-admin-panel][hidden] { display: none !important; }
     .admin-tabs { display: flex; gap: .5rem; overflow-x: auto; padding: .5rem; border: 1px solid var(--site-muted); border-radius: .75rem; }
@@ -22,10 +24,15 @@
     <button type="button" role="tab" id="tab-user_roles_modal" aria-controls="user_roles_modal" aria-selected="false" tabindex="-1" data-admin-tab="user_roles_modal">Usuários</button>
     <button type="button" role="tab" id="tab-character_modal" aria-controls="character_modal" aria-selected="false" tabindex="-1" data-admin-tab="character_modal">Personagens</button>
     <button type="button" role="tab" id="tab-larp_modal" aria-controls="larp_modal" aria-selected="false" tabindex="-1" data-admin-tab="larp_modal">LARPs</button>
+    <button type="button" role="tab" id="tab-wiki_panel" aria-controls="wiki_panel" aria-selected="false" tabindex="-1" data-admin-tab="wiki_panel">Wiki</button>
     <button type="button" role="tab" id="tab-home_components_modal" aria-controls="home_components_modal" aria-selected="false" tabindex="-1" data-admin-tab="home_components_modal">Página inicial</button>
     <button type="button" role="tab" id="tab-theme_modal" aria-controls="theme_modal" aria-selected="false" tabindex="-1" data-admin-tab="theme_modal">Aparência</button>
     <button type="button" role="tab" id="tab-social_modal" aria-controls="social_modal" aria-selected="false" tabindex="-1" data-admin-tab="social_modal">Redes sociais</button>
   </div>
+  <div class="alert" role="status" data-admin-feedback hidden></div>
+  <section id="wiki_panel" role="tabpanel" aria-labelledby="tab-wiki_panel" tabindex="0" data-admin-panel hidden>
+    {% include 'wiki/admin_panel.html' %}
+  </section>
   <section id="overview" role="tabpanel" aria-labelledby="tab-overview" tabindex="0" data-admin-panel class="space-y-6">
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
     <button type="button" class="card border border-primary/25 bg-primary/10 text-left shadow-md transition hover:-translate-y-0.5" data-admin-target="user_roles_modal">
@@ -74,185 +81,15 @@
 </section>
 
   <section id="theme_modal" role="tabpanel" aria-labelledby="tab-theme_modal" tabindex="0" data-admin-panel hidden>
-    <div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
-      <h3 class="font-bold text-xl">Cores do site</h3>
-      <p class="text-sm text-base-content/70 mt-1 mb-4">As cores salvas aqui serao aplicadas para todos os usuarios em todo o site.</p>
-      <form method="post" class="space-y-4">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="update_theme_config" />
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <label class="form-control">
-            <span class="label-text">Cor principal</span>
-            <input type="color" name="primary_color" value="{{ layout_config.primary_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
-          </label>
-          <label class="form-control">
-            <span class="label-text">Conteudo da cor principal</span>
-            <input type="color" name="primary_content_color" value="{{ layout_config.primary_content_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
-          </label>
-          <label class="form-control">
-            <span class="label-text">Cor secundaria</span>
-            <input type="color" name="secondary_color" value="{{ layout_config.secondary_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
-          </label>
-          <label class="form-control">
-            <span class="label-text">Conteudo da cor secundaria</span>
-            <input type="color" name="secondary_content_color" value="{{ layout_config.secondary_content_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
-          </label>
-          <label class="form-control">
-            <span class="label-text">Fundo principal</span>
-            <input type="color" name="site_background_color" value="{{ layout_config.site_background_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
-          </label>
-          <label class="form-control">
-            <span class="label-text">Superfície dos painéis</span>
-            <input type="color" name="site_surface_color" value="{{ layout_config.site_surface_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
-          </label>
-          <label class="form-control">
-            <span class="label-text">Cor de destaque</span>
-            <input type="color" name="site_accent_color" value="{{ layout_config.site_accent_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
-          </label>
-          <label class="form-control">
-            <span class="label-text">Texto do destaque</span>
-            <input type="color" name="site_accent_content_color" value="{{ layout_config.site_accent_content_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
-          </label>
-          <label class="form-control">
-            <span class="label-text">Texto claro</span>
-            <input type="color" name="site_text_color" value="{{ layout_config.site_text_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
-          </label>
-          <label class="form-control">
-            <span class="label-text">Texto secundario</span>
-            <input type="color" name="site_muted_text_color" value="{{ layout_config.site_muted_text_color }}" class="h-12 w-full cursor-pointer rounded border border-base-300 p-1" required />
-          </label>
-        </div>
-        <div class="rounded-box border border-base-300 p-4 bg-base-200">
-          <p class="text-sm font-semibold">Pre-visualizacao</p>
-          <div class="flex flex-wrap gap-2 mt-3">
-            <span class="badge badge-primary">Principal</span>
-            <span class="badge badge-secondary">Secundaria</span>
-            <button type="button" class="btn btn-primary btn-sm">Acao principal</button>
-          </div>
-        </div>
-        <div class="modal-action">
-          <button type="submit" class="btn btn-primary">Salvar cores</button>
-        </div>
-      </form>
-      <form method="post" class="mt-4 flex justify-end">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="reset_theme_config" />
-        <button type="submit" class="btn btn-outline">Restaurar cores padrão</button>
-      </form>
-    </div>
+    {% include 'dashboard/includes/theme_panel.html' %}
   </section>
 
   <section id="social_modal" role="tabpanel" aria-labelledby="tab-social_modal" tabindex="0" data-admin-panel hidden>
-    <div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
-      <h3 class="font-bold text-xl">Redes sociais do cabeçalho</h3>
-      <p class="text-sm text-base-content/70 mt-1 mb-4">
-        Informe os links que devem aparecer no cabeçalho. Deixe um campo vazio para esconder o respectivo botão.
-      </p>
-      <form method="post" class="space-y-4">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="update_social_links" />
-        <label class="form-control w-full">
-          <span class="label-text">Instagram</span>
-          <input type="url" name="social_instagram_url" value="{{ layout_config.social_instagram_url }}" class="input input-bordered w-full" placeholder="https://instagram.com/sua-conta" />
-        </label>
-        <label class="form-control w-full">
-          <span class="label-text">WhatsApp</span>
-          <input type="url" name="social_whatsapp_url" value="{{ layout_config.social_whatsapp_url }}" class="input input-bordered w-full" placeholder="https://wa.me/5511999999999" />
-        </label>
-        <label class="form-control w-full">
-          <span class="label-text">X / Twitter</span>
-          <input type="url" name="social_x_url" value="{{ layout_config.social_x_url }}" class="input input-bordered w-full" placeholder="https://x.com/sua-conta" />
-        </label>
-        <label class="form-control w-full">
-          <span class="label-text">YouTube</span>
-          <input type="url" name="social_youtube_url" value="{{ layout_config.social_youtube_url }}" class="input input-bordered w-full" placeholder="https://youtube.com/@seu-canal" />
-        </label>
-        <div class="modal-action">
-          <button type="submit" class="btn btn-primary">Salvar redes sociais</button>
-        </div>
-      </form>
-    </div>
+    {% include 'dashboard/includes/social_panel.html' %}
   </section>
 
   <section id="user_roles_modal" role="tabpanel" aria-labelledby="tab-user_roles_modal" tabindex="0" data-admin-panel hidden>
-    <div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
-      <h3 class="font-bold text-xl">Usuarios e Tipos de Conta</h3>
-      <p class="text-sm text-base-content/70 mt-1 mb-4">Altere o tipo entre Admin e Usuario comum.</p>
-
-      <form method="get" class="bg-base-200 rounded-box p-3 mb-4 grid grid-cols-1 md:grid-cols-4 gap-2 items-end">
-        <input type="hidden" name="open_users_modal" value="1" />
-        <label class="form-control md:col-span-2">
-          <span class="label-text text-xs">Buscar por usuario ou email</span>
-          <input type="text" name="q" value="{{ q_value }}" class="input input-bordered input-sm" placeholder="Digite para filtrar" />
-        </label>
-        <label class="form-control">
-          <span class="label-text text-xs">Tipo</span>
-          <select name="role_filter" class="select select-bordered select-sm">
-            {% for value, label in filter_role_options %}
-              <option value="{{ value }}" {% if role_filter == value %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </label>
-        <div class="flex gap-2 md:justify-end">
-          <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
-          <a href="{% url 'admin_dashboard' %}?open_users_modal=1" class="btn btn-sm btn-ghost">Limpar</a>
-        </div>
-      </form>
-
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="bulk_update_roles" />
-
-        <div class="overflow-x-auto rounded-box border border-base-300">
-          <table class="table table-zebra">
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Email</th>
-                <th>Tipo atual</th>
-                <th class="text-right">Alterar tipo</th>
-                <th>Perfil</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in users_with_role %}
-                <tr>
-                  <td>
-                    <div class="font-semibold">{% include 'core/includes/user_avatar.html' with avatar_user=item.account %} {{ item.username }}</div>
-                    {% if item.is_superuser %}
-                      <span class="badge badge-warning badge-sm">superusuario</span>
-                    {% endif %}
-                  </td>
-                  <td>{{ item.email|default:'Nao informado' }}</td>
-                  <td>{{ item.role_label }}</td>
-                  <td class="text-right">
-                    {% if item.is_superuser %}
-                      <span class="text-sm text-base-content/70">Nao editavel</span>
-                    {% else %}
-                      <input type="hidden" name="user_ids" value="{{ item.id }}" />
-                      <select name="role_{{ item.id }}" class="select select-bordered select-sm w-full max-w-xs" required>
-                        {% for value, label in role_choices %}
-                          <option value="{{ value }}" {% if item.role_value == value %}selected{% endif %}>{{ label }}</option>
-                        {% endfor %}
-                      </select>
-                    {% endif %}
-                  </td>
-                  <td><a href="{% url 'admin_user_profile' item.id %}" class="btn btn-outline btn-sm" aria-label="Ver perfil de {{ item.username }}">Ver perfil</a></td>
-                </tr>
-              {% empty %}
-                <tr>
-                  <td colspan="5" class="text-center text-base-content/70">Nenhum usuario encontrado.</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-
-        <div class="modal-action">
-          <button type="submit" class="btn btn-primary">Salvar</button>
-        </div>
-      </form>
-    </div>
+    {% include 'dashboard/includes/records_panel.html' with manager=users_manager %}
   </section>
 
   <section id="home_components_modal" role="tabpanel" aria-labelledby="tab-home_components_modal" tabindex="0" data-admin-panel hidden>
@@ -260,274 +97,14 @@
   </section>
 
   <section id="character_modal" role="tabpanel" aria-labelledby="tab-character_modal" tabindex="0" data-admin-panel hidden>
-    <div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
-      <h3 class="font-bold text-xl">Personagens</h3>
-      <p class="text-sm text-base-content/70 mt-1 mb-4">Leia e edite os personagens em lote.</p>
-
-      <form method="get" class="bg-base-200 rounded-box p-3 mb-4 grid grid-cols-1 md:grid-cols-5 gap-2 items-end">
-        <input type="hidden" name="open_personagens_modal" value="1" />
-        <label class="form-control md:col-span-2">
-          <span class="label-text text-xs">Buscar por nome, slug, usuario, guilda ou classe</span>
-          <input type="text" name="character_q" value="{{ character_q_value }}" class="input input-bordered input-sm" placeholder="Digite para filtrar" />
-        </label>
-        <label class="form-control">
-          <span class="label-text text-xs">Status</span>
-          <select name="character_status_filter" class="select select-bordered select-sm">
-            {% for value, label in character_status_options %}
-              <option value="{{ value }}" {% if character_status_filter|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </label>
-        <label class="form-control">
-          <span class="label-text text-xs">Aprovacao</span>
-          <select name="character_approval_filter" class="select select-bordered select-sm">
-            {% for value, label in character_approval_options %}
-              <option value="{{ value }}" {% if character_approval_filter|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
-            {% endfor %}
-          </select>
-        </label>
-        <div class="flex gap-2 md:justify-end">
-          <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
-          <a href="{% url 'admin_dashboard' %}?open_personagens_modal=1" class="btn btn-sm btn-ghost">Limpar</a>
-        </div>
-      </form>
-
-      <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="bulk_update_personagens" />
-
-        <div class="overflow-x-auto rounded-box border border-base-300 max-h-[60vh]">
-          <table class="table table-zebra table-pin-rows">
-            <thead>
-              <tr>
-                <th>Personagem</th>
-                <th>Usuario</th>
-                <th>Status</th>
-                <th>Classe</th>
-                <th>Guilda</th>
-                <th>XP</th>
-                <th>Ouro</th>
-                <th>Aprovacao</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for item in personagens_data %}
-                <tr>
-                  <td>
-                    <div class="font-semibold">{% include 'core/includes/character_avatar.html' with character=item.character %} {{ item.nome }}</div>
-                    <div class="text-xs text-base-content/70">{{ item.slug }}</div>
-                    <input type="hidden" name="personagem_ids" value="{{ item.id }}" />
-                  </td>
-                  <td>{% include 'core/includes/user_avatar.html' with avatar_user=item.character.usuario %} {{ item.usuario }}</td>
-                  <td>
-                    <select name="status_{{ item.id }}" class="select select-bordered select-sm w-full min-w-40" required>
-                      {% for value, label in character_status_options %}
-                        {% if value != 'ALL' %}
-                          <option value="{{ value }}" {% if item.status|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
-                        {% endif %}
-                      {% endfor %}
-                    </select>
-                  </td>
-                  <td>
-                    <select name="classe_{{ item.id }}" class="select select-bordered select-sm w-full min-w-40">
-                      <option value="">---------</option>
-                      {% for value, label in character_class_options %}
-                        <option value="{{ value }}" {% if item.classe|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
-                      {% endfor %}
-                    </select>
-                  </td>
-                  <td>
-                    <select name="guilda_{{ item.id }}" class="select select-bordered select-sm w-full min-w-40">
-                      <option value="">---------</option>
-                      {% for value, label in character_guild_options %}
-                        <option value="{{ value }}" {% if item.guilda|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
-                      {% endfor %}
-                    </select>
-                  </td>
-                  <td>
-                    <input type="number" min="0" name="xp_atual_{{ item.id }}" value="{{ item.xp_atual }}" class="input input-bordered input-sm w-24" />
-                  </td>
-                  <td>
-                    <input type="number" min="0" name="ouro_{{ item.id }}" value="{{ item.ouro }}" class="input input-bordered input-sm w-24" />
-                  </td>
-                  <td>
-                    <select name="status_aprovacao_{{ item.id }}" class="select select-bordered select-sm w-full min-w-40" required>
-                      {% for value, label in character_approval_options %}
-                        {% if value != 'ALL' %}
-                          <option value="{{ value }}" {% if item.status_aprovacao|stringformat:'s' == value|stringformat:'s' %}selected{% endif %}>{{ label }}</option>
-                        {% endif %}
-                      {% endfor %}
-                    </select>
-                  </td>
-                </tr>
-              {% empty %}
-                <tr>
-                  <td colspan="8" class="text-center text-base-content/70">Nenhum personagem encontrado.</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-
-        <div class="modal-action">
-          <button type="submit" class="btn btn-primary">Salvar</button>
-        </div>
-      </form>
-    </div>
+    {% include 'dashboard/includes/records_panel.html' with manager=characters_manager %}
   </section>
 
   <section id="larp_modal" role="tabpanel" aria-labelledby="tab-larp_modal" tabindex="0" data-admin-panel hidden>
-    <style>
-      .larp-create-form {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 1.25rem;
-        padding: 1.5rem;
-        border: 1px solid var(--codex-border-soft);
-      }
-      .larp-create-form[hidden] { display: none !important; }
-      .larp-create-form .larp-field {
-        display: flex;
-        flex-direction: column;
-        align-items: stretch;
-        gap: .5rem;
-        min-width: 0;
-      }
-      .larp-create-form .larp-field > span { font-size: .875rem; font-weight: 600; }
-      .larp-create-form .input,
-      .larp-create-form .textarea { width: 100%; max-width: none; min-width: 0; box-sizing: border-box; }
-      .larp-create-form .input { min-height: 2.75rem; }
-      .larp-create-form .textarea { min-height: 9rem; resize: vertical; }
-      .larp-create-form .larp-full-row { grid-column: 1 / -1; }
-      .larp-create-form .larp-form-footer {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-      }
-      .larp-create-form .larp-visibility { display: flex; align-items: center; gap: .75rem; cursor: pointer; }
-      @media (max-width: 640px) {
-        .larp-create-form { grid-template-columns: minmax(0, 1fr); padding: 1rem; }
-        .larp-create-form .larp-form-footer > .btn { width: 100%; }
-      }
-    </style>
-    <div class="rounded-box border border-base-300 bg-base-100 p-5 md:p-6">
-      <h3 class="font-bold text-xl">Eventos de LARP</h3>
-      <p class="text-sm text-base-content/70 mt-1 mb-4">Crie eventos, controle visibilidade e copie o link de inscricao de cada LARP.</p>
-
-      <div class="space-y-5">
-        <div class="larp-toolbar">
-          <h4 class="font-semibold">Criação de eventos</h4>
-          <button type="button" class="btn btn-primary" data-toggle-event-form aria-controls="larp-create-form" aria-expanded="false">Criar novo evento</button>
-        </div>
-        <form id="larp-create-form" method="post" class="larp-create-form bg-base-200 rounded-box" hidden>
-          {% csrf_token %}
-          <input type="hidden" name="action" value="create_larp_event" />
-
-          <label class="larp-field larp-full-row">
-            <span>Título do evento</span>
-            <input type="text" name="larp_titulo" class="input input-bordered" maxlength="180" required />
-          </label>
-
-          <label class="larp-field larp-full-row">
-            <span>Local</span>
-            <input type="text" name="larp_local" class="input input-bordered" maxlength="180" required />
-          </label>
-
-          <label class="larp-field">
-            <span class="label-text text-xs">Data e horário do evento</span>
-            <input type="datetime-local" name="larp_data_evento" class="input input-bordered" required />
-          </label>
-          <label class="larp-field">
-            <span class="label-text text-xs">Inscrições até (data e horário)</span>
-            <input type="datetime-local" name="larp_data_limite_inscricao" class="input input-bordered" required />
-          </label>
-
-          <label class="larp-field larp-full-row">
-            <span>História do evento</span>
-            <textarea name="larp_historia" class="textarea textarea-bordered" rows="3" required></textarea>
-          </label>
-
-          <div class="larp-full-row larp-actions larp-form-footer">
-          <label class="larp-visibility">
-            <input type="checkbox" name="larp_visivel_publicamente" class="checkbox checkbox-sm" checked />
-            <span class="label-text">Visível para usuários comuns</span>
-          </label>
-
-            <button type="submit" class="btn btn-primary">Criar evento</button>
-          </div>
-        </form>
-
-        <form method="post">
-          {% csrf_token %}
-          <input type="hidden" name="action" value="bulk_update_larp_visibility" />
-
-          <div class="overflow-x-auto rounded-box border border-base-300 max-h-[50vh]">
-            <table class="table table-zebra table-pin-rows">
-              <thead>
-                <tr>
-                  <th>Titulo</th>
-                  <th>Local</th>
-                  <th>Data do evento</th>
-                  <th>Inscrições até</th>
-                  <th>Inscricoes</th>
-                  <th>Visivel</th>
-                  <th>Link de inscricao</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for larp in larp_events_data %}
-                  <tr>
-                    <td>
-                      <div class="font-semibold">{{ larp.titulo }}</div>
-                    </td>
-                    <td>{{ larp.local }}</td>
-                    <td>{{ larp.data_evento|date:'d/m/Y H:i' }}</td>
-                    <td>{{ larp.data_limite_inscricao|date:'d/m/Y H:i' }}</td>
-                    <td>{{ larp.inscricoes_count }}</td>
-                    <td>
-                      <input type="hidden" name="larp_ids" value="{{ larp.id }}" />
-                      <input
-                        type="checkbox"
-                        name="larp_visivel_{{ larp.id }}"
-                        class="checkbox checkbox-sm"
-                        {% if larp.visivel_publicamente %}checked{% endif %}
-                      />
-                    </td>
-                    <td>
-                      <div class="larp-row-actions">
-                        <a href="{{ larp.detalhe_url }}" class="btn btn-primary">Informações</a>
-                        <a href="{{ larp.detalhe_url }}?editar=1#editar-evento" class="btn btn-outline">Editar</a>
-                        <a href="{{ larp.inscricao_url }}" class="btn btn-ghost" target="_blank" rel="noopener" aria-label="Abrir inscrição de {{ larp.titulo }} em nova aba">Abrir link ↗</a>
-                        <button
-                          type="button"
-                          class="btn btn-outline"
-                          aria-label="Copiar link de inscrição de {{ larp.titulo }}"
-                          aria-live="polite"
-                          data-copy-link="{{ larp.inscricao_url }}"
-                        >Copiar link</button>
-                      </div>
-                    </td>
-                  </tr>
-                {% empty %}
-                  <tr>
-                    <td colspan="7" class="text-center text-base-content/70">Nenhum LARP criado ainda.</td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-
-          <div class="larp-actions mt-4">
-            <a href="{% url 'listar_larps' %}" class="btn btn-outline larp-back">Ver eventos publicados ↗</a>
-            <button type="submit" class="btn btn-primary" {% if not larp_events_data %}disabled{% endif %}>Salvar visibilidade</button>
-          </div>
-        </form>
-      </div>
-    </div>
+    {% include 'dashboard/includes/records_panel.html' with manager=larps_manager %}
   </section>
 </section>
 
 <script src="{% static 'dashboard/admin-tabs.js' %}" defer></script>
+<script src="{% static 'dashboard/admin-records.js' %}" defer></script>
 {% endblock content %}

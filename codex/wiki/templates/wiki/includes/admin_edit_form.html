@@ -1,0 +1,12 @@
+{% load static %}
+<div class="wiki-manager-edit">
+  {% if wiki_mode == 'new' %}<h4 class="text-lg font-bold">Dados: {{ wiki_category_name }}</h4>{% else %}<a class="btn btn-ghost btn-sm" href="{{ wiki_back_url }}">Voltar aos detalhes</a><h3 class="text-2xl font-bold">Editar: {{ wiki_category_name }}</h3>{% endif %}
+  {% if wiki_content.image_url or wiki_content.imagem %}<figure class="wiki-manager-edit-image"><img src="{% if wiki_content.image_url %}{{ wiki_content.image_url }}{% else %}{% static wiki_content.imagem %}{% endif %}" alt="Imagem atual de {{ wiki_entry.name }}"><figcaption>Imagem atual</figcaption></figure>{% endif %}
+  <form method="post" action="{{ wiki_list_url }}" enctype="multipart/form-data" class="space-y-4">
+    {% csrf_token %}<input type="hidden" name="action" value="wiki_save"><input type="hidden" name="wiki_id" value="{{ wiki_entry.pk|default:'' }}"><input type="hidden" name="wiki_category" value="{{ wiki_entry.category }}">
+    {% include 'wiki/includes/admin_filters.html' %}
+    <div class="text-error">{{ wiki_form.non_field_errors }}</div>
+    <div class="wiki-manager-edit-fields">{% for field in wiki_form %}<div class="wiki-manager-input{% if field.field.widget.input_type == 'checkbox' %} wiki-manager-checkbox{% endif %}" data-wiki-field="{{ field.name }}"><label class="font-semibold" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<p class="text-sm text-base-content/70">{{ field.help_text }}</p>{% endif %}<div class="text-error">{{ field.errors }}</div></div>{% endfor %}</div>
+    <div class="flex flex-wrap gap-3"><button class="btn btn-primary" type="submit">Salvar conteúdo</button><a class="btn btn-ghost" href="{{ wiki_back_url }}">Cancelar</a></div>
+  </form>
+</div>

@@ -1,0 +1,15 @@
+<article data-record-id="{{ record.id }}">
+  <header class="admin-records-item-header">
+    {% include 'dashboard/includes/record_photo.html' with large=True %}
+    <div><p class="admin-records-eyebrow">{{ record.status_label }}</p><h3>{{ record.titulo }}</h3><p class="admin-records-subtitle">{{ record.local }} · {{ record.inscricoes_count }} inscrito{{ record.inscricoes_count|pluralize:'s' }}</p>
+      <div class="admin-records-actions"><button type="button" class="btn btn-primary btn-sm" data-record-edit>Editar evento</button><a class="btn btn-outline btn-sm" href="{% url 'planilha_larp' record.event.slug %}">Planilha de inscritos</a><a class="btn btn-ghost btn-sm" href="{{ record.detalhe_url }}">Abrir página do evento</a></div>
+    </div>
+  </header>
+  <div class="admin-records-body" data-record-edit-fields{% if not record.editing %} hidden{% endif %}><h4>Editar evento</h4>{% include 'dashboard/includes/larp_event_form.html' with event_form=record.edit_form %}</div>
+  <div class="admin-records-body" data-record-read-fields{% if record.editing %} hidden{% endif %}>
+    <dl class="admin-records-facts"><div><dt>Data do evento</dt><dd>{{ record.data_evento|date:'d/m/Y H:i' }}</dd></div><div><dt>Inscrições até</dt><dd>{{ record.data_limite_inscricao|date:'d/m/Y H:i' }}</dd></div><div><dt>Local</dt><dd>{{ record.local }}</dd></div><div><dt>Criado por</dt><dd>{{ record.event.criado_por.username|default:'Não informado' }}</dd></div><div><dt>Inscrições</dt><dd>{% if record.event.inscricoes_abertas %}Abertas{% else %}Encerradas{% endif %}</dd></div><div><dt>Total de inscritos</dt><dd>{{ record.inscricoes_count }}</dd></div></dl>
+    <section class="admin-records-section"><h4>História do evento</h4><p>{{ record.event.historia }}</p></section>
+    <section class="admin-records-section"><h4>Publicação</h4><form method="post" action="{{ record.save_url }}" class="admin-records-form">{% csrf_token %}{% include 'dashboard/includes/record_return_filters.html' %}<input type="hidden" name="action" value="bulk_update_larp_visibility"><input type="hidden" name="larp_ids" value="{{ record.id }}"><label class="admin-records-checkbox"><input class="checkbox checkbox-sm" type="checkbox" name="larp_visivel_{{ record.id }}"{% if record.visivel_publicamente %} checked{% endif %}>Visível para os jogadores</label><button type="submit" class="btn btn-primary btn-sm">Salvar visibilidade</button></form></section>
+    <section class="admin-records-section"><h4>Link de inscrição</h4><p class="admin-records-registration-url">{{ record.inscricao_url }}</p><div class="admin-records-actions"><a href="{{ record.inscricao_url }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Abrir inscrição ↗</a><button type="button" class="btn btn-outline btn-sm" data-record-copy="{{ record.inscricao_url }}" aria-live="polite">Copiar link</button></div></section>
+  </div>
+</article>

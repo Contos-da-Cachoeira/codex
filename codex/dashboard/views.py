@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Q
 from django.db import transaction
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.views.decorators.http import require_POST
 from .home_components import parse_components, serialize_components
 from django.urls import reverse
@@ -25,6 +25,10 @@ from personagens.consts import (
     STATUS_PERSONAGEM_CHOICES,
 )
 from personagens.models import Personagem
+from wiki.editor import wiki_panel
+from core.forms import LarpEventoForm
+from .record_managers import record_managers, record_url
+from .admin_fragments import panel_response
 
 
 GUILDA_SLUG_BY_KEY = {
@@ -123,9 +127,36 @@ def admin_user_profile(request, user_id):
 
 
 @login_required(login_url='login')
+@never_cache
 def admin_dashboard(request):
     if not _is_admin(request.user):
+        if request.headers.get('X-Admin-Panel'):
+            return JsonResponse({'error': 'Acesso exclusivo da administração.'}, status=403)
         return redirect('home')
+
+    admin_event_form = None
+    if request.method == 'POST' and request.POST.get('action') == 'save_admin_larp':
+        event = None
+        if request.POST.get('event_id'):
+            try:
+                event_id = int(request.POST['event_id'])
+            except (ValueError, TypeError):
+                raise Http404('Evento não encontrado.')
+            event = get_object_or_404(LarpEvento, pk=event_id)
+        admin_event_form = LarpEventoForm(request.POST, request.FILES, instance=event)
+        if admin_event_form.is_valid():
+            saved_event = admin_event_form.save(commit=False)
+            if not saved_event.pk:
+                saved_event.criado_por = request.user
+            saved_event.save()
+            messages.success(request, 'LARP salvo com sucesso.')
+            return redirect(record_url(request, 'larps', saved_event.pk))
+
+    wiki_context = None
+    if request.method == 'POST' and request.POST.get('action', '').startswith('wiki_'):
+        wiki_context = wiki_panel(request)
+        if not isinstance(wiki_context, dict):
+            return wiki_context
 
     def _redirect_admin_with_filters(q_value, role_value):
         params = {'open_users_modal': '1'}
@@ -230,6 +261,8 @@ def admin_dashboard(request):
             updated_count += 1
 
         messages.success(request, 'Tipos de usuario atualizados.')
+        if request.POST.get('record_manager') == 'users' and len(user_ids) == 1:
+            return redirect(record_url(request, 'users', user_ids[0]))
         return redirect(f"{reverse('admin_dashboard')}?open_users_modal=1")
 
     if request.method == 'POST' and request.POST.get('action') == 'bulk_update_personagens':
@@ -328,6 +361,8 @@ def admin_dashboard(request):
                 updated_count += 1
 
         messages.success(request, 'Personagens atualizados.')
+        if request.POST.get('record_manager') == 'characters' and len(personagem_ids) == 1:
+            return redirect(record_url(request, 'characters', personagem_ids[0]))
         return redirect(f"{reverse('admin_dashboard')}?open_personagens_modal=1")
 
     if request.method == 'POST' and request.POST.get('action') == 'create_larp_event':
@@ -388,6 +423,8 @@ def admin_dashboard(request):
         else:
             messages.info(request, 'Nenhuma alteracao de visibilidade foi feita.')
 
+        if request.POST.get('record_manager') == 'larps' and len(evento_ids) == 1:
+            return redirect(record_url(request, 'larps', evento_ids[0]))
         return redirect(f"{reverse('admin_dashboard')}?open_larps_modal=1")
 
     q_value = request.GET.get('q', '').strip()
@@ -439,7 +476,9 @@ def admin_dashboard(request):
         status_aprovacao=STATUS_APROVACAO.PENDENTE,
     ).order_by('-data_criacao', '-id')[:5]
 
-    users = User.objects.select_related('profile__image_asset').all().order_by('username')
+    users = User.objects.select_related('profile__image_asset').prefetch_related(
+        'personagens__image_asset', 'inscricoes_larp__evento', 'inscricoes_larp__personagem',
+    ).order_by('username')
     if q_value:
         users = users.filter(Q(username__icontains=q_value) | Q(email__icontains=q_value))
 
@@ -476,6 +515,7 @@ def admin_dashboard(request):
             'is_superuser': user.is_superuser,
             'role_value': role_value,
             'role_label': role_label,
+            'role_key': role_key,
         })
 
     personagens_queryset = Personagem.objects.select_related('image_asset', 'usuario__profile__image_asset').order_by('nome')
@@ -531,7 +571,7 @@ def admin_dashboard(request):
         for personagem in personagens_queryset
     ]
 
-    larp_events_queryset = LarpEvento.objects.prefetch_related('inscricoes').order_by('-data_evento')
+    larp_events_queryset = LarpEvento.objects.select_related('criado_por').prefetch_related('inscricoes').order_by('-data_evento')
     larp_events_data = []
     for evento in larp_events_queryset:
         inscricao_path = reverse(
@@ -542,6 +582,7 @@ def admin_dashboard(request):
         larp_events_data.append(
             {
                 'id': evento.id,
+                'event': evento,
                 'titulo': evento.titulo,
                 'local': evento.local,
                 'data_evento': evento.data_evento,
@@ -554,7 +595,9 @@ def admin_dashboard(request):
             }
         )
 
+    manager_context = record_managers(request, users_with_role, personagens_data, larp_events_data, admin_event_form)
     context = {
+        **manager_context,
         'users_with_role': users_with_role,
         'role_choices': Profile.UserRole.choices,
         'q_value': q_value,
@@ -589,8 +632,10 @@ def admin_dashboard(request):
         'recent_characters': recent_characters,
         'recent_larps': recent_larps,
         'pending_characters': pending_characters,
+        **(wiki_context if wiki_context is not None else wiki_panel(request)),
     }
-    return render(request, 'dashboard/admin_dashboard.html', context)
+    fragment = panel_response(request, context)
+    return fragment if fragment is not None else render(request, 'dashboard/admin_dashboard.html', context)
 
 
 @login_required

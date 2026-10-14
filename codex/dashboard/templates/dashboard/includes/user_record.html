@@ -1,0 +1,37 @@
+<article data-record-id="{{ record.id }}">
+  <header class="admin-records-item-header">
+    {% include 'dashboard/includes/record_photo.html' with large=True %}
+    <div><p class="admin-records-eyebrow">{{ record.role_label }}</p><h3>{{ record.username }}</h3><p class="admin-records-subtitle">{% if record.account.is_active %}Conta ativa{% else %}Conta inativa{% endif %} · {{ record.account.personagens.all|length }} personagem{{ record.account.personagens.all|length|pluralize:'s' }}</p>
+      <div class="admin-records-actions">{% if not record.is_superuser %}<button type="button" class="btn btn-primary btn-sm" data-record-edit>Alterar tipo da conta</button>{% endif %}<a class="btn btn-sm btn-outline" href="{% url 'admin_user_profile' record.id %}">Abrir perfil completo</a></div>
+    </div>
+  </header>
+  {% if not record.is_superuser %}<div class="admin-records-body" data-record-edit-fields hidden>
+    <h4>Tipo de conta</h4>
+    <form method="post" action="{{ record.save_url }}" class="admin-records-form">
+      {% csrf_token %}{% include 'dashboard/includes/record_return_filters.html' %}
+      <input type="hidden" name="action" value="bulk_update_roles"><input type="hidden" name="user_ids" value="{{ record.id }}">
+      <label for="record-role-{{ record.id }}">Tipo<select name="role_{{ record.id }}" id="record-role-{{ record.id }}" class="select select-bordered">{% for value, label in role_choices %}<option value="{{ value }}"{% if record.role_value == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+      <div class="admin-records-form-actions"><button class="btn btn-primary btn-sm" type="submit">Salvar tipo da conta</button><button class="btn btn-ghost btn-sm" type="button" data-record-cancel>Cancelar</button></div>
+    </form>
+  </div>{% endif %}
+  <div class="admin-records-body" data-record-read-fields>
+    <h4>Informações do jogador</h4>
+    <dl class="admin-records-facts">
+      <div><dt>Nome completo</dt><dd>{{ record.profile.nome_completo_jogador|default:record.account.get_full_name|default:'Não informado' }}</dd></div>
+      <div><dt>E-mail</dt><dd>{{ record.email|default:'Não informado' }}</dd></div>
+      <div><dt>Data de nascimento</dt><dd>{{ record.profile.data_nascimento|date:'d/m/Y'|default:'Não informada' }}</dd></div>
+      <div><dt>Apelido no clã</dt><dd>{{ record.profile.apelido_cla|default:'Não informado' }}</dd></div>
+      <div><dt>Telefone</dt><dd>{{ record.profile.telefone|default:'Não informado' }}</dd></div>
+      <div><dt>CPF</dt><dd>{{ record.profile.cpf|default:'Não informado' }}</dd></div>
+      <div><dt>Cadastro</dt><dd>{{ record.account.date_joined|date:'d/m/Y H:i' }}</dd></div>
+      <div><dt>Último acesso</dt><dd>{{ record.account.last_login|date:'d/m/Y H:i'|default:'Nunca acessou' }}</dd></div>
+      <div class="admin-records-wide"><dt>Fobias ou gatilhos</dt><dd>{{ record.profile.fobia_gatilho|default:'Nenhuma informação cadastrada.' }}</dd></div>
+    </dl>
+    <section class="admin-records-section"><h4>Personagens</h4>
+      {% for character in record.account.personagens.all %}<div class="admin-records-related"><strong>{{ character.nome }}</strong><span>{{ character.get_classe_display|default:'Sem classe' }} · {{ character.get_guilda_display|default:'Sem guilda' }}</span><small>{{ character.get_status_display }} · {{ character.get_status_aprovacao_display }}</small></div>{% empty %}<p>Nenhum personagem cadastrado.</p>{% endfor %}
+    </section>
+    <section class="admin-records-section"><h4>Inscrições em eventos</h4>
+      {% for registration in record.account.inscricoes_larp.all %}<div class="admin-records-related"><a class="link link-primary" href="{% url 'detalhe_larp' registration.evento.slug %}">{{ registration.evento.titulo }}</a><span>{{ registration.personagem.nome }} · {{ registration.evento.data_evento|date:'d/m/Y H:i' }}</span><small>{% if registration.taxa_paga %}Pago{% else %}Pagamento pendente{% endif %}</small></div>{% empty %}<p>Nenhuma inscrição em evento.</p>{% endfor %}
+    </section>
+  </div>
+</article>
