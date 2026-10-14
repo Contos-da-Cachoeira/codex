@@ -126,11 +126,11 @@ class RecordManagerTests(TestCase):
 
     def test_non_admin_cannot_access_or_mutate_managers(self):
         self.client.force_login(self.player)
-        self.assertEqual(self.client.get(self.url).status_code, 302)
+        self.assertEqual(self.client.get(self.url).status_code, 403)
         for action, extra in [('save_admin_larp', self.event_payload()),
                               ('bulk_update_roles', {'user_ids': self.other.pk, f'role_{self.other.pk}': 'ADMIN'}),
                               ('bulk_update_personagens', {'personagem_ids': self.character.pk, f'xp_atual_{self.character.pk}': 999})]:
-            self.assertEqual(self.client.post(self.url, {**extra, 'action': action}).status_code, 302)
+            self.assertEqual(self.client.post(self.url, {**extra, 'action': action}).status_code, 403)
         self.assertFalse(LarpEvento.objects.filter(titulo='Novo LARP').exists())
         self.character.refresh_from_db()
         self.assertEqual(self.character.xp_atual, 10)

@@ -125,13 +125,14 @@ class WikiEditorTests(TestCase):
         for user in [None, self.player]:
             if user:
                 self.client.force_login(user)
+            denied_status = 403 if user else 302
             for mode in ['', 'new', 'edit', 'delete']:
                 url = panel_url(wiki_action=mode, wiki_id=entry.pk)
-                self.assertEqual(self.client.get(url).status_code, 302)
+                self.assertEqual(self.client.get(url).status_code, denied_status)
             for action in ['wiki_save', 'wiki_delete', 'wiki_visibility']:
                 self.assertEqual(self.client.post(reverse('admin_dashboard'), {
                     'action': action, 'wiki_id': entry.pk, 'name': 'Alteração indevida', 'slug': entry.slug,
-                }).status_code, 302)
+                }).status_code, denied_status)
         entry.refresh_from_db()
         self.assertTrue(entry.visible)
 

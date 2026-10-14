@@ -6,8 +6,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db.models import Count, Q
 from django.db import transaction
-from django.http import Http404, JsonResponse
-from django.views.decorators.http import require_POST
+from django.http import Http404, HttpResponseForbidden, JsonResponse
+from django.views.decorators.http import require_POST, require_http_methods, require_safe
 from .home_components import parse_components, serialize_components
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -43,7 +43,7 @@ GUILDA_SLUG_BY_KEY = {
 
 
 def _is_admin(user):
-    if not user.is_authenticated:
+    if not user.is_authenticated or not getattr(user, 'is_active', True):
         return False
     if user.is_superuser or user.is_staff:
         return True
@@ -112,9 +112,10 @@ def home_preview(request):
 
 @login_required(login_url='login')
 @never_cache
+@require_safe
 def admin_user_profile(request, user_id):
     if not _is_admin(request.user):
-        return redirect('home')
+        return HttpResponseForbidden('Acesso restrito.')
     account = get_object_or_404(User.objects.select_related('profile__image_asset'), pk=user_id)
     profile = getattr(account, 'profile', None)
     return render(request, 'dashboard/admin_user_profile.html', {
@@ -128,11 +129,21 @@ def admin_user_profile(request, user_id):
 
 @login_required(login_url='login')
 @never_cache
+@require_http_methods(['GET', 'POST'])
 def admin_dashboard(request):
     if not _is_admin(request.user):
         if request.headers.get('X-Admin-Panel'):
             return JsonResponse({'error': 'Acesso exclusivo da administração.'}, status=403)
-        return redirect('home')
+        return HttpResponseForbidden('Acesso restrito.')
+
+    allowed_actions = {
+        'update_theme_config', 'reset_theme_config', 'update_social_links',
+        'update_home_components', 'bulk_update_roles', 'bulk_update_personagens',
+        'create_larp_event', 'bulk_update_larp_visibility', 'save_admin_larp',
+        'wiki_save', 'wiki_delete', 'wiki_visibility',
+    }
+    if request.method == 'POST' and request.POST.get('action') not in allowed_actions:
+        return JsonResponse({'error': 'Ação administrativa inválida.'}, status=400)
 
     admin_event_form = None
     if request.method == 'POST' and request.POST.get('action') == 'save_admin_larp':

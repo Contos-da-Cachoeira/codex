@@ -37,7 +37,7 @@ class AdminUserProfileTests(SimpleTestCase):
         request.user = SimpleNamespace(is_authenticated=True, is_staff=False, is_superuser=False)
         with patch('dashboard.views.get_object_or_404') as lookup:
             response = admin_user_profile(request, 1)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
         lookup.assert_not_called()
 
     def test_anonymous_user_must_log_in(self):
@@ -209,7 +209,7 @@ class ThemeSettingsTests(SimpleTestCase):
 
     def test_regular_user_cannot_reset(self):
         response, save = self.submit({'action': 'reset_theme_config'}, admin=False)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 403)
         save.assert_not_called()
 
 
