@@ -1,6 +1,9 @@
-<span class="identity-avatar {{ avatar_class }}" role="img" aria-label="Foto de {{ character.nome }}">
-  {% if character.image_asset %}
+{% load static %}
+<span class="identity-avatar {{ avatar_class }}" role="img" aria-label="{{ character.nome }}">
+  {% if character.portrait_mode == 'photo' and character.image_asset %}
     {% include 'core/includes/image_asset.html' with asset=character.image_asset image_alt=character.nome %}
+  {% elif character.portrait_mode == 'class' and character.class_image_url %}
+    <img src="{{ character.class_image_url }}" alt="{{ character.get_classe_display }}" style="object-fit:contain;background:#eee;width:100%;height:100%">
   {% else %}
     <span aria-hidden="true">{{ character.nome|slice:':1'|upper }}</span>
   {% endif %}

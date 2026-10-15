@@ -37,6 +37,7 @@ def panel_response(request, context):
     payload = {'panel': panel, 'html': render_to_string(template, panel_context, request=request),
                'state': state, 'invalid': invalid,
                'messages': [{'text': str(message), 'tags': message.tags} for message in get_messages(request)]}
+    payload['invalid'] = invalid or any('error' in message['tags'] for message in payload['messages'])
     if panel == 'theme_modal':
         layout = context['layout_config']
         payload['theme'] = {field.name: getattr(layout, field.name) for field in layout._meta.fields if field.name.endswith('_color')}

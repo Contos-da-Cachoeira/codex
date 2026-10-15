@@ -1,0 +1,9 @@
+<form method="post" enctype="multipart/form-data" action="{% url 'detalhe_larp' evento.slug %}" class="em-editor" data-event-editor novalidate>
+  {% csrf_token %}<input type="hidden" name="action" value="edit_event">
+  <div class="em-field-error" data-event-form-errors>{{ event_form.non_field_errors }}</div>
+  <figure class="em-cover-preview" data-event-cover-preview hidden><img alt="Prévia da nova capa"><figcaption>Prévia da capa selecionada</figcaption></figure>
+  <div class="em-editor-grid">
+    {% for field in event_form %}<div class="em-editor-field{% if field.name == 'historia' or field.name == 'capa' or field.name == 'titulo' or field.name == 'visivel_publicamente' %} em-span-all{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}<div class="em-field-error">{{ field.errors }}</div></div>{% endfor %}
+  </div>
+  <div class="em-editor-actions"><button type="button" class="em-button em-button-quiet" data-cancel-event-edit>Cancelar</button><button type="submit" class="em-button em-button-primary">Salvar evento</button></div>
+</form>

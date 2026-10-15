@@ -9,6 +9,8 @@ class Command(BaseCommand):
         created_count = 0
         
         for guilda_id, nome in GUILDA_NOMES.items():
+            if guilda_id == 7:
+                continue  # Mercenários não são uma guilda coletiva.
             guilda, created = Guilda.objects.get_or_create(
                 guilda_id=guilda_id,
                 defaults={

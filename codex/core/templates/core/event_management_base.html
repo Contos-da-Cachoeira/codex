@@ -1,0 +1,10 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block head_extra %}{{ block.super }}<link rel="stylesheet" href="{% static 'core/css/event-management.css' %}?v=events-1"><script src="{% static 'core/js/event-management.js' %}?v=events-1" defer></script>{% endblock %}
+{% block content %}
+<div class="event-manager" data-event-manager>
+  {% include 'core/includes/event_header.html' %}
+  <div class="em-feedback" data-event-feedback role="status" aria-live="polite" hidden></div>
+  {% block event_content %}{% endblock %}
+</div>
+{% endblock %}

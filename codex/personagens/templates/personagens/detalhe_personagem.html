@@ -12,6 +12,7 @@
         <p class="mt-2 text-base-content/80">Slug: {{ personagem.slug }}</p>
       </div>
       <div class="flex gap-2">
+        <a href="{% url 'talentos_personagem' personagem.slug %}" class="btn btn-primary">Talentos e evolução</a>
         <a href="{% url 'editar_personagem' personagem.slug %}" class="btn btn-secondary">Editar</a>
         <a href="{% url 'meus_personagens' %}" class="btn btn-ghost">Voltar</a>
       </div>
@@ -25,8 +26,24 @@
         <p><strong>Aprovacao:</strong> {{ personagem.get_status_aprovacao_display }}</p>
         <p><strong>Classe:</strong> {{ personagem.get_classe_display|default:'Nao definida' }}</p>
         <p><strong>Guilda:</strong> {{ personagem.get_guilda_display|default:'Sem guilda' }}</p>
-        <p><strong>XP:</strong> {{ personagem.xp_atual }}</p>
-        <p><strong>Ouro:</strong> {{ personagem.ouro }}</p>
+        <p><strong>XP do jogador (compartilhado):</strong> {{ personagem.xp_jogador }}</p>
+        {% if personagem.feitico_antigo %}<p><strong>Feitiço antigo:</strong> {{ personagem.feitico_antigo }}</p>{% endif %}
+        {% if personagem.divindade %}<p><strong>Divindade:</strong> {{ personagem.divindade }}</p>{% endif %}
+        {% if personagem.afinidade %}<p><strong>Afinidade:</strong> {{ personagem.afinidade }}</p><p><strong>Forma definida pela comissão:</strong> {{ personagem.forma_selvagem|default:'Aguardando definição.' }}</p>{% endif %}
+        {% if personagem.revisao_manual %}<p>Ficha antiga: aguardando revisão conforme o manual.</p>{% endif %}
+        <p><strong>Ouro:</strong> {{ personagem.ouro }} DO <small>(1 DO = 2 DP)</small></p>
+        {% for class in personagem.capacidades_classes %}
+        <section class="border border-base-300 rounded-lg p-4 my-3">
+          <h2 class="font-bold">Multiclasse: {{ class.nome }}</h2>
+          <p>{{ class.habilidade }}</p>
+          {% if class.feitico %}<p><strong>Feitiço antigo:</strong> {{ class.feitico }}</p>{% endif %}
+          {% if class.focos %}<p><strong>Focos:</strong> {{ class.focos }}</p>{% endif %}
+          {% if class.dons %}<p>{{ class.dons }}</p>{% endif %}
+          {% if class.divindade %}<p><strong>Divindade:</strong> {{ class.divindade }}</p>{% endif %}
+          {% if class.afinidade %}<p><strong>Afinidade:</strong> {{ class.afinidade }}</p><p><strong>Forma definida:</strong> {{ class.forma_selvagem }}</p>{% endif %}
+          <p class="text-sm opacity-70">A segunda classe não concede armas, armaduras ou todas as magias da lista.</p>
+        </section>
+        {% endfor %}
         <p><strong>Criado em:</strong> {{ personagem.data_criacao|date:'d/m/Y H:i' }}</p>
         <p><strong>Atualizado em:</strong> {{ personagem.data_atualizacao|date:'d/m/Y H:i' }}</p>
       </div>
@@ -36,9 +53,9 @@
       <div class="card-body space-y-4">
         <div>
           <h2 class="card-title text-lg">Magias que sabe</h2>
-          {% if personagem.magias_pretendidas %}
+          {% if personagem.magias_conhecidas %}
             <ul class="list-disc pl-6 text-base-content/80 space-y-1">
-              {% for magia in personagem.magias_pretendidas %}
+              {% for magia in personagem.magias_conhecidas %}
                 <li>{{ magia }}</li>
               {% endfor %}
             </ul>
@@ -47,7 +64,8 @@
           {% endif %}
         </div>
         <div>
-          <h2 class="card-title text-lg">Talentos iniciais</h2>
+          <h2 class="card-title text-lg">Anotações antigas de talentos</h2>
+          <p>Compras e benefícios ativos estão em Talentos e evolução. Anotações antigas aguardam revisão e não comprovam pagamento.</p>
           {% if personagem.talentos_iniciais %}
             <ul class="list-disc pl-6 text-base-content/80 space-y-1">
               {% for talento in personagem.talentos_iniciais %}

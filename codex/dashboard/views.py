@@ -301,7 +301,7 @@ def admin_dashboard(request):
                 personagem.status = new_status
                 changed_fields.append('status')
 
-            classe_raw = request.POST.get(f'classe_{personagem_id}', '').strip()
+            classe_raw = request.POST.get(f'classe_{personagem_id}', str(personagem.classe or '')).strip()
             new_classe = None
             if classe_raw:
                 try:
@@ -312,10 +312,10 @@ def admin_dashboard(request):
                     new_classe = personagem.classe
 
             if personagem.classe != new_classe:
-                personagem.classe = new_classe
-                changed_fields.append('classe')
+                messages.error(request, 'A classe e as magias iniciais são permanentes. Para corrigir uma ficha antiga, use Revisar ficha completa.')
+                continue
 
-            guilda_raw = request.POST.get(f'guilda_{personagem_id}', '').strip()
+            guilda_raw = request.POST.get(f'guilda_{personagem_id}', str(personagem.guilda or '')).strip()
             new_guilda = None
             if guilda_raw:
                 try:
@@ -342,25 +342,39 @@ def admin_dashboard(request):
                 new_status_aprovacao in allowed_aprovacao
                 and personagem.status_aprovacao != new_status_aprovacao
             ):
+                if new_status_aprovacao == STATUS_APROVACAO.APROVADO:
+                    from personagens.rules import validate_base
+                    try:
+                        validate_base(personagem, require_commission=True)
+                    except ValidationError as error:
+                        messages.error(request, 'Ficha incompleta: ' + '; '.join(error.messages))
+                        continue
                 personagem.status_aprovacao = new_status_aprovacao
                 changed_fields.append('status_aprovacao')
 
-            xp_raw = request.POST.get(f'xp_atual_{personagem_id}', str(personagem.xp_atual)).strip()
+            xp_raw = request.POST.get(f'xp_atual_{personagem_id}', str(personagem.xp_jogador)).strip()
             ouro_raw = request.POST.get(f'ouro_{personagem_id}', str(personagem.ouro)).strip()
 
             try:
                 new_xp = max(0, int(xp_raw))
             except (TypeError, ValueError):
-                new_xp = personagem.xp_atual
+                new_xp = personagem.xp_jogador
 
             try:
-                new_ouro = max(0, int(ouro_raw))
-            except (TypeError, ValueError):
-                new_ouro = personagem.ouro
+                from core.money import GoldField
+                new_ouro = GoldField().clean(ouro_raw)
+            except ValidationError as error:
+                messages.error(request, '; '.join(error.messages))
+                continue
 
-            if personagem.xp_atual != new_xp:
-                personagem.xp_atual = new_xp
-                changed_fields.append('xp_atual')
+            if personagem.xp_jogador != new_xp:
+                from personagens.rules import set_player_xp
+                try:
+                    expected_raw = request.POST.get(f'xp_anterior_{personagem_id}')
+                    set_player_xp(personagem.usuario, new_xp, request.user, 'Ajuste administrativo', expected=int(expected_raw) if expected_raw is not None else None)
+                except (ValidationError, ValueError) as error:
+                    messages.error(request, '; '.join(error.messages) if isinstance(error, ValidationError) else 'Saldo anterior inválido.')
+                    continue
 
             if personagem.ouro != new_ouro:
                 personagem.ouro = new_ouro
@@ -574,7 +588,7 @@ def admin_dashboard(request):
             'classe_display': personagem.get_classe_display() if personagem.classe else '',
             'guilda': personagem.guilda,
             'guilda_display': personagem.get_guilda_display() if personagem.guilda else '',
-            'xp_atual': personagem.xp_atual,
+            'xp_atual': personagem.xp_jogador,
             'ouro': personagem.ouro,
             'status_aprovacao': personagem.status_aprovacao,
             'status_aprovacao_display': personagem.get_status_aprovacao_display(),
@@ -582,7 +596,11 @@ def admin_dashboard(request):
         for personagem in personagens_queryset
     ]
 
-    larp_events_queryset = LarpEvento.objects.select_related('criado_por').prefetch_related('inscricoes').order_by('-data_evento')
+    larp_events_queryset = LarpEvento.objects.select_related('criado_por').annotate(
+        total_inscricoes=Count('inscricoes'),
+        total_pagos=Count('inscricoes', filter=Q(inscricoes__taxa_paga=True)),
+        total_presentes=Count('inscricoes', filter=Q(inscricoes__presenca_confirmada=True)),
+    ).order_by('-data_evento')
     larp_events_data = []
     for evento in larp_events_queryset:
         inscricao_path = reverse(
@@ -602,7 +620,10 @@ def admin_dashboard(request):
                 'inscricao_path': inscricao_path,
                 'inscricao_url': inscricao_url,
                 'detalhe_url': reverse('detalhe_larp', kwargs={'slug': evento.slug}),
-                'inscricoes_count': evento.inscricoes.count(),
+                'inscricoes_count': evento.total_inscricoes,
+                'pagos_count': evento.total_pagos,
+                'pendentes_count': evento.total_inscricoes - evento.total_pagos,
+                'presencas_count': evento.total_presentes,
             }
         )
 

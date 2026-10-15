@@ -67,7 +67,7 @@
       .character-mobile-title { display: block; margin: 0; font-size: 1.15rem; font-weight: 800; }
       .character-create-page > .character-create-card { margin-top: .75rem; }
       .character-create-card > .card-body { padding: .75rem; }
-      .character-create-card [role="tablist"] { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .3rem; padding-bottom: .75rem; }
+      .character-create-card [role="tablist"] { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .3rem; padding-bottom: .75rem; }
       .character-tab { min-height: 3rem; padding: .4rem .25rem; font-size: .65rem; text-align: center; letter-spacing: 0; }
       .character-tab span { display: inline-block; font-size: .6rem; line-height: 1.2; }
       .character-tab[aria-selected="true"]::before { display: none; }
@@ -107,25 +107,25 @@
         <p class="text-xs font-black uppercase tracking-[0.22em] text-primary">Construcao de personagem</p>
         <h1 class="mt-2 text-3xl font-black tracking-tight md:text-5xl">Crie sua identidade na Cachoeira</h1>
       </div>
-      <div class="rounded-box border border-primary/25 bg-base-100/10 px-4 py-3 text-left backdrop-blur-sm"><p class="text-xs uppercase tracking-[0.16em] text-base-content/60">Cadastro</p><p class="mt-1 font-bold text-primary">4 etapas</p></div>
+      <div class="rounded-box border border-primary/25 bg-base-100/10 px-4 py-3 text-left backdrop-blur-sm"><p class="text-xs uppercase tracking-[0.16em] text-base-content/60">Cadastro</p><p class="mt-1 font-bold text-primary">5 etapas</p></div>
     </div>
   </div>
 
   <div class="character-create-card card border border-base-300 bg-base-100 shadow-xl">
     <div class="card-body">
-      <form method="post" id="personagem-form" class="space-y-4">
+      <form method="post" id="personagem-form" novalidate class="space-y-4">
         {% csrf_token %}
-        {% include 'personagens/image_field.html' %}
 
         {% if form.non_field_errors %}
           <div class="alert alert-error"><span>{{ form.non_field_errors|striptags }}</span></div>
         {% endif %}
 
-        <div class="grid grid-cols-2 gap-2 border-b border-base-300 pb-4 md:grid-cols-4" role="tablist" aria-label="Etapas do personagem">
+        <div class="grid grid-cols-2 gap-2 border-b border-base-300 pb-4 md:grid-cols-5" role="tablist" aria-label="Etapas do personagem">
           <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="identity" aria-selected="true">01<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Nome e descricao</span></button>
           <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="class" aria-selected="false">02<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Classe</span></button>
           <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="guild" aria-selected="false">03<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Guilda</span></button>
           <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="talent" aria-selected="false">04<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Talentos</span></button>
+          <button type="button" class="character-tab rounded-lg border border-base-300 px-3 py-3 text-left text-xs font-bold uppercase tracking-[0.08em]" data-character-tab="portrait" aria-selected="false">05<br><span class="text-[0.65rem] font-normal normal-case tracking-normal">Prévia e foto</span></button>
         </div>
 
         <div class="character-step space-y-4" data-character-panel="identity">
@@ -176,7 +176,7 @@
                   <label class="guilda-showcase-card character-class-card {% if form.classe.value|stringformat:'s' == classe.value|stringformat:'s' %}is-selected{% endif %}">
                     <input type="radio" name="classe_visual" value="{{ classe.value }}" {% if form.classe.value|stringformat:'s' == classe.value|stringformat:'s' %}checked{% endif %} required>
                     <span class="guilda-showcase-image">
-                      <img src="{% static classe.imagem %}" alt="Ilustração minimalista da classe {{ classe.nome }}" loading="lazy">
+                      <img src="{{ classe.image_url }}" alt="Ilustração minimalista da classe {{ classe.nome }}" loading="lazy">
                     </span>
                     <span class="guilda-showcase-footer">
                       <strong>{{ classe.nome }}</strong>
@@ -189,14 +189,24 @@
             {% if form.classe.errors %}<span class="label-text-alt text-error">{{ form.classe.errors|striptags }}</span>{% endif %}
           </div>
           <div class="character-choice-panel field-block hidden" id="magias-wrapper"><h3 class="text-lg font-semibold">Magias que o personagem sabe</h3><div class="mt-1 text-xs text-base-content/55">As opcoes aparecem de acordo com a classe escolhida.</div><div class="mt-3 hidden" id="magias-fixas-info"><div class="alert alert-info">Para esta classe, as magias sao definidas automaticamente.</div></div><div class="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2" id="magias-opcoes"><p class="text-sm text-base-content/70">Escolha uma classe conjuradora para liberar as opcoes.</p></div>{% if form.magias_pretendidas.errors %}<div class="mt-2 text-sm text-error">{{ form.magias_pretendidas.errors|striptags }}</div>{% endif %}</div>
+          <p id="spell-count" class="text-sm font-bold" aria-live="polite"></p>
+          <div class="character-question" data-special-field="feitico_antigo"><label>Feitiço antigo inicial do Mago {{ form.feitico_antigo }}</label>{{ form.feitico_antigo.errors }}</div>
+          <div class="character-question" data-special-field="divindade"><label>Divindade do cenário {{ form.divindade }}</label><p class="text-sm opacity-70">Clérigos e Paladinos veneram uma divindade; escolhas personalizadas dependem da comissão.</p>{{ form.divindade.errors }}</div>
+          <div class="character-question" data-special-field="afinidade"><label>Afinidade com a natureza {{ form.afinidade }}</label>{{ form.afinidade.errors }}<p>A comissão definirá três características e um defeito da sua Forma Selvagem antes da aprovação.</p></div>
+          <div id="class-rules" class="character-choice-panel space-y-2" aria-live="polite"></div>
           <div class="character-action-row flex justify-between"><button type="button" class="btn btn-ghost" data-character-prev="identity">← Voltar</button><button type="button" class="btn btn-primary" data-character-next="guild">Continuar para guilda <span aria-hidden="true">→</span></button></div>
         </div>
 
         <div class="character-step space-y-4" data-character-panel="talent" hidden>
-          <div class="character-step-heading"><p class="text-xs font-bold uppercase tracking-[0.16em] text-primary">Etapa 4 / Personalizacao</p><h2 class="mt-1 text-2xl font-bold">Escolha seus talentos</h2><p class="mt-2 text-sm text-base-content/70">Selecione ate cinco talentos iniciais para completar a ficha.</p></div>
-          <div class="character-choice-panel field-block"><div class="flex flex-wrap items-center justify-between gap-2"><h3 class="text-lg font-semibold">Talentos iniciais</h3><span class="badge badge-outline" id="talentos-count">0/5 selecionados</span></div><div class="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2" id="talentos-grid">{% for value, label in form.fields.talentos_iniciais.choices %}<label class="flex cursor-pointer items-center gap-3 rounded-lg border border-base-300 px-3 py-2 transition hover:border-primary hover:bg-primary/5"><input type="checkbox" name="talentos_iniciais" value="{{ value }}" class="checkbox checkbox-sm talento-checkbox" {% if value in form.talentos_iniciais.value %}checked{% endif %} /><span>{{ label }}</span></label>{% endfor %}</div>{% if form.talentos_iniciais.errors %}<div class="mt-2 text-sm text-error">{{ form.talentos_iniciais.errors|striptags }}</div>{% endif %}</div>
+          {% include 'personagens/creation_talents.html' %}
+          <div class="character-action-row flex justify-between"><button type="button" class="btn btn-ghost" data-character-prev="guild">← Voltar</button><button type="button" class="btn btn-primary" data-character-next="portrait">Continuar para prévia <span aria-hidden="true">→</span></button></div>
+        </div>
+
+        <div class="character-step space-y-4" data-character-panel="portrait" hidden>
+          <div class="character-step-heading"><p class="text-xs font-bold uppercase text-primary">Etapa 5 / Aparência</p><h2 class="mt-1 text-2xl font-bold">Compare a prévia do personagem</h2><p class="mt-2 text-sm">Escolha usar o nome, a imagem da classe ou uma foto própria.</p></div>
+          {% include 'personagens/portrait_field.html' %}
           <label class="character-question field-block flex cursor-pointer items-start gap-3"><input type="checkbox" name="ciencia_concordancia" class="checkbox mt-1" {% if form.ciencia_concordancia.value %}checked{% endif %} required /><span><strong>Confirmacao final</strong><br><span class="text-sm text-base-content/70">Confirmo que os dados do personagem estao corretos para cadastro.</span></span></label>{% if form.ciencia_concordancia.errors %}<div class="text-sm text-error">{{ form.ciencia_concordancia.errors|striptags }}</div>{% endif %}
-          <div class="character-action-row flex items-center justify-between"><button type="button" class="btn btn-ghost" data-character-prev="class">← Voltar</button><div class="flex gap-2">{% if popup_mode %}<button type="button" class="btn btn-ghost" onclick="window.close()">Fechar janela</button>{% else %}<a href="{% url 'meus_personagens' %}" class="btn btn-ghost">Cancelar</a>{% endif %}<button type="submit" class="btn btn-primary">Salvar personagem</button></div></div>
+          <div class="character-action-row flex items-center justify-between"><button type="button" class="btn btn-ghost" data-character-prev="talent">← Voltar</button><div class="flex gap-2">{% if popup_mode %}<button type="button" class="btn btn-ghost" onclick="window.close()">Fechar janela</button>{% else %}<a href="{% url 'meus_personagens' %}" class="btn btn-ghost">Cancelar</a>{% endif %}<button type="submit" class="btn btn-primary">Salvar personagem</button></div></div>
         </div>
       </form>
     </div>
@@ -205,6 +215,9 @@
 
 {{ magias_por_classe|json_script:"magias-por-classe-data" }}
 {{ magias_selecionadas|json_script:"magias-selecionadas-data" }}
+{{ talent_catalog|json_script:"creation-talents-data" }}
+{{ talent_spell_choices|json_script:"creation-talent-spells" }}
+{{ ancient_spell_choices|json_script:"creation-talent-ancient" }}
 
 <script>
   window.addEventListener('DOMContentLoaded', function () {
@@ -299,215 +312,8 @@
   });
 </script>
 
-<script>
-  window.addEventListener('DOMContentLoaded', function () {
-    const classeSelect = document.getElementById('classe-select');
-    const magiasFixasInfo = document.getElementById('magias-fixas-info');
-    const magiasOpcoes = document.getElementById('magias-opcoes');
-    const magiasPorClasseNode = document.getElementById('magias-por-classe-data');
-    const magiasSelecionadasNode = document.getElementById('magias-selecionadas-data');
-    const magiasPorClasse = magiasPorClasseNode ? JSON.parse(magiasPorClasseNode.textContent) : {};
-    const magiasSelecionadasIniciais = magiasSelecionadasNode ? JSON.parse(magiasSelecionadasNode.textContent || '[]') : [];
-    const characterTabs = document.querySelectorAll('[data-character-tab]');
-    const characterPanels = document.querySelectorAll('[data-character-panel]');
-
-    function showCharacterTab(tabName) {
-      characterTabs.forEach(function (tab) {
-        const active = tab.dataset.characterTab === tabName;
-        tab.setAttribute('aria-selected', active ? 'true' : 'false');
-      });
-      characterPanels.forEach(function (panel) {
-        panel.hidden = panel.dataset.characterPanel !== tabName;
-      });
-    }
-
-    function validateCharacterPanel(panel) {
-      if (!panel) { return true; }
-      const requiredFields = panel.querySelectorAll('input[required], select[required], textarea[required]');
-      for (const field of requiredFields) {
-        if (!field.checkValidity()) {
-          field.reportValidity();
-          return false;
-        }
-      }
-      return true;
-    }
-
-    characterTabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        showCharacterTab(tab.dataset.characterTab);
-      });
-    });
-
-    document.querySelectorAll('[data-character-next]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        const currentPanel = button.closest('[data-character-panel]');
-        if (validateCharacterPanel(currentPanel)) {
-          showCharacterTab(button.dataset.characterNext);
-        }
-      });
-    });
-
-    document.querySelectorAll('[data-character-prev]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        showCharacterTab(button.dataset.characterPrev);
-      });
-    });
-
-    let firstErrorTab = 'identity';
-    characterPanels.forEach(function (panel) {
-      if (panel.querySelector('.text-error, .alert-error')) {
-        firstErrorTab = panel.dataset.characterPanel;
-      }
-    });
-    showCharacterTab(firstErrorTab);
-
-    const characterForm = document.getElementById('personagem-form');
-    if (characterForm) {
-      characterForm.addEventListener('submit', function (event) {
-        const invalidField = characterForm.querySelector(':invalid');
-        if (!invalidField) { return; }
-        const invalidPanel = invalidField.closest('[data-character-panel]');
-        if (invalidPanel) {
-          showCharacterTab(invalidPanel.dataset.characterPanel);
-        }
-        event.preventDefault();
-        invalidField.reportValidity();
-      });
-    }
-
-    function classeSelecionada() {
-      if (!classeSelect) { return null; }
-      return classeSelect.options[classeSelect.selectedIndex] || null;
-    }
-    function shouldShowMagiasStep() {
-      const selected = classeSelecionada();
-      return selected && selected.dataset.conjuradora === '1';
-    }
-    function classeComMagiasFixas() {
-      const selected = classeSelecionada();
-      return selected && selected.dataset.fixa === '1';
-    }
-    const talentGrid = document.getElementById('talentos-grid');
-    const talentInputs = Array.from(document.querySelectorAll('.talento-checkbox'));
-    let talentPage = 0;
-    const talentPageSize = 6;
-    const talentTools = document.createElement('div');
-    talentTools.className = 'talent-tools';
-    talentTools.innerHTML = '<label for="talent-search" class="text-sm">Buscar talento</label><input id="talent-search" type="search" class="input input-bordered" placeholder="Digite o nome do talento"><p class="text-xs text-base-content/70">Seus escolhidos — toque para remover</p><div class="talent-selected" id="talent-selected"></div><p id="talent-limit" class="text-xs" role="status"></p>';
-    talentGrid.before(talentTools);
-    const talentSearch = talentTools.querySelector('input');
-    const talentSelected = document.getElementById('talent-selected');
-    const talentPagination = document.createElement('div');
-    talentPagination.className = 'talent-pagination';
-    talentPagination.innerHTML = '<button type="button" class="btn btn-sm btn-ghost" aria-label="Página anterior de talentos">← Anterior</button><span role="status" aria-live="polite"></span><button type="button" class="btn btn-sm btn-ghost" aria-label="Próxima página de talentos">Próxima →</button>';
-    talentGrid.after(talentPagination);
-    const talentPrevious = talentPagination.firstElementChild;
-    const talentNext = talentPagination.lastElementChild;
-    const normalizeTalent = function (value) { return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); };
-    function renderTalentPage() {
-      const query = normalizeTalent(talentSearch.value);
-      const matches = talentInputs.filter(function (input) { return normalizeTalent(input.parentElement.textContent).includes(query); });
-      const pages = Math.max(1, Math.ceil(matches.length / talentPageSize));
-      talentPage = Math.min(talentPage, pages - 1);
-      const visible = new Set(matches.slice(talentPage * talentPageSize, (talentPage + 1) * talentPageSize));
-      talentInputs.forEach(function (input) { input.parentElement.hidden = !visible.has(input); });
-      talentPagination.querySelector('span').textContent = matches.length ? (talentPage + 1) + ' / ' + pages : 'Nenhum talento encontrado';
-      talentPrevious.disabled = talentPage === 0;
-      talentNext.disabled = talentPage >= pages - 1;
-    }
-    talentSearch.addEventListener('input', function () { talentPage = 0; renderTalentPage(); });
-    talentSearch.addEventListener('keydown', function (event) { if (event.key === 'Enter') event.preventDefault(); });
-    talentPrevious.addEventListener('click', function () { talentPage--; renderTalentPage(); });
-    talentNext.addEventListener('click', function () { talentPage++; renderTalentPage(); });
-    renderTalentPage();
-
-    function updateTalentosCounter() {
-      const talentos = document.querySelectorAll('.talento-checkbox:checked').length;
-      const target = document.getElementById('talentos-count');
-      if (target) { target.textContent = talentos + '/5 selecionados'; }
-      talentSelected.replaceChildren();
-      talentInputs.forEach(function (input) {
-        input.disabled = talentos >= 5 && !input.checked;
-        if (!input.checked) return;
-        const name = input.parentElement.querySelector('span').textContent;
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = name + ' ×';
-        button.setAttribute('aria-label', 'Remover talento ' + name);
-        button.addEventListener('click', function () {
-          input.checked = false;
-          input.dispatchEvent(new Event('change', { bubbles: true }));
-          talentSearch.focus();
-        });
-        talentSelected.appendChild(button);
-      });
-      if (!talentos) talentSelected.textContent = 'Nenhum talento escolhido ainda.';
-      document.getElementById('talent-limit').textContent = talentos >= 5 ? 'Você escolheu 5 talentos. Remova um para trocar.' : 'Você pode escolher mais ' + (5 - talentos) + '.';
-    }
-    function renderMagias() {
-      const fixed = classeComMagiasFixas();
-      const visible = shouldShowMagiasStep();
-      const wrapper = document.getElementById('magias-wrapper');
-      const classeId = classeSelect ? classeSelect.value : '';
-      const magiasDaClasse = magiasPorClasse[classeId] || [];
-      const selecionadasAtuais = Array.from(document.querySelectorAll('.magia-checkbox:checked')).map(function (input) {
-        return input.value;
-      });
-      const selecionadasBase = new Set(selecionadasAtuais.length ? selecionadasAtuais : magiasSelecionadasIniciais);
-
-      if (wrapper) {
-        wrapper.classList.toggle('hidden', !visible);
-      }
-      if (magiasFixasInfo) { magiasFixasInfo.classList.toggle('hidden', !fixed); }
-      if (magiasOpcoes) {
-        magiasOpcoes.classList.toggle('hidden', !visible || fixed);
-        if (visible && !fixed) {
-          magiasOpcoes.innerHTML = '';
-          if (!magiasDaClasse.length) {
-            magiasOpcoes.innerHTML = '<p class="text-sm text-base-content/70">Nao ha magias cadastradas para esta classe.</p>';
-          } else {
-            magiasDaClasse.forEach(function (magia) {
-              const label = document.createElement('label');
-              label.className = 'cursor-pointer flex items-center gap-3 border border-base-300 rounded-lg px-3 py-2';
-
-              const input = document.createElement('input');
-              input.type = 'checkbox';
-              input.name = 'magias_pretendidas';
-              input.value = magia;
-              input.className = 'checkbox checkbox-sm magia-checkbox';
-              input.required = true;
-              input.checked = selecionadasBase.has(magia);
-
-              const span = document.createElement('span');
-              span.textContent = magia;
-
-              label.appendChild(input);
-              label.appendChild(span);
-              magiasOpcoes.appendChild(label);
-            });
-          }
-        } else {
-          magiasOpcoes.querySelectorAll('.magia-checkbox').forEach(function (cb) { cb.required = false; cb.checked = false; });
-        }
-      }
-    }
-
-    if (classeSelect) { classeSelect.addEventListener('change', renderMagias); }
-    document.querySelectorAll('.talento-checkbox').forEach(function (checkbox) {
-      checkbox.addEventListener('change', function () {
-        const selectedCount = document.querySelectorAll('.talento-checkbox:checked').length;
-        if (selectedCount > 5) { checkbox.checked = false; alert('Limite de 5 talentos atingido.'); }
-        updateTalentosCounter();
-      });
-    });
-
-    updateTalentosCounter();
-    renderMagias();
-
-    if (window.location.search.includes('created=') && window.parent && window.parent !== window) {
-      window.parent.postMessage({ type: 'personagem-criado' }, '*');
-    }
-  });
-</script>
+{{ class_rules|json_script:"class-rules-data" }}
+<script src="{% static 'personagens/creation.js' %}?v=talents-step-1"></script>
+<script src="{% static 'personagens/creation-talents.js' %}?v=manual-audit-2"></script>
+<script src="{% static 'personagens/portrait.js' %}?v=manual33"></script>
 {% endblock content %}

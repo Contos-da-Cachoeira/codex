@@ -65,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.middleware.DevelopmentNotFoundMiddleware',
+    'wiki.catalog_cache.CatalogMiddleware',
 ]
 
 ROOT_URLCONF = 'codex.urls'

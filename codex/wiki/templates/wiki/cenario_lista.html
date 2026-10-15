@@ -1,0 +1,10 @@
+{% extends 'wiki/base.html' %}
+{% block title %}Cenário · Contos da Cachoeira{% endblock %}
+{% block wiki_content %}
+<header class="wiki-list-intro mb-8"><h1 class="text-4xl font-black">Contos da Cachoeira</h1><p class="mt-2 opacity-70">História, crenças e lugares para construir seu personagem. A comissão avalia a ligação da ficha com o mundo.</p></header>
+{% include 'wiki/includes/search.html' %}
+<section class="wiki-entry-grid" id="wiki-results">
+  {% for entry in entries %}<article class="wiki-entry-card card bg-base-100 border border-base-300" data-wiki-item="{{ entry.nome }} {{ entry.categoria }} {{ entry.resumo }}"><div class="card-body"><h2 class="card-title">{{ entry.nome }}</h2><p>{{ entry.resumo }}</p><a class="btn btn-primary btn-sm" href="{% url 'wiki_cenario_detalhe' entry.slug %}">Consultar</a></div></article>
+  {% empty %}<p>As referências do cenário estão em preparação.</p>{% endfor %}
+</section>
+{% endblock %}

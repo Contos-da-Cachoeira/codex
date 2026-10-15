@@ -1,0 +1,212 @@
+{
+  "record_type": "diagnostico_anterior_as_correcoes",
+  "corrections_record": "correcoes-manual-cenario-2026-10-15.md",
+  "audit_date": "2026-10-15",
+  "timezone": "America/Sao_Paulo",
+  "sources": [
+    {
+      "file": "Manual LARP - 3.3.pdf",
+      "pdf_pages": 25,
+      "sha256": "682ab2a49b32966c36fae2cb03bd769f21dfb279a406e74ae8383f1b2c3aecec"
+    },
+    {
+      "file": "Cenário_ Contos da Cachoeira.pdf",
+      "pdf_pages": 23,
+      "sha256": "287d31ad1312869c174d1170e0f96b64227d7304bce630e4a7578c56d7520673"
+    }
+  ],
+  "scope": "Regras e conteúdo; sem alterações de aplicação ou publicação nesta auditoria.",
+  "validation": {
+    "existing_tests_passed": 109,
+    "test_command": "codex/.venv/Scripts/python.exe codex/manage.py test personagens core dashboard wiki --settings=wiki.test_settings --noinput",
+    "probe_settings": "wiki.test_settings",
+    "probe_database": "SQLite :memory:",
+    "probe_count": 15,
+    "wallet_race_method": "Intercalação determinística: carregar perfil; aprovar compra; salvar perfil anteriormente carregado. Não é teste de carga concorrente.",
+    "pdf_reference_check": {
+      "talents_compared": 25,
+      "talent_costs_match": true,
+      "class_spell_lists_match": true,
+      "class_spell_lists": {
+        "Bardo": [
+          "Antídoto Mágico",
+          "Contramágica",
+          "Lentidão",
+          "Silenciar",
+          "Versos de Proteção",
+          "Vigor do Touro"
+        ],
+        "Clérigo": [
+          "Antídoto Mágico",
+          "Barreira Mágica",
+          "Exorcismo",
+          "Lentidão",
+          "Toque da Cura",
+          "Versos de Proteção"
+        ],
+        "Mago": [
+          "Barreira Mágica",
+          "Bola de Fogo",
+          "Contramágica",
+          "Exorcismo",
+          "Lentidão",
+          "Raio Elétrico",
+          "Silenciar",
+          "Vigor do Touro"
+        ],
+        "Druida": [
+          "Antídoto Mágico",
+          "Comunhão com a Natureza",
+          "Toque da Cura"
+        ],
+        "Paladino": [
+          "Exorcismo",
+          "Toque da Cura"
+        ]
+      }
+    }
+  },
+  "read_only_database_snapshot": {
+    "counts": [
+      {
+        "category": "magias",
+        "visible": true,
+        "total": 12
+      },
+      {
+        "category": "regras",
+        "visible": true,
+        "total": 4
+      },
+      {
+        "category": "magia_geral",
+        "visible": true,
+        "total": 1
+      },
+      {
+        "category": "classes",
+        "visible": true,
+        "total": 9
+      },
+      {
+        "category": "talentos",
+        "visible": true,
+        "total": 25
+      },
+      {
+        "category": "itens",
+        "visible": true,
+        "total": 16
+      }
+    ],
+    "content_differences_against_code_constants": [],
+    "guild_records": [],
+    "wallets_different_from_movement_sum": 0,
+    "privacy": "Sem nomes de jogadores, fichas ou saldos individuais. Apenas conteúdo público e agregados."
+  },
+  "probe_results": [
+    {
+      "case": "Conjurar + magia + Multiclasse Mago (3 compras)",
+      "accepted": false,
+      "error": [
+        "O personagem já é conjurador."
+      ]
+    },
+    {
+      "case": "Escolhas do Mago como segunda classe",
+      "multi_approved": true,
+      "base_ancient_spell": "",
+      "multiclass_spell": "",
+      "focus": ""
+    },
+    {
+      "case": "Tentar registrar feitiço inicial na Multiclasse Mago",
+      "valid": false,
+      "errors": {
+        "__all__": [
+          {
+            "message": "Este talento não concede uma magia.",
+            "code": ""
+          }
+        ]
+      }
+    },
+    {
+      "case": "Magias estrangeiras já adquiridas + Multiclasse Mago",
+      "accepted": false,
+      "error": [
+        "Escolha uma magia válida para este talento."
+      ]
+    },
+    {
+      "case": "Editar forma inicial de Druida aprovado",
+      "valid": true,
+      "approval_after": 2,
+      "form_after": "Fogo, veneno, voo; nenhum defeito."
+    },
+    {
+      "case": "Reenviar aprovação de Forma Selvagem já adquirida",
+      "http": 200,
+      "status": "approved",
+      "details_changed_despite_rejection": true,
+      "details_after": "Forma alterada depois da compra."
+    },
+    {
+      "case": "Conjurar usando Espada como foco",
+      "valid": true,
+      "approved": true,
+      "focus": "Espada"
+    },
+    {
+      "case": "Salvar dados pessoais com Profile carregado antes de uma compra concorrente",
+      "balance_after_purchase": 1975,
+      "balance_after_profile_save": 2000,
+      "purchase_debit_still_in_ledger": true
+    },
+    {
+      "case": "Registrar saldo de 1 DP / 0,5 DO",
+      "valid": false,
+      "errors": {
+        "ouro": [
+          {
+            "message": "Informe um número inteiro.",
+            "code": "invalid"
+          }
+        ]
+      }
+    },
+    {
+      "case": "Mercenário sem guilda com Benefícios de patente",
+      "guild_id": 7,
+      "status": "approved"
+    },
+    {
+      "case": "Validação de divindade de Clérigo",
+      "value": "Nenhuma; sou ateu",
+      "base_validation_accepted": true
+    },
+    {
+      "case": "Jogador troca de Zaori para Círculo",
+      "guild_after": 2,
+      "approval_after": 1,
+      "exit_authorization_or_curse_fields": []
+    },
+    {
+      "case": "Quantidades iniciais Bardo/Clérigo/Mago",
+      "correct_counts_accepted": true,
+      "all_spells_rejected": true
+    },
+    {
+      "case": "Compras repetidas no limite ativo",
+      "five_accepted": true,
+      "six_rejected": true
+    },
+    {
+      "case": "Alterar custo no editor da wiki e solicitar o mesmo talento",
+      "published_wiki_cost": 999,
+      "purchase_cost": 25
+    }
+  ],
+  "application_changes": [],
+  "deployment_performed": false
+}

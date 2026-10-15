@@ -78,6 +78,8 @@ def listar_guildas(request):
     guildas_info = []
     for guilda_id in GUILDA_PUBLIC_KEY_BY_ID:
         guilda = guildas_db.get(guilda_id)
+        if guilda_id == 7:
+            guilda = None
 
         # O conteudo publico existe em core.constants.guildas e nao deve
         # desaparecer da pagina enquanto os dados administrativos ainda nao
@@ -140,7 +142,7 @@ def detalhe_guilda(request, slug):
     guilda_registro = Guilda.objects.filter(
         guilda_id=guilda_id,
         ativa=True,
-    ).first()
+    ).first() if guilda_id != 7 else None
 
     # As paginas publicas podem ser acessadas mesmo antes do cadastro dos
     # registros administrativos. Quando o registro existir, todas as areas

@@ -160,6 +160,7 @@ TALENTOS_WIKI = {
         "nome": "Feitiço antigo adicional",
         "slug": "feitico-antigo",
         "custo_xp": 70,
+        "stackavel": True,
         "descricao": "Mago aprende um novo feitiço de magia antiga.",
     },
 
@@ -167,6 +168,7 @@ TALENTOS_WIKI = {
         "nome": "Forma selvagem adicional",
         "slug": "forma-selvagem",
         "custo_xp": 70,
+        "stackavel": True,
         "descricao": "Druida ganha uma nova forma selvagem.",
     },
 

@@ -20,7 +20,8 @@ class RecordManagerTests(TestCase):
         cls.player = User.objects.create_user('jogador', email='jogador@example.com')
         cls.other = User.objects.create_user('outro')
         cls.superuser = User.objects.create_user('super', is_staff=True, is_superuser=True)
-        Profile.objects.update_or_create(user=cls.player, defaults={'nome_completo_jogador': 'Jogador de teste', 'telefone': '12345'})
+        Profile.objects.update_or_create(user=cls.player, defaults={'nome_completo_jogador': 'Jogador de teste', 'telefone': '12345', 'xp_disponivel': 10})
+        Profile.objects.update_or_create(user=cls.other, defaults={'xp_disponivel': 30})
         cls.character = Personagem.objects.create(usuario=cls.player, nome='Aventureiro', historia='História preservada', classe=1, guilda=1, xp_atual=10, ouro=20)
         cls.other_character = Personagem.objects.create(usuario=cls.other, nome='Outro aventureiro', xp_atual=30)
         cls.event = LarpEvento.objects.create(titulo='LARP de teste', local='Praça', historia='Uma aventura',
@@ -67,13 +68,13 @@ class RecordManagerTests(TestCase):
     def test_character_update_only_changes_selected_character(self):
         pk = self.character.pk
         response = self.client.post(self.url, {'action': 'bulk_update_personagens', 'record_manager': 'characters',
-            'personagem_ids': pk, f'status_{pk}': 1, f'status_aprovacao_{pk}': 2, f'classe_{pk}': 2,
+            'personagem_ids': pk, f'status_{pk}': 1, f'status_aprovacao_{pk}': 2, f'classe_{pk}': 1,
             f'guilda_{pk}': 2, f'xp_atual_{pk}': 100, f'ouro_{pk}': 50, 'return_character_q': 'Aventureiro'})
         self.assertEqual(response.status_code, 302)
         self.assertIn(f'selected_character={pk}', response.url)
         self.character.refresh_from_db()
         self.other_character.refresh_from_db()
-        self.assertEqual((self.character.classe, self.character.guilda, self.character.xp_atual, self.character.ouro, self.character.status_aprovacao), (2, 2, 100, 50, 2))
+        self.assertEqual((self.character.classe, self.character.guilda, self.character.xp_jogador, self.character.ouro, self.character.status_aprovacao), (1, 2, 100, 50, 2))
         self.assertEqual(self.character.historia, 'História preservada')
         self.assertEqual(self.other_character.xp_atual, 30)
 

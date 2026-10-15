@@ -53,6 +53,7 @@
                         <div class="rounded-box bg-base-200 p-4">
                             <p class="text-xs uppercase tracking-wide opacity-70">Vantagem</p>
                             <p class="font-medium">{{ info_publica.vantagem }}</p>
+                            {% if info_publica.vantagem_efeito %}<p class="mt-2">{{ info_publica.vantagem_efeito }}</p>{% endif %}
                         </div>
                     {% endif %}
                 </div>
@@ -62,6 +63,9 @@
                         <span><strong>{{ info_publica.marca_nome }}:</strong> {{ info_publica.marca_efeito }}</span>
                     </div>
                 {% endif %}
+                {% if info_publica.saida %}<section><h3 class="font-bold">Saída autorizada</h3><p>{{ info_publica.saida }}</p></section>{% endif %}
+                {% if info_publica.desvantagem %}<section><h3 class="font-bold">Desvantagem</h3><p>{{ info_publica.desvantagem }}</p></section>{% endif %}
+                <p class="text-sm opacity-70">Regras de referência: Manual LARP 3.3, páginas 6–10. Iniciação, pactos, marcas e perdão são avaliados pela comissão.</p>
             </div>
         </article>
 

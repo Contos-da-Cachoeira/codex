@@ -1,0 +1,27 @@
+<div class="character-step-heading">
+  <p class="text-xs font-bold uppercase text-primary">Etapa 4 / Talentos</p>
+  <h2 class="mt-1 text-2xl font-bold">Escolha os talentos</h2>
+  <p class="mt-2 text-sm">Você pode continuar sem talentos. As escolhas são enviadas à comissão com a ficha; o XP só é descontado após aprovação.</p>
+</div>
+{{ form.talent_requests }}
+{% if form.talent_requests.errors %}<div class="text-error" role="alert">{{ form.talent_requests.errors }}</div>{% endif %}
+{{ form.talentos_iniciais.errors }}
+<div class="character-choice-panel space-y-4" data-creation-talents data-player-xp="{{ player_xp }}">
+  <div class="flex flex-wrap justify-between gap-2"><strong>Saldo do jogador: {{ player_xp }} XP</strong><span data-talent-summary aria-live="polite">0 de 5 compras selecionadas</span></div>
+  <p class="text-sm">Cada compra ocupa uma vaga, inclusive compras repetidas. Os pré-requisitos devem vir da classe ou de talentos já adquiridos.</p>
+  <label class="block font-semibold" for="creation-talent-choice">Talento</label>
+  <select id="creation-talent-choice" class="select select-bordered w-full" data-talent-choice>
+    <option value="">Selecione um talento para consultar</option>
+    {% for item in talent_catalog %}<option value="{{ item.key }}" {% if item.key == 'MULTICLASSE' or item.key == 'BENEFICIOS_DE_PATENTE' %}disabled{% endif %}>{{ item.nome }} — {{ item.custo_xp }} XP{% if item.key == 'MULTICLASSE' or item.key == 'BENEFICIOS_DE_PATENTE' %} (após jogar com este personagem){% endif %}</option>{% endfor %}
+  </select>
+  <div data-talent-editor hidden class="space-y-3">
+    <p data-talent-description></p><p data-talent-requirement class="text-sm"></p>
+    <div data-talent-choice-field="magia" hidden><label class="block" for="creation-talent-spell">Magia ou feitiço aprendido</label><select id="creation-talent-spell" class="select select-bordered w-full" data-talent-value="magia"></select></div>
+    <div data-talent-choice-field="foco" hidden><label class="block" for="creation-talent-focus">Foco de magia (exceto cajado)</label><input id="creation-talent-focus" class="input input-bordered w-full" maxlength="120" data-talent-value="foco"></div>
+    <div data-talent-choice-field="detalhes" hidden><label class="block" for="creation-talent-details">Nova Forma Selvagem</label><textarea id="creation-talent-details" class="textarea textarea-bordered w-full" rows="3" data-talent-value="detalhes"></textarea><p class="text-sm">A comissão define três características e um defeito.</p></div>
+    <label class="block" for="creation-talent-story">Como aprendeu este talento?</label><textarea id="creation-talent-story" class="textarea textarea-bordered w-full" rows="3" data-talent-value="justificativa" placeholder="Descreva o treino ou acontecimento na história do personagem."></textarea>
+    <button type="button" class="btn btn-primary" data-add-creation-talent>Adicionar talento</button>
+  </div>
+  <p data-talent-feedback class="text-sm" role="status" aria-live="polite"></p>
+  <div data-selected-creation-talents class="space-y-3"></div>
+</div>

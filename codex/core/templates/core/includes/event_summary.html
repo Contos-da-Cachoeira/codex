@@ -1,0 +1,13 @@
+<div data-event-summary>
+  {% if evento.capa %}<img class="em-cover" src="{{ evento.capa.url }}" alt="Capa de {{ evento.titulo }}">{% else %}<div class="em-cover em-cover-placeholder" aria-hidden="true">{% include 'core/includes/event_icon.html' %}<span>{{ evento.data_evento|date:'d' }}<small>{{ evento.data_evento|date:'M' }}</small></span></div>{% endif %}
+  <div class="em-card-body">
+    <div class="em-section-heading"><h2>Informações da sessão</h2><span class="em-badge{% if evento.visivel_publicamente %} is-green{% endif %}">{% if evento.visivel_publicamente %}Publicado{% else %}Oculto{% endif %}</span></div>
+    <dl class="em-facts">
+      <div><dt>{% include 'core/includes/event_icon.html' %}Data e horário</dt><dd>{{ evento.data_evento|date:'d/m/Y · H:i' }}</dd></div>
+      <div><dt>{% include 'core/includes/event_icon.html' with kind='pin' %}Local</dt><dd>{{ evento.local }}</dd></div>
+      <div><dt>{% include 'core/includes/event_icon.html' with kind='clock' %}Inscrições até</dt><dd>{{ evento.data_limite_inscricao|date:'d/m/Y · H:i' }}</dd></div>
+      <div><dt>{% include 'core/includes/event_icon.html' with kind='people' %}Inscrições</dt><dd>{% if evento.inscricoes_abertas %}Abertas{% else %}Encerradas{% endif %}</dd></div>
+    </dl>
+    <section class="em-story"><h3>História do evento</h3><p>{{ evento.historia|linebreaksbr }}</p></section>
+  </div>
+</div>

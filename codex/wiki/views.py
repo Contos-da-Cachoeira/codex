@@ -43,6 +43,7 @@ def wiki_home(request):
         ('Talentos', 'talentos', 'talento', 'Explore novas habilidades e planeje a evolução do personagem.', _talentos_ordenados()),
         ('Magias', 'magias', 'magia', 'Consulte invocações, efeitos e quem pode usar cada magia.', _magias_ordenadas()),
         ('Itens', 'itens', 'item', 'Prepare seu inventário com equipamentos e recursos alquímicos.', _itens_ordenados()),
+        ('Cenário', 'cenario', 'cenario', 'Explore a história, as divindades e os lugares dos Contos da Cachoeira.', _published('cenario')),
     ]:
         images = [image_url(item) for item in items]
         sections.append({'key': plural, 'name': name, 'description': description, 'count': len(items),
@@ -67,6 +68,17 @@ def regras_lista(request):
         'regras': _regras_ordenadas(),
     }
     return render(request, 'wiki/regras_lista.html', context)
+
+
+def cenario_lista(request):
+    return render(request, 'wiki/cenario_lista.html', {'entries': _published('cenario')})
+
+
+def cenario_detalhe(request, slug):
+    entry = next((item for item in _published('cenario') if item['slug'] == slug), None)
+    if not entry:
+        raise Http404('Referência do cenário não encontrada.')
+    return render(request, 'wiki/cenario_detalhe.html', {'entry': entry})
 
 
 def regra_detalhe(request, slug):

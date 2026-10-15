@@ -1,6 +1,8 @@
 from django import forms
+from django.core.files.uploadedfile import UploadedFile
 
 from .models import LarpEvento, ImageAsset
+from .money import GoldField
 
 
 class ImageAssetForm(forms.ModelForm):
@@ -28,15 +30,30 @@ class ImageAssetForm(forms.ModelForm):
 
 class EventCharacterBalanceForm(forms.Form):
     xp = forms.IntegerField(label='XP', min_value=0, max_value=2147483647)
-    ouro = forms.IntegerField(label='Ouro', min_value=0, max_value=2147483647)
+    ouro = GoldField(label='Ouro (DO)')
+    presenca = forms.BooleanField(label='Presença confirmada', required=False)
+    taxa_paga = forms.BooleanField(label='Taxa paga', required=False)
+    xp_anterior = forms.IntegerField(min_value=0, required=False, widget=forms.HiddenInput)
+    ouro_anterior = GoldField(required=False, widget=forms.HiddenInput)
+    taxa_anterior = forms.TypedChoiceField(choices=(('0', 'Não'), ('1', 'Sim')), coerce=lambda value: bool(int(value)), empty_value=None, required=False, widget=forms.HiddenInput)
+    presenca_anterior = forms.TypedChoiceField(choices=(('0', 'Não'), ('1', 'Sim')), coerce=lambda value: bool(int(value)), empty_value=None, required=False, widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.widget.attrs.update({'class': 'input input-bordered', 'style': 'width:8rem', 'step': '1'})
+        for name in ('xp', 'ouro'):
+            self.fields[name].widget.attrs.update({'class': 'em-number', 'step': '1', 'inputmode': 'decimal' if name == 'ouro' else 'numeric'})
+        for name in ('presenca', 'taxa_paga'):
+            self.fields[name].widget.attrs['class'] = 'em-checkbox'
+        self.fields['ouro'].widget.attrs['step'] = '0.5'
 
 
 class LarpEventoForm(forms.ModelForm):
+    def clean_capa(self):
+        image = self.cleaned_data.get('capa')
+        if isinstance(image, UploadedFile) and image.size > 10 * 1024 * 1024:
+            raise forms.ValidationError('A capa deve ter no máximo 10 MB.')
+        return image
+
     class Meta:
         model = LarpEvento
         fields = ('titulo', 'capa', 'local', 'data_evento', 'data_limite_inscricao', 'historia', 'visivel_publicamente')

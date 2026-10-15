@@ -1,5 +1,5 @@
 <div class="md:col-span-2 space-y-3" data-character-image-field>
-  <p class="font-semibold">Foto do personagem</p>
+  {% if not hide_photo_title %}<p class="font-semibold">Foto do personagem</p>{% endif %}
   <div class="identity-avatar identity-avatar-large" data-profile-image-preview>
     {% if selected_image %}
       {% include 'core/includes/image_asset.html' with asset=selected_image %}

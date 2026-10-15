@@ -1,5 +1,6 @@
 <span class="admin-record-photo{% if large %} admin-record-photo-large{% endif %}" aria-hidden="true">
-  {% if record.image_asset %}{% include 'core/includes/image_asset.html' with asset=record.image_asset %}
+  {% if record.character %}{% include 'core/includes/character_avatar.html' with character=record.character avatar_class='identity-avatar-fill' %}
+  {% elif record.image_asset %}{% include 'core/includes/image_asset.html' with asset=record.image_asset %}
   {% elif record.image_url %}<img src="{{ record.image_url }}" alt="" loading="lazy">
   {% else %}<span>{{ record.title|first|upper }}</span>{% endif %}
 </span>

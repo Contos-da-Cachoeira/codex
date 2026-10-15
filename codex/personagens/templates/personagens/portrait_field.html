@@ -1,0 +1,33 @@
+{% load static %}
+<style>
+  [data-portrait-options] .portrait-option { display:flex; flex-direction:column; align-items:center; gap:.8rem; text-align:center; }
+  [data-portrait-options] .portrait-option:has(input[type=radio]:checked) { border-color:var(--codex-accent); box-shadow:0 0 0 1px var(--codex-accent); }
+  [data-portrait-options] input[type=radio] { width:auto; margin:0; accent-color:var(--codex-accent); }
+  [data-portrait-options] .portrait-option > label { display:flex; align-items:center; justify-content:center; gap:.6rem; }
+  [data-portrait-options] [data-character-image-field] { display:flex; flex-direction:column; align-items:center; }
+  [data-portrait-options] [data-character-image-field] > div:last-child { justify-content:center; }
+</style>
+<fieldset class="character-choice-panel space-y-3" data-portrait-options>
+  <legend class="font-bold">Como seu personagem aparece</legend>
+  <p class="text-sm">Compare as opções. Uma foto própria é opcional.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem">
+    <label class="character-question portrait-option" style="cursor:pointer">
+      <input type="radio" name="portrait_mode" value="name" {% if form.portrait_mode.value == 'name' %}checked{% endif %}>
+      <strong>Nome</strong>
+      <div class="identity-avatar identity-avatar-large" data-name-preview>{{ form.nome.value|default:'?'|slice:':1'|upper }}</div>
+      <p data-character-name>{{ form.nome.value|default:'Seu personagem' }}</p>
+    </label>
+    <label class="character-question portrait-option" style="cursor:pointer">
+      <input type="radio" name="portrait_mode" value="class" {% if form.portrait_mode.value == 'class' or not form.portrait_mode.value %}checked{% endif %}>
+      <strong>Imagem da classe</strong>
+      <div class="identity-avatar identity-avatar-large" style="background:#eee"><img data-class-preview alt="Imagem da classe" {% if personagem.class_image_url %}src="{{ personagem.class_image_url }}"{% endif %} style="object-fit:contain;width:100%;height:100%"></div>
+      <p data-character-name>{{ form.nome.value|default:'Seu personagem' }}</p>
+    </label>
+    <div class="character-question portrait-option">
+      <label style="cursor:pointer"><input type="radio" name="portrait_mode" value="photo" {% if form.portrait_mode.value == 'photo' %}checked{% endif %}> <strong>Foto própria</strong></label>
+      {% include 'personagens/image_field.html' with hide_photo_title=True %}
+      <p data-character-name>{{ form.nome.value|default:'Seu personagem' }}</p>
+    </div>
+  </div>
+  {{ form.portrait_mode.errors }}
+</fieldset>

@@ -5,9 +5,16 @@ from .models import HomeDynamicSection, HomePageConfig, LarpEvento, LarpInscrica
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
+	readonly_fields = ('xp_disponivel',)
 	list_display = ('user', 'role')
 	search_fields = ('user__username', 'user__email')
 	list_filter = ('role',)
+
+	def save_model(self, request, obj, form, change):
+		if change:
+			obj.save(update_fields=[field for field in form.changed_data if field != 'xp_disponivel'])
+		else:
+			super().save_model(request, obj, form, change)
 
 
 class SingletonAdminMixin:

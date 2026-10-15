@@ -1,8 +1,9 @@
 from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
 
-from django.test import RequestFactory, SimpleTestCase
+from django.test import RequestFactory, SimpleTestCase, TestCase
 from django.template.loader import get_template, render_to_string
+from django.urls import reverse
 
 from core.models import SiteLayoutConfig
 from dashboard.views import admin_dashboard, admin_user_profile
@@ -213,7 +214,7 @@ class ThemeSettingsTests(SimpleTestCase):
         save.assert_not_called()
 
 
-class LarpDeadlineTests(SimpleTestCase):
+class LarpDeadlineTests(TestCase):
     def test_spreadsheet_url_is_registered(self):
         from django.urls import reverse, resolve
         url = reverse('planilha_larp', kwargs={'slug': 'larp-test-1'})
@@ -266,22 +267,31 @@ class LarpDeadlineTests(SimpleTestCase):
             self.assertFalse(EventCharacterBalanceForm({'xp': invalid, 'ouro': '10'}).is_valid())
 
     def test_balance_update_only_changes_event_participant(self):
-        event = MagicMock(slug='test', visivel_publicamente=True)
-        character = MagicMock(pk=42, xp_atual=10, ouro=20)
-        registration = SimpleNamespace(personagem=character, personagem_id=42)
-        event.inscricoes.select_related.return_value.order_by.return_value = [registration]
-        request = RequestFactory().post('/larp/test/', {
-            'action': 'update_balances', 'character-42-xp': '150', 'character-42-ouro': '50',
-            'character-99-xp': '999', 'character-99-ouro': '999',
+        from django.contrib.auth.models import User
+        from core.models import Profile, LarpInscricao
+        from personagens.models import Personagem
+        admin = User.objects.create_user('planilha-admin', is_staff=True)
+        player = User.objects.create_user('planilha-player')
+        Profile.objects.create(user=player, xp_disponivel=10)
+        character = Personagem.objects.create(usuario=player, nome='Inscrito', classe=6, guilda=1, xp_atual=10, ouro=20)
+        other = Personagem.objects.create(usuario=player, nome='Outro', classe=6, guilda=1, ouro=30)
+        event = LarpEvento.objects.create(titulo='Teste', local='Parque', historia='História',
+            data_evento=timezone.now()+timedelta(days=2), data_limite_inscricao=timezone.now()+timedelta(days=1))
+        registration = LarpInscricao.objects.create(evento=event, usuario=player, personagem=character, taxa_paga=True)
+        self.client.force_login(admin)
+        response = self.client.post(reverse('planilha_larp', args=[event.slug]), {
+            'action': 'update_balances', f'character-{character.pk}-xp': '150', f'character-{character.pk}-ouro': '50',
+            f'character-{other.pk}-xp': '999', f'character-{other.pk}-ouro': '999',
         })
-        request.user = SimpleNamespace(is_authenticated=True, is_superuser=True)
-        with patch('core.views.get_object_or_404', return_value=event), patch('core.views.messages'), \
-                patch('core.views.LarpEventoForm'), patch('core.views.transaction.atomic'):
-            response = planilha_larp(request, 'test')
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(character.xp_atual, 150)
+        character.refresh_from_db()
+        other.refresh_from_db()
+        registration.refresh_from_db()
+        self.assertEqual(Profile.objects.get(user=player).xp_disponivel, 150)
+        self.assertEqual(character.xp_atual, 10)
         self.assertEqual(character.ouro, 50)
-        character.save.assert_called_once_with(update_fields=['xp_atual', 'ouro', 'data_atualizacao'])
+        self.assertEqual(other.ouro, 30)
+        self.assertTrue(registration.taxa_paga)  # Uma tela antiga sem coluna de pagamento não deve apagá-lo.
 
     def test_larp_templates_compile(self):
         for template in ('core/planilha_larp.html', 'core/listar_larps.html', 'core/detalhe_larp.html',

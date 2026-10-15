@@ -144,8 +144,8 @@ ITENS_WIKI = {
         "slug": "sangue-de-dragao",
         "valor": "10 DO",
         "descricao": (
-            "Ganha 7 PV temporários, imunidade a desmembramento e ataques BRUTAL por 5 minutos. "
-            "Após o efeito, o usuário morre lentamente."
+            "Após beber, grite DRAGÃO. Ganha 7 PV temporários, até o máximo de 10 PV, imunidade a desmembramento e BRUTAL em todos os golpes. "
+            "O efeito dura 5 minutos ou até o fim do combate. Ao terminar, o usuário morre em 10 segundos. Apenas Água Primordial pode ressuscitá-lo."
         ),
         "tipo": "Consumível",
         "alquimico": True,
@@ -157,7 +157,8 @@ ITENS_WIKI = {
         "slug": "laco-da-verdade",
         "valor": "8 DO",
         "descricao": (
-            "Prende o alvo e impede mentiras. Uso único."
+            "Corda mágica: quem estiver preso não pode mentir, mas pode omitir. É um efeito mental. "
+            "A habilidade é de uso único; depois de usada, resta uma corda comum."
         ),
         "tipo": "Item mágico",
     },

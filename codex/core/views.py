@@ -1,10 +1,11 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
-from django.db import transaction
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.views.decorators.http import require_POST
 from .forms import ImageAssetForm
 
@@ -24,11 +25,12 @@ def upload_image(request):
 from personagens.forms import LarpInscricaoEventoForm
 
 from .models import LarpEvento, LarpInscricao, Profile
-from .forms import LarpEventoForm, EventCharacterBalanceForm
+from .forms import LarpEventoForm
+from .event_management import EDITABLE, participant_rows, event_metrics, save_participants
 
 
 def _is_admin(user):
-    if not user.is_authenticated:
+    if not user.is_authenticated or not getattr(user, 'is_active', True):
         return False
     if user.is_superuser or user.is_staff:
         return True
@@ -93,8 +95,16 @@ def detalhe_larp(request, slug):
             event_form = LarpEventoForm(request.POST, request.FILES, instance=evento)
             if event_form.is_valid():
                 event_form.save()
+                if request.headers.get('X-Event-Management') == '1':
+                    return JsonResponse({'ok': True, 'message': 'Informações do evento salvas.',
+                        'title': evento.titulo,
+                        'summary': render_to_string('core/includes/event_summary.html', {'evento': evento}, request=request),
+                        'editor': render_to_string('core/includes/event_editor.html', {'evento': evento, 'event_form': LarpEventoForm(instance=evento)}, request=request)})
                 messages.success(request, 'Informações do evento atualizadas.')
                 return redirect('detalhe_larp', slug=evento.slug)
+            if request.headers.get('X-Event-Management') == '1':
+                return JsonResponse({'ok': False, 'message': 'Confira os campos indicados.',
+                    'errors': {name: list(errors) for name, errors in event_form.errors.items()}}, status=422)
 
         if request.method == 'POST' and request.POST.get('action') == 'update_payments':
             atualizadas = 0
@@ -115,6 +125,8 @@ def detalhe_larp(request, slug):
         total_pagos = inscricoes.filter(taxa_paga=True).count()
         total_alertas = sum(bool(item.fobia_gatilho.strip()) for item in inscricoes)
     elif request.method == 'POST':
+        if request.headers.get('X-Event-Management') == '1':
+            return JsonResponse({'ok': False, 'message': 'Apenas administradores podem gerenciar eventos.'}, status=403)
         messages.error(request, 'Apenas administradores podem atualizar o checklist de pagamento.')
         return redirect('detalhe_larp', slug=evento.slug)
 
@@ -137,6 +149,10 @@ def detalhe_larp(request, slug):
         'total_pendentes': total_inscricoes - total_pagos,
         'inscricao_usuario': inscricao_usuario,
     }
+    if is_admin:
+        context.update(metrics=event_metrics(list(inscricoes)), event_page='overview',
+            signup_url=request.build_absolute_uri(reverse('inscricao_larp', args=[evento.slug, evento.inscricao_token])))
+        return render(request, 'core/gerenciar_larp.html', context)
     return render(request, 'core/detalhe_larp.html', context)
 
 
@@ -180,32 +196,51 @@ def inscricao_larp(request, slug, token):
 
 @login_required
 def planilha_larp(request, slug):
+    ajax = request.headers.get('X-Event-Management') == '1'
     if not _is_admin(request.user):
+        if ajax:
+            return JsonResponse({'ok': False, 'message': 'Apenas administradores podem gerenciar participantes.'}, status=403)
         return redirect('home')
     evento = get_object_or_404(LarpEvento, slug=slug)
-    inscricoes = evento.inscricoes.select_related('usuario__profile__image_asset', 'personagem__image_asset').order_by('nome_completo_jogador', 'id')
-    balance_rows = []
+    inscricoes = list(evento.inscricoes.select_related('usuario__profile__image_asset', 'personagem__image_asset').order_by('nome_completo_jogador', 'id'))
     editing_balances = request.method == 'POST' and request.POST.get('action') == 'update_balances'
-    for registration in inscricoes:
-        balance_rows.append({
-            'registration': registration,
-            'form': EventCharacterBalanceForm(
-                request.POST if editing_balances else None,
-                prefix=f'character-{registration.personagem_id}',
-                initial={'xp': registration.personagem.xp_atual, 'ouro': registration.personagem.ouro},
-            ),
-        })
+    selected, changes = inscricoes, None
+    if editing_balances and ajax:
+        try:
+            ids = {int(value) for value in request.POST.getlist('registration_ids')}
+            known = {item.pk for item in inscricoes}
+            if not ids or not ids <= known:
+                raise ValueError
+            selected = [item for item in inscricoes if item.pk in ids]
+            changes = {item.pk: request.POST.getlist(f'changed_fields_{item.pk}') for item in selected}
+            if any(not fields or not set(fields) <= set(EDITABLE) for fields in changes.values()):
+                raise ValueError
+        except (ValueError, TypeError):
+            return JsonResponse({'ok': False, 'message': 'Seleção de participantes inválida. Atualize a tela e tente novamente.'}, status=400)
+    balance_rows = participant_rows(selected, request.POST if editing_balances else None)
     if editing_balances:
         valid = [row['form'].is_valid() for row in balance_rows]
         if all(valid):
-            with transaction.atomic():
-                for row in balance_rows:
-                    character = row['registration'].personagem
-                    character.xp_atual = row['form'].cleaned_data['xp']
-                    character.ouro = row['form'].cleaned_data['ouro']
-                    character.save(update_fields=['xp_atual', 'ouro', 'data_atualizacao'])
-            messages.success(request, 'XP e ouro dos participantes atualizados.')
-            return redirect('planilha_larp', slug=evento.slug)
+            try:
+                saved = save_participants(evento, balance_rows, request.user, changes=changes, include_payments=request.POST.get('include_payments') == '1')
+            except ValidationError as error:
+                if ajax:
+                    conflicts = getattr(error, 'ids', [])
+                    current = participant_rows(list(evento.inscricoes.select_related('usuario__profile', 'personagem').filter(pk__in=conflicts)))
+                    return JsonResponse({'ok': False, 'message': '; '.join(error.messages), 'conflicts': [
+                        {'id': row['registration'].pk, **row['form'].initial} for row in current]}, status=409)
+                messages.error(request, '; '.join(error.messages))
+            else:
+                if ajax:
+                    metrics = event_metrics(list(evento.inscricoes.all()))
+                    return JsonResponse({'ok': True, 'message': 'Alterações salvas.', 'rows': saved, 'metrics': metrics})
+                messages.success(request, 'XP e ouro dos participantes atualizados.')
+                return redirect('planilha_larp', slug=evento.slug)
+        if ajax:
+            return JsonResponse({'ok': False, 'message': 'Confira os valores indicados. Nenhuma alteração foi salva.',
+                'errors': {row['registration'].pk: {name: list(errors) for name, errors in row['form'].errors.items()} for row in balance_rows if row['form'].errors}}, status=422)
         messages.error(request, 'Confira os valores da planilha. Nenhum saldo foi alterado.')
 
-    return render(request, 'core/planilha_larp.html', {'evento': evento, 'balance_rows': balance_rows})
+    guilds = sorted({(item.personagem.guilda or 0, item.personagem.get_guilda_display() or 'Sem guilda') for item in inscricoes}, key=lambda item: item[1])
+    return render(request, 'core/planilha_larp.html', {'evento': evento, 'balance_rows': balance_rows,
+        'metrics': event_metrics(inscricoes), 'guild_filters': guilds, 'event_page': 'participants'})

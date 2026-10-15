@@ -23,6 +23,7 @@ CLASSES_WIKI = {
         "sabe_usar": "Armas corpo-a-corpo curtas e de arremesso.",
         "defesas": "Pode usar até 2 peças de armadura. Não sabe usar escudo.",
         "magia": "Escolha 3: Antídoto Mágico, Contramágica, Lentidão, Silenciar, Versos de Proteção, Vigor do Touro.",
+        "foco": "Instrumento musical tocado; instrumentos de sopro são proibidos. Pelo Dom de Bardo, pode usar canto no lugar do instrumento.",
         "item_inicial": "2 DO adicionais.",
         "habilidade_especial": "Truques de Bardo (habilidade de uso único, efeito mental).",
         "habilidade_detalhes": [
@@ -57,6 +58,7 @@ CLASSES_WIKI = {
         "sabe_usar": "Armas corpo-a-corpo curtas ou médias (não usa dual); cajado.",
         "defesas": "2 peças de armadura OU um escudo.",
         "magia": "Escolha 3: Barreira Mágica, Antídoto Mágico, Exorcismo, Lentidão, Toque da Cura ou Versos da Proteção.",
+        "foco": "Cajado, amuleto com símbolo da divindade ou livro sagrado.",
         "item_inicial": "1 água benta ou 1 antídoto e 1 semente dos deuses.",
         "habilidade_especial": "Milagres.",
         "habilidade_detalhes": [
@@ -75,6 +77,7 @@ CLASSES_WIKI = {
         "sabe_usar": "Armas corpo-a-corpo curtas, médias ou longas; manopla de garras; cajado.",
         "defesas": "Nenhuma.",
         "magia": "Antídoto Mágico, Comunhão com a Natureza e Toque da Cura (as três).",
+        "foco": "Cajado, cristais ou amuletos ligados à natureza. Pelo Dom de Druida, também mato, flores ou folhas; galhos duros são proibidos.",
         "item_inicial": "Duas sementes dos deuses ou dois antídotos ou uma semente e um antídoto.",
         "habilidade_especial": "Forma Selvagem (habilidade de uso único).",
         "habilidade_detalhes": [
@@ -126,6 +129,7 @@ CLASSES_WIKI = {
         "sabe_usar": "Adaga (mas não sabe usar dual); esferas de magia; cajado ou varinha.",
         "defesas": "Nenhuma.",
         "magia": "Escolha 4: Barreira Mágica, Bola de Fogo, Contramágica, Exorcismo, Lentidão, Raio Elétrico, Silenciar e Vigor do Touro.",
+        "foco": "Cajado, varinha ou grimório (livro de magia). Esferas são usadas conforme as regras de magia; não substituem a exigência do foco.",
         "item_inicial": "2 balões de bola de fogo ou um amuleto de proteção espiritual.",
         "habilidade_especial": "Feitiços de Magia Antiga (habilidade de uso único).",
         "habilidade_detalhes": [
@@ -143,6 +147,7 @@ CLASSES_WIKI = {
         "sabe_usar": "Armas corpo-a-corpo curtas, médias e longas.",
         "defesas": "Até 2 peças de armadura + um escudo.",
         "magia": "Toque da Cura e Exorcismo (as duas).",
+        "foco": "Amuleto com símbolo da divindade. Pelo Dom de Paladino, o símbolo na frente do escudo permite usá-lo como foco.",
         "item_inicial": "Duas sementes dos deuses ou uma água benta.",
         "habilidade_especial": "Proteção Divina (habilidade de uso único).",
         "habilidade_detalhes": [

@@ -160,6 +160,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       box.replaceChildren();const img=document.createElement('img');img.src=asset.source;img.alt='Foto de perfil';
       img.style.cssText=`width:100%;height:100%;object-fit:cover;object-position:${asset.x}% ${asset.y}%;transform:scale(${asset.zoom});transform-origin:${asset.x}% ${asset.y}%`;
       box.append(img);
+      scope.dispatchEvent(new Event('character-photo-change', {bubbles:true}));
     }});
   }));
   document.querySelectorAll('[data-remove-character-image]').forEach(button=>button.addEventListener('click',()=>{
@@ -171,5 +172,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     const initial=document.createElement('span');
     initial.textContent=(button.closest('form').querySelector('[name=nome]').value.trim()[0] || '?').toUpperCase();
     field.querySelector('[data-profile-image-preview]').replaceChildren(initial);
+    button.closest('form').dispatchEvent(new Event('character-photo-change', {bubbles:true}));
   }));
 });

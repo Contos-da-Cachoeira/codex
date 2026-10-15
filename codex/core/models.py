@@ -37,6 +37,7 @@ class Profile(models.Model):
 	telefone = models.CharField(max_length=30, blank=True)
 	cpf = models.CharField(max_length=14, blank=True)
 	fobia_gatilho = models.TextField(blank=True)
+	xp_disponivel = models.PositiveIntegerField(default=0, verbose_name='XP disponível do jogador')
 
 	def __str__(self):
 		return f'{self.user.username} ({self.get_role_display()})'
@@ -215,6 +216,7 @@ class LarpInscricao(models.Model):
 	usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='inscricoes_larp')
 	personagem = models.ForeignKey('personagens.Personagem', on_delete=models.PROTECT, related_name='inscricoes_larp')
 	taxa_paga = models.BooleanField(default=False)
+	presenca_confirmada = models.BooleanField(default=False)
 	nome_completo_jogador = models.CharField(max_length=180)
 	apelido_cla = models.CharField(max_length=120, blank=True)
 	telefone = models.CharField(max_length=30)

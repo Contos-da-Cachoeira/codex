@@ -23,7 +23,7 @@
             <p><strong>Status:</strong> {{ personagem.get_status_display }}</p>
             <p><strong>Classe:</strong> {{ personagem.get_classe_display|default:'Nao definida' }}</p>
             <p><strong>Guilda:</strong> {{ personagem.get_guilda_display|default:'Sem guilda' }}</p>
-            <p><strong>XP:</strong> {{ personagem.xp_atual }} | <strong>Ouro:</strong> {{ personagem.ouro }}</p>
+            <p><strong>XP:</strong> {{ personagem.xp_jogador }} | <strong>Ouro:</strong> {{ personagem.ouro }}</p>
           </div>
 
           <div class="card-actions justify-end mt-3">

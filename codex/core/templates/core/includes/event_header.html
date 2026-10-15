@@ -1,0 +1,18 @@
+<nav class="em-breadcrumbs" aria-label="Localização"><a href="{% url 'admin_dashboard' %}#larp_modal">Admin</a><span>/</span><a href="{% url 'listar_larps' %}">LARPs</a><span>/</span><span data-event-title>{{ evento.titulo }}</span></nav>
+<header class="em-header">
+  <div class="em-heading">
+    <div class="em-event-symbol" aria-hidden="true">{% include 'core/includes/event_icon.html' %}</div>
+    <div><p class="em-eyebrow">Gerenciamento de evento</p><h1 data-event-title>{{ evento.titulo }}</h1><p class="em-subtitle">Organize a sessão e acompanhe seus participantes.</p></div>
+  </div>
+  <a href="{% url 'admin_dashboard' %}?selected_larp={{ evento.pk }}#larp_modal" class="em-button em-button-quiet">{% include 'core/includes/event_icon.html' with kind='back' %}Painel de eventos</a>
+</header>
+<nav class="em-tabs" aria-label="Gerenciar este LARP">
+  <a href="{% url 'detalhe_larp' evento.slug %}"{% if event_page == 'overview' %} aria-current="page"{% endif %}>Visão geral</a>
+  <a href="{% url 'planilha_larp' evento.slug %}"{% if event_page == 'participants' %} aria-current="page"{% endif %}>Participantes <span data-event-metric="total">{{ metrics.total }}</span></a>
+</nav>
+<div class="em-stats" aria-label="Resumo das inscrições">
+  <div class="em-stat"><span class="em-stat-icon">{% include 'core/includes/event_icon.html' with kind='people' %}</span><div><span>Inscritos</span><strong data-event-metric="total">{{ metrics.total }}</strong></div><small>Total de participantes</small></div>
+  <div class="em-stat"><span class="em-stat-icon is-green">{% include 'core/includes/event_icon.html' with kind='coin' %}</span><div><span>Taxas pagas</span><strong data-event-metric="paid">{{ metrics.paid }}</strong></div><small>Pagamento confirmado</small></div>
+  <div class="em-stat"><span class="em-stat-icon is-amber">{% include 'core/includes/event_icon.html' with kind='clock' %}</span><div><span>Pagamentos pendentes</span><strong data-event-metric="pending">{{ metrics.pending }}</strong></div><small>Aguardando confirmação</small></div>
+  <div class="em-stat"><span class="em-stat-icon">{% include 'core/includes/event_icon.html' with kind='check' %}</span><div><span>Presenças</span><strong data-event-metric="present">{{ metrics.present }}</strong></div><small>Participações confirmadas</small></div>
+</div>

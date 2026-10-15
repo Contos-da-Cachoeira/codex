@@ -1,0 +1,20 @@
+{% extends 'core/event_management_base.html' %}
+{% block title %}Gerenciar {{ evento.titulo }} | Codex{% endblock %}
+{% block event_content %}
+<div class="em-overview">
+  <div class="em-overview-main">
+    <article class="em-card">{% include 'core/includes/event_summary.html' %}</article>
+    <details class="em-card em-edit-section" id="editar-evento"{% if request.GET.editar or event_form.errors %} open{% endif %}>
+      <summary><span>Editar informações do evento</span><span aria-hidden="true">＋</span></summary>
+      <div data-event-editor-host>{% include 'core/includes/event_editor.html' %}</div>
+    </details>
+  </div>
+  <aside class="em-overview-side">
+    <section class="em-card em-card-body"><p class="em-eyebrow">Próximo passo</p><h2>Prepare sua sessão</h2><p class="em-muted">Confirme pagamentos e presenças e atualize os saldos dos participantes em um só lugar.</p><a class="em-button em-button-primary" href="{% url 'planilha_larp' evento.slug %}">Gerenciar participantes{% include 'core/includes/event_icon.html' with kind='arrow' %}</a><a class="em-button em-button-secondary" href="?editar=1#editar-evento" data-open-event-edit>Editar evento</a></section>
+    <section class="em-card em-card-body"><div class="em-section-heading"><h2>Preparação do LARP</h2><span class="em-badge">{{ metrics.total }} inscritos</span></div><div class="em-progress-heading"><span>Pagamentos confirmados</span><strong>{{ metrics.paid_percent }}%</strong></div><progress class="em-progress" max="100" value="{{ metrics.paid_percent }}" aria-label="Pagamentos confirmados"></progress><p class="em-muted">{{ metrics.pending }} pagamento{{ metrics.pending|pluralize:'s' }} pendente{{ metrics.pending|pluralize:'s' }}.</p>{% if metrics.alerts %}<div class="em-care-note"><strong>{{ metrics.alerts }} participante{{ metrics.alerts|pluralize:'s' }} com cuidados informados</strong><p>Consulte os detalhes do inscrito na tela de participantes.</p></div>{% endif %}</section>
+    <section class="em-card em-card-body"><h2>Convide os jogadores</h2><p class="em-muted">Compartilhe o link direto para a inscrição.</p><label class="em-sr-only" for="event-signup-link">Link de inscrição</label><input id="event-signup-link" class="em-copy-input" value="{{ signup_url }}" readonly><button class="em-button em-button-secondary" type="button" data-event-copy="{{ signup_url }}">{% include 'core/includes/event_icon.html' with kind='link' %}Copiar link de inscrição</button></section>
+    <section class="em-danger"><h2>Excluir evento</h2><p>Remove o evento e suas inscrições. Os jogadores e personagens são mantidos.</p><button class="em-button em-button-danger" type="button" data-event-delete>Excluir evento</button></section>
+  </aside>
+</div>
+<dialog id="delete-event-dialog" class="em-dialog" aria-labelledby="delete-event-title"><div class="em-dialog-body"><h2 id="delete-event-title">Excluir evento?</h2><p>O evento <strong>{{ evento.titulo }}</strong> e suas {{ total_inscricoes }} inscrições serão excluídos permanentemente, incluindo os registros de pagamento.</p><form method="post" action="{% url 'detalhe_larp' evento.slug %}">{% csrf_token %}<input type="hidden" name="action" value="delete_event"><div class="em-editor-actions"><button type="button" class="em-button em-button-secondary" data-close-event-dialog autofocus>Cancelar</button><button type="submit" class="em-button em-button-danger">Excluir definitivamente</button></div></form></div></dialog>
+{% endblock %}

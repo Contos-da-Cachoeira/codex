@@ -5,20 +5,25 @@
   </header>
   <div class="admin-records-body" data-record-edit-fields hidden>
     <h4>Editar personagem</h4>
+    <p>A classe e as magias iniciais são permanentes. O XP pertence ao jogador e é compartilhado entre seus personagens.</p>
+    <p><a class="btn btn-outline btn-sm" href="{% url 'editar_personagem' record.character.slug %}">Revisar ficha completa</a> <a class="btn btn-outline btn-sm" href="{% url 'talentos_personagem' record.character.slug %}">Talentos e compras</a></p>
+    {% if record.character.revisao_manual %}<p>Ficha antiga: revise as escolhas conforme o manual antes de aprovar.</p>{% endif %}
     <form method="post" action="{{ record.save_url }}" class="admin-records-form">
       {% csrf_token %}{% include 'dashboard/includes/record_return_filters.html' %}<input type="hidden" name="action" value="bulk_update_personagens"><input type="hidden" name="personagem_ids" value="{{ record.id }}">
+      <input type="hidden" name="xp_anterior_{{ record.id }}" value="{{ record.xp_atual }}">
       <div class="admin-records-form-grid">
         <label for="record-status-{{ record.id }}">Status<select id="record-status-{{ record.id }}" name="status_{{ record.id }}" class="select select-bordered">{% for value, label in character_status_options %}{% if value != 'ALL' %}<option value="{{ value }}"{% if record.status|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endif %}{% endfor %}</select></label>
         <label for="record-approval-{{ record.id }}">Aprovação<select id="record-approval-{{ record.id }}" name="status_aprovacao_{{ record.id }}" class="select select-bordered">{% for value, label in character_approval_options %}{% if value != 'ALL' %}<option value="{{ value }}"{% if record.status_aprovacao|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endif %}{% endfor %}</select></label>
-        <label for="record-class-{{ record.id }}">Classe<select id="record-class-{{ record.id }}" name="classe_{{ record.id }}" class="select select-bordered"><option value="">Sem classe</option>{% for value, label in character_class_options %}<option value="{{ value }}"{% if record.classe|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+        <label for="record-class-{{ record.id }}">Classe<select id="record-class-{{ record.id }}" name="classe_{{ record.id }}" class="select select-bordered" disabled><option value="">Sem classe</option>{% for value, label in character_class_options %}<option value="{{ value }}"{% if record.classe|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
         <label for="record-guild-{{ record.id }}">Guilda<select id="record-guild-{{ record.id }}" name="guilda_{{ record.id }}" class="select select-bordered"><option value="">Sem guilda</option>{% for value, label in character_guild_options %}<option value="{{ value }}"{% if record.guilda|stringformat:'s' == value|stringformat:'s' %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
-        <label for="record-xp-{{ record.id }}">XP<input id="record-xp-{{ record.id }}" class="input input-bordered" type="number" min="0" name="xp_atual_{{ record.id }}" value="{{ record.xp_atual }}"></label>
-        <label for="record-gold-{{ record.id }}">Ouro<input id="record-gold-{{ record.id }}" class="input input-bordered" type="number" min="0" name="ouro_{{ record.id }}" value="{{ record.ouro }}"></label>
+        <label for="record-xp-{{ record.id }}">XP do jogador<input id="record-xp-{{ record.id }}" class="input input-bordered" type="number" min="0" max="2147483647" name="xp_atual_{{ record.id }}" value="{{ record.xp_atual }}"></label>
+        {% load l10n %}<label for="record-gold-{{ record.id }}">Ouro (DO)<input id="record-gold-{{ record.id }}" class="input input-bordered" type="number" min="0" step="0.5" name="ouro_{{ record.id }}" value="{{ record.ouro|unlocalize }}"><small>0,5 DO = 1 DP</small></label>
       </div>
       <div class="admin-records-form-actions"><button class="btn btn-primary btn-sm" type="submit">Salvar personagem</button><button class="btn btn-ghost btn-sm" type="button" data-record-cancel>Cancelar</button></div>
     </form>
   </div>
   <div class="admin-records-body" data-record-read-fields>
+    <p><a class="btn btn-outline btn-sm" href="{% url 'talentos_personagem' record.character.slug %}">Talentos e compras</a></p>
     <dl class="admin-records-facts"><div><dt>Jogador</dt><dd>{{ record.usuario }}</dd></div><div><dt>Status</dt><dd>{{ record.status_display }}</dd></div><div><dt>XP</dt><dd>{{ record.xp_atual }}</dd></div><div><dt>Ouro</dt><dd>{{ record.ouro }}</dd></div><div><dt>Criado em</dt><dd>{{ record.character.data_criacao|date:'d/m/Y H:i' }}</dd></div><div><dt>Atualizado em</dt><dd>{{ record.character.data_atualizacao|date:'d/m/Y H:i' }}</dd></div></dl>
     <section class="admin-records-section"><h4>História</h4><p>{{ record.character.historia|default:'Não informada.' }}</p></section>
     <section class="admin-records-section"><h4>Aparência</h4><p>{{ record.character.aparencia|default:'Não informada.' }}</p></section>

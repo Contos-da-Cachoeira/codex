@@ -3,7 +3,7 @@ from django.db import models
 
 class WikiEntry(models.Model):
     CATEGORIES = [('regras', 'Regras'), ('classes', 'Classes'), ('talentos', 'Talentos'),
-                  ('magias', 'Magias'), ('itens', 'Itens'), ('magia_geral', 'Regras gerais de magia')]
+                  ('magias', 'Magias'), ('itens', 'Itens'), ('magia_geral', 'Regras gerais de magia'), ('cenario', 'Cenário')]
     category = models.CharField('Seção', max_length=20, choices=CATEGORIES)
     slug = models.SlugField(max_length=160)
     name = models.CharField('Nome', max_length=200)
@@ -24,3 +24,15 @@ class WikiEntry(models.Model):
         if self.image:
             content['image_url'] = self.image.url
         return content
+
+    def save(self, *args, **kwargs):
+        result = super().save(*args, **kwargs)
+        from .catalog_cache import invalidate_catalog
+        invalidate_catalog()
+        return result
+
+    def delete(self, *args, **kwargs):
+        result = super().delete(*args, **kwargs)
+        from .catalog_cache import invalidate_catalog
+        invalidate_catalog()
+        return result

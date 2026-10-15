@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+{% block title %}Talentos de {{ personagem.nome }} | Codex{% endblock %}
+{% block content %}
+<section class="max-w-5xl mx-auto space-y-6">
+  <header class="flex flex-wrap items-center justify-between gap-3">
+    <div><h1 class="text-3xl font-bold">Talentos de {{ personagem.nome }}</h1><p>Saldo do jogador: <strong>{{ personagem.xp_jogador }} XP</strong>, compartilhado entre todos os seus personagens.</p></div>
+    <a href="{% url 'detalhe_personagem' personagem.slug %}" class="btn btn-outline">Voltar à ficha</a>
+  </header>
+  {% if personagem.revisao_manual %}<p class="alert">Esta ficha antiga precisa ser revisada pela comissão conforme o manual antes de novas compras.</p>{% endif %}
+  <section class="card bg-base-100 border border-base-300"><div class="card-body">
+    <h2 class="card-title">Compras e talentos ativos</h2>
+    <p>Escolha até cinco compras para usar. <strong>Duas compras de Armadura adicional ocupam duas vagas.</strong> Desativar uma compra preserva sua aquisição, sem devolver XP. Os pré-requisitos também precisam estar ativos.</p>
+    <p>Usar cajado é incompatível com usar escudo. Multiclasse concede habilidade, dons e focos (exceto cajado); não concede armas nem a lista inteira de magias.</p>
+    <form method="post" class="space-y-3">
+      {% csrf_token %}<input type="hidden" name="action" value="activate">
+      {% for purchase in purchases %}{% if purchase.status == 'approved' %}
+        <label class="flex items-center gap-3 border border-base-300 rounded-lg p-3"><input type="checkbox" name="active" value="{{ purchase.pk }}" {% if purchase.ativo %}checked{% endif %} class="checkbox"><span><strong>{{ purchase.nome }}</strong> — {{ purchase.custo_xp }} XP pagos{% if purchase.magia %} · {{ purchase.magia }}{% endif %}{% if purchase.segunda_classe %} · {{ purchase.get_segunda_classe_display }}{% endif %}{% if purchase.foco %} · Foco: {{ purchase.foco }}{% endif %}<br>{{ purchase.detalhes }}</span></label>
+      {% endif %}{% empty %}<p>Nenhuma compra registrada.</p>{% endfor %}
+      <button class="btn btn-primary" type="submit">Salvar talentos ativos</button>
+    </form>
+    {% for review in choice_reviews %}
+    <form method="post" class="border border-base-300 rounded-lg p-4 space-y-3">
+      {% csrf_token %}<input type="hidden" name="action" value="complete_choices"><input type="hidden" name="purchase" value="{{ review.purchase.pk }}">
+      <h3 class="font-bold">Completar escolhas antigas: {{ review.purchase.get_segunda_classe_display }}</h3><p>Esta compra já foi paga. A comissão precisa registrar as escolhas que faltam; não haverá nova cobrança de XP.</p>
+      {{ review.form.as_p }}<button type="submit" class="btn btn-primary btn-sm">Confirmar escolhas da comissão</button>
+    </form>
+    {% endfor %}
+    {% if personagem.talentos_iniciais %}<details><summary>Anotações antigas para revisão</summary><p>Sem registro de pagamento. Não são compras confirmadas nem contam como benefícios ativos.</p><ul>{% for item in personagem.talentos_iniciais %}<li>{{ item }}</li>{% endfor %}</ul></details>{% endif %}
+  </div></section>
+  <section class="card bg-base-100 border border-base-300"><div class="card-body">
+    <h2 class="card-title">Solicitar uma compra</h2>
+    <p>Informe a evolução do personagem. A comissão verifica a história e as condições da compra; o custo é debitado após aprovação. A compra fica vinculada a este personagem.</p>
+    <details><summary>Consultar custos e requisitos</summary>{% for key, item in catalog.items %}<p class="my-3"><strong>{{ item.nome }} — {{ item.custo_xp }} XP</strong><br>{{ item.descricao }} {% if item.requisito %}{{ item.requisito }}.{% endif %} {% if item.restricao %}{{ item.restricao }}.{% endif %}{% if item.stackavel %} Pode ser comprado várias vezes.{% endif %}</p>{% endfor %}</details>
+    <form method="post" class="space-y-4" id="talent-request">
+      {% csrf_token %}<input type="hidden" name="action" value="request">
+      {{ form.non_field_errors }}
+      {% for field in form %}<div data-talent-field="{{ field.name }}"><label for="{{ field.id_for_label }}" class="block font-semibold">{{ field.label }}</label>{{ field }}{% if field.help_text %}<p class="text-sm opacity-70">{{ field.help_text }}</p>{% endif %}{{ field.errors }}</div>{% endfor %}
+      <p class="text-sm">Forma selvagem: descreva a afinidade; a comissão define três características e um defeito. Multiclasse: indique ao menos duas compras anteriores relacionadas e explique a evolução nas sessões.</p>
+      <button class="btn btn-primary" type="submit">Enviar para a comissão</button>
+    </form>
+  </div></section>
+  <section class="card bg-base-100 border border-base-300"><div class="card-body">
+    <h2 class="card-title">Solicitações</h2>
+    {% for purchase in purchases %}{% if purchase.status != 'approved' %}
+      <article class="border border-base-300 rounded-lg p-4 space-y-2">
+        <h3 class="font-bold">{{ purchase.nome }} · {{ purchase.custo_xp }} XP · {{ purchase.get_status_display }}</h3>
+        <p>{{ purchase.justificativa }}</p><p>{{ purchase.magia }} {{ purchase.get_segunda_classe_display|default:'' }} {{ purchase.foco }}</p><p class="whitespace-pre-line">{{ purchase.detalhes }}</p>
+        {% if purchase.talentos_relacionados %}<p>Compras anteriores relacionadas (IDs): {{ purchase.talentos_relacionados|join:', ' }}</p>{% endif %}
+        {% if is_admin and purchase.status == 'pending' %}
+          <form method="post" class="space-y-2">{% csrf_token %}<input type="hidden" name="purchase" value="{{ purchase.pk }}">
+            <p>Ao aprovar, confirme a justificativa, as autorizações do mestre e, para Multiclasse, a relação das compras anteriores com a jornada interpretada.</p>
+            {% if purchase.talento == 'FORMA_SELVAGEM' %}<label>Definição da comissão (três características e um defeito)<textarea name="commission_details" class="textarea textarea-bordered" required>{{ purchase.detalhes }}</textarea></label>{% endif %}
+            {% if purchase.talento == 'MULTICLASSE' and purchase.segunda_classe == 5 %}<label>Forma da segunda classe Druida: três características e um defeito<textarea name="commission_details" class="textarea textarea-bordered" required>{{ purchase.escolhas_classe.forma_selvagem }}</textarea></label>{% endif %}
+            {% if purchase.talento == 'BENEFICIOS_DE_PATENTE' %}<label>Vantagens e desvantagens da patente concedida<textarea name="commission_details" class="textarea textarea-bordered" required>{{ purchase.detalhes }}</textarea></label>{% endif %}
+            <button type="submit" name="action" value="approve" class="btn btn-primary">Aprovar e descontar XP</button><button type="submit" name="action" value="reject" formnovalidate class="btn btn-outline">Recusar</button>
+          </form>
+        {% endif %}
+      </article>
+    {% endif %}{% endfor %}
+  </div></section>
+</section>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('#talent-request'), select = form.querySelector('[name=talento]');
+  const secondClass = form.querySelector('[name=segunda_classe]');
+  const conditional = {magia:['MAGIA_EXTRA_CLASSE','MAGIA_OUTRA_CLASSE','CONJURAR','FEITICO_ANTIGO','MULTICLASSE'], segunda_classe:['MULTICLASSE'], tipo_foco:['CONJURAR'], foco:['CONJURAR'], divindade:['MULTICLASSE'], afinidade:['MULTICLASSE'], detalhes:['MULTICLASSE','FORMA_SELVAGEM'], talentos_relacionados:['MULTICLASSE']};
+  const update = () => Object.entries(conditional).forEach(([name, talents]) => {
+    const box = form.querySelector(`[data-talent-field="${name}"]`);
+    let visible = talents.includes(select.value);
+    if (select.value === 'MULTICLASSE' && name === 'magia') visible = secondClass.value === '8';
+    if (name === 'divindade') visible = visible && ['4','9'].includes(secondClass.value);
+    if (name === 'afinidade') visible = visible && secondClass.value === '5';
+    box.hidden = !visible; box.querySelectorAll('input,select,textarea').forEach(input => input.disabled = !visible);
+  });
+  select.addEventListener('change', update); secondClass.addEventListener('change', update); update();
+});
+</script>
+{% endblock %}

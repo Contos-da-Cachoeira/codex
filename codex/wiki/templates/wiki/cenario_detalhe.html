@@ -1,0 +1,8 @@
+{% extends 'wiki/base.html' %}
+{% block title %}{{ entry.nome }} · Cenário{% endblock %}
+{% block wiki_content %}
+<nav class="breadcrumbs text-sm mb-6"><ul><li><a href="{% url 'wiki_home' %}">Wiki</a></li><li><a href="{% url 'wiki_cenario_lista' %}">Cenário</a></li><li>{{ entry.nome }}</li></ul></nav>
+<article class="card bg-base-100 border border-base-300"><div class="card-body gap-6"><header><h1 class="text-3xl font-black">{{ entry.nome }}</h1><p class="mt-2 opacity-70">{{ entry.resumo }}</p></header>
+{% for section in entry.secoes %}<section><h2 class="text-xl font-bold">{{ section.titulo }}</h2><ul class="list-disc pl-6 space-y-2 mt-3">{% for item in section.itens %}<li>{{ item }}</li>{% endfor %}</ul></section>{% endfor %}
+<a class="btn btn-outline btn-sm" href="{% url 'wiki_cenario_lista' %}">Voltar ao cenário</a></div></article>
+{% endblock %}

@@ -34,6 +34,7 @@
           <h2 class="font-bold">Magia</h2>
           <p class="mt-1 text-base-content/80">{{ classe.magia }}</p>
         </div>
+        {% if classe.foco %}<div class="rounded-xl border border-base-300 p-4 bg-base-200/50"><h2 class="font-bold">Focos de magia</h2><p class="mt-1 text-base-content/80">{{ classe.foco }}</p></div>{% endif %}
         <div class="rounded-xl border border-base-300 p-4 bg-base-200/50">
           <h2 class="font-bold">Item inicial</h2>
           <p class="mt-1 text-base-content/80">{{ classe.item_inicial }}</p>

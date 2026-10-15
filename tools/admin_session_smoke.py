@@ -25,7 +25,7 @@ class AdminSessionSmoke(StaticLiveServerTestCase):
         self.admin = User.objects.create_user('admin-test', is_staff=True)
         self.player = User.objects.create_user('ana-test')
         self.other = User.objects.create_user('bruno-test')
-        Profile.objects.update_or_create(user=self.player, defaults={'nome_completo_jogador': 'Ana — teste'})
+        Profile.objects.update_or_create(user=self.player, defaults={'nome_completo_jogador': 'Ana — teste', 'xp_disponivel': 10})
         self.character = Personagem.objects.create(usuario=self.player, nome='Personagem em teste', classe=1, guilda=1, xp_atual=10)
         self.other_character = Personagem.objects.create(usuario=self.other, nome='Segundo personagem', classe=2)
         self.event = LarpEvento.objects.create(titulo='Evento em teste', local='Local de teste', historia='História de teste',
@@ -183,7 +183,7 @@ class AdminSessionSmoke(StaticLiveServerTestCase):
         self.character.refresh_from_db()
         self.player.refresh_from_db()
         self.event.refresh_from_db()
-        self.assertEqual(self.character.xp_atual, 125)
+        self.assertEqual(self.character.xp_jogador, 125)
         self.assertTrue(self.player.is_staff)
         self.assertEqual(self.event.titulo, 'Evento atualizado')
         self.assertEqual(LarpEvento.objects.filter(titulo='Evento novo sem recarga').count(), 1)

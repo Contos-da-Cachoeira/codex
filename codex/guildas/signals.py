@@ -8,7 +8,7 @@ from guildas.models import Guilda, GuildaMembro
 
 def _recalcular_guilda(guilda_id):
     """Recalcula contadores e tabela de membros a partir dos personagens aprovados e ativos."""
-    if guilda_id is None:
+    if guilda_id is None or guilda_id == 7:
         return
 
     try:

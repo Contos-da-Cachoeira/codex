@@ -87,5 +87,6 @@ class AccountPersonalDataForm(forms.ModelForm):
         profile.fobia_gatilho = (self.cleaned_data.get('fobia_gatilho') or '').strip()
 
         if commit:
-            profile.save()
+            profile.save(update_fields=['image_asset', 'data_nascimento', 'avatar', 'nome_completo_jogador',
+                                        'apelido_cla', 'telefone', 'cpf', 'fobia_gatilho'])
         return user

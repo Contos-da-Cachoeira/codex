@@ -15,7 +15,7 @@ class CharacterPhotoTests(TestCase):
         cls.other = User.objects.create_user('other')
         cls.image = ImageAsset.objects.create(owner=cls.owner, url='https://example.com/portrait.png')
         cls.foreign_image = ImageAsset.objects.create(owner=cls.other, url='https://example.com/other.png')
-        cls.character = Personagem.objects.create(usuario=cls.owner, nome='Aria', image_asset=cls.image)
+        cls.character = Personagem.objects.create(usuario=cls.owner, nome='Aria', image_asset=cls.image, portrait_mode='photo')
 
     def create_form(self, image):
         return PersonagemCreateForm({

@@ -5,17 +5,18 @@ from .models import WikiEntry
 
 FIELDS = {
     'regras': 'categoria resumo ordem secoes',
-    'classes': 'tipo descricao sabe_usar defesas magia item_inicial habilidade_especial habilidade_detalhes extra',
+    'classes': 'tipo descricao sabe_usar defesas magia foco item_inicial habilidade_especial habilidade_detalhes extra',
     'talentos': 'descricao custo_xp stackavel requisito restricao extra',
     'magias': 'tipo quem_usa invocacao descricao extra',
     'itens': 'tipo descricao valor raridade alquimico',
     'magia_geral': 'itens',
+    'cenario': 'categoria resumo ordem secoes',
 }
 LABELS = {'descricao': 'Descrição', 'sabe_usar': 'Sabe usar', 'item_inicial': 'Item inicial',
           'habilidade_especial': 'Habilidade especial', 'habilidade_detalhes': 'Detalhes da habilidade',
           'custo_xp': 'Custo em XP', 'stackavel': 'Pode acumular', 'restricao': 'Restrição',
           'quem_usa': 'Quem usa', 'invocacao': 'Invocação', 'alquimico': 'Alquímico',
-          'secoes': 'Seções', 'itens': 'Regras'}
+          'secoes': 'Seções', 'itens': 'Regras', 'foco': 'Focos de magia'}
 LISTS = {'habilidade_detalhes', 'quem_usa', 'itens'}
 
 
@@ -29,6 +30,8 @@ class WikiEntryForm(forms.ModelForm):
     def __init__(self, *args, category, **kwargs):
         super().__init__(*args, **kwargs)
         self.instance.category = category
+        if category == 'classes':
+            self.fields['name'].help_text = 'As nove classes jogáveis seguem o Manual 3.3. Novas entradas nesta seção são referências; não criam uma nova classe mecânica.'
         for key in FIELDS[category].split():
             value = self.instance.data.get(key, '')
             options = {'label': LABELS.get(key, key.replace('_', ' ').capitalize()), 'required': False}
@@ -46,6 +49,11 @@ class WikiEntryForm(forms.ModelForm):
                     field.help_text = 'Em cada bloco: título na primeira linha e tópicos nas próximas. Separe os blocos com uma linha vazia.'
             field.initial = value
             self.fields[key] = field
+        if category == 'talentos':
+            self.fields['custo_xp'].help_text = 'Valor aplicado às novas solicitações. Compras e solicitações já registradas mantêm o preço informado na aquisição.'
+            self.fields['stackavel'].help_text = 'Permite novas compras repetidas. Aquisições anteriores são preservadas.'
+        if category == 'magias':
+            self.fields['quem_usa'].help_text = 'Um nome por linha: Bardo, Clérigo, Druida, Mago ou Paladino. Esta lista também define as escolhas na ficha.'
         for field in self.fields.values():
             if isinstance(field.widget, forms.CheckboxInput):
                 css = 'checkbox'
@@ -79,6 +87,19 @@ class WikiEntryForm(forms.ModelForm):
                 value = value or 0
             data[key] = value
         self.instance.data = data
+        if self.instance.category == 'magias':
+            allowed = {'Bardo', 'Clérigo', 'Druida', 'Mago', 'Paladino'}
+            if set(data['quem_usa']) - allowed:
+                self.add_error('quem_usa', 'Use os nomes das classes conjuradoras: Bardo, Clérigo, Druida, Mago ou Paladino.')
+            # O nome é a identidade utilizada nas fichas existentes; nunca renomear silenciosamente uma magia aprendida.
+            if self.instance.pk:
+                previous = WikiEntry.objects.get(pk=self.instance.pk)
+                if previous.name != cleaned.get('name'):
+                    from personagens.models import Personagem, CompraTalento
+                    used = CompraTalento.objects.filter(magia=previous.name).exists() or any(
+                        previous.name in names for names in Personagem.objects.values_list('magias_pretendidas', flat=True))
+                    if used:
+                        self.add_error('name', 'Esta magia consta em fichas ou compras. Preserve o nome; edite a descrição ou crie outra magia.')
         return cleaned
 
     def save(self, commit=True):
