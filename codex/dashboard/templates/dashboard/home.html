@@ -20,6 +20,8 @@
     .codex-home-section-heading p:first-child { color: var(--codex-accent-hover); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; }
     .codex-home-section-heading h2 { margin-top: 0.5rem; color: var(--codex-text); font-size: clamp(1.7rem, 3vw, 2.5rem); font-weight: 600; letter-spacing: -0.04em; }
     .codex-home-section-heading p:last-child { margin-top: 0.65rem; color: var(--codex-muted); line-height: 1.65; }
+    .codex-home-community { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: center; }
+    .codex-home-community .codex-home-section-heading { margin-bottom: 0; }
     .codex-home-feature-grid, .codex-home-guild-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
     .codex-home-feature, .codex-home-guild { min-height: 11rem; padding: 1.25rem; border: 1px solid var(--codex-border-soft); border-radius: 0.7rem; background: var(--codex-surface); transition: border-color 140ms ease, background-color 140ms ease; }
     .codex-home-feature:hover, .codex-home-guild:hover, .codex-home-feature:focus-visible, .codex-home-guild:focus-visible { border-color: var(--codex-border); background: var(--codex-elevated); }
@@ -30,9 +32,9 @@
     .codex-home-guild-image { display: flex; height: 8rem; align-items: center; justify-content: center; margin: -1.25rem -1.25rem 0; padding: 1rem; border-bottom: 1px solid var(--codex-border-soft); background: var(--codex-elevated); }
     .codex-home-guild-image img { width: 100%; height: 100%; object-fit: contain; filter: grayscale(0.25); }
     .codex-home-guild h3 { margin-top: 1rem; }
-    @media (max-width: 900px) { .codex-home-hero, .codex-home-feature-grid, .codex-home-guild-grid { grid-template-columns: 1fr; } .codex-home-hero { gap: 2rem; } }
+    @media (max-width: 900px) { .codex-home-hero, .codex-home-feature-grid, .codex-home-guild-grid, .codex-home-community { grid-template-columns: 1fr; } .codex-home-hero { gap: 2rem; } }
   </style>
-  <link rel="stylesheet" href="{% static 'core/css/guildas-showcase.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/guild-heraldry.css' %}?v=guild-heraldry-1">
   <link rel="stylesheet" href="{% static 'core/css/home-components.css' %}">
 {% endblock head_extra %}
 

@@ -130,64 +130,6 @@
     text-decoration: none;
 }
 .guild-index-explore span { font-size: 1.25rem; }
-.guild-index-heraldry {
-    position: relative;
-    display: grid;
-    min-height: 25rem;
-    align-content: center;
-    justify-items: center;
-    padding: 2rem .75rem;
-    background: radial-gradient(ellipse at center, rgb(227 197 142 / .05), transparent 65%);
-}
-.guild-index-heraldry::before,
-.guild-index-heraldry::after {
-    content: "";
-    position: absolute;
-    inset: 8% 14%;
-    z-index: -1;
-    border: 1px solid rgb(227 197 142 / .1);
-    border-radius: 50%;
-    pointer-events: none;
-}
-.guild-index-heraldry::after { inset: 1% 22%; transform: rotate(38deg); }
-.guild-index-caption {
-    margin: 0 0 1.4rem;
-    color: var(--gi-muted);
-    font-size: .65rem;
-    font-weight: 600;
-    letter-spacing: .13em;
-    text-align: center;
-    text-transform: uppercase;
-}
-.guild-index-seals {
-    display: flex;
-    max-width: 30rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: .5rem .65rem;
-}
-.guild-index-seal {
-    display: flex;
-    width: clamp(5rem, 6.2vw, 7rem);
-    height: clamp(5rem, 6.2vw, 7rem);
-    align-items: center;
-    justify-content: center;
-    border: 1px solid transparent;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgb(var(--gi-rgb) / .09), transparent 72%);
-    transition: border-color 180ms ease, transform 180ms ease;
-}
-.guild-index-seal img { width: 84%; height: 84%; object-fit: contain; }
-.guild-index-seal:hover { border-color: rgb(var(--gi-rgb) / .5); transform: translateY(-4px); }
-.guild-index-heraldry-note {
-    margin: 1.4rem 0 0;
-    color: var(--gi-muted);
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 1rem;
-    font-style: italic;
-    line-height: 1.55;
-    text-align: center;
-}
 .guild-index-section-heading {
     display: flex;
     align-items: end;
@@ -299,16 +241,11 @@
 @media (max-width: 1170px) {
     .guild-index-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .guild-index-hero { gap: 2rem; }
-    .guild-index-seal { width: 5.2rem; height: 5.2rem; }
     .guild-index-card-art { height: 19rem; }
 }
 @media (max-width: 760px) {
     .guild-index-hero { grid-template-columns: 1fr; gap: 1.5rem; padding-top: 1.2rem; padding-bottom: 2rem; }
     .guild-index-intro h1 { font-size: clamp(3.25rem, 9.5vw, 5rem); }
-    .guild-index-heraldry { min-height: 0; padding: 1.5rem .5rem; }
-    .guild-index-seals { max-width: 27rem; gap: .35rem; }
-    .guild-index-seal { width: clamp(3.75rem, 15vw, 5rem); height: clamp(3.75rem, 15vw, 5rem); }
-    .guild-index-heraldry-note { display: none; }
     .guild-index-section-heading { align-items: start; padding-top: 2rem; }
     .guild-index-section-heading > p { display: none; }
     .guild-index-grid { gap: 1rem; }

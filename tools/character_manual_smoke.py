@@ -8,6 +8,7 @@ from tempfile import TemporaryDirectory
 ROOT = Path(__file__).resolve().parent.parent / 'codex'
 sys.path.insert(0, str(ROOT))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'wiki.test_settings'
+os.environ['AUTO_SSH_DB_TUNNEL'] = '0'
 import django
 django.setup()
 from django.conf import settings
@@ -66,9 +67,13 @@ class CreationSmoke(StaticLiveServerTestCase):
                 expect(detail.get_by_text(info['vantagem'],exact=True)).to_be_visible()
                 expect(detail.get_by_text(info.get('marca_efeito') or info['desvantagem'],exact=True)).to_be_visible()
             choose_guild(3)
+            expect(page.locator('.guild-heraldry--select')).to_be_visible()
+            expect(page.locator('[data-character-guild-prev], [data-character-guild-next]')).to_have_count(0)
             page.screenshot(path=str(output/'codex-creation-guild-desktop.png'),full_page=True,animations='disabled')
             page.set_viewport_size({'width':390,'height':844})
-            page.wait_for_function("() => { const track = document.querySelector('[data-character-guild-track]').getBoundingClientRect(); const card = document.querySelector('.character-guild-card.is-selected').getBoundingClientRect(); return card.left >= track.left - 1 && card.right <= track.right + 1; }")
+            self.assertTrue(page.locator('[data-character-guild-track]').evaluate(
+                'track => track.scrollWidth <= track.clientWidth + 1 && track.scrollLeft === 0'))
+            page.wait_for_function("() => { const track = document.querySelector('[data-character-guild-track]').getBoundingClientRect(); return [...document.querySelectorAll('.character-guild-card')].every(card => { const bounds = card.getBoundingClientRect(); return bounds.left >= track.left - 1 && bounds.right <= track.right + 1; }); }")
             choose_guild(2)
             expect(detail.locator('h3')).to_have_text(GUILDAS['CIRCULO_DO_FOGO']['nome'])
             choose_guild(3)

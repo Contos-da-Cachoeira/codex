@@ -19,7 +19,7 @@
   {% endif %}
 </section>
 {% else %}
-<section class="codex-home-section">
+<section class="codex-home-section{% if component.kind == 'community' %} codex-home-community{% endif %}">
   {% if component.kind == 'banner' %}
     {% if component.image_asset %}<div class="rounded-xl overflow-hidden mb-5">{% include 'core/includes/image_asset.html' with asset=component.image_asset %}</div>
     {% elif component.image_url %}<img src="{{ component.image_url }}" alt="" class="w-full max-h-96 object-cover rounded-xl mb-5">{% endif %}
@@ -30,7 +30,7 @@
     {% if component.content %}<p class="whitespace-pre-line">{{ component.content }}</p>{% endif %}
   </div>
   {% if component.kind == 'community' %}
-    {% include 'core/includes/guildas_showcase.html' %}
+    {% include 'core/includes/guild_heraldry.html' with items=guildas_showcase %}
   {% elif component.kind == 'event' %}
     {% if next_event %}
       <div class="home-event">

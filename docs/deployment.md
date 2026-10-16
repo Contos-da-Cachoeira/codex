@@ -1,5 +1,11 @@
 # Publicação do site
 
+## Brasões na home e na criação de personagens — 16/10/2026
+
+A home e a etapa de guilda em `/personagens/novo/` usam a mesma composição de sete brasões com círculos ovais do índice de guildas. Na home, os símbolos abrem as páginas correspondentes; na criação, são escolhas com nome, foco de teclado e destaque na cor de cada guilda. Os brasões ficam visíveis em uma grade, sem carrossel de guildas. No desktop, a home distribui texto e composição em duas colunas; no celular, os elementos se reorganizam sem rolagem horizontal.
+
+A seleção continua exibindo vantagem, marca/desvantagem e condição de saída da guilda escolhida, diretamente no navegador. Os valores enviados pelo formulário e a preservação das escolhas após erros de validação permanecem iguais. O seletor de classes mantém seu comportamento anterior. O componente compartilhado usa `guild-heraldry.css?v=guild-heraldry-1`.
+
 ## Identidades visuais das guildas — 16/10/2026
 
 O índice e os sete detalhes de `/guildas/` receberam composições amplas, paletas próprias, brasões coloridos, ornamentos em SVG/CSS, narrativas e referências dos PDFs. O desktop usa grade e colunas para aproveitar a largura; o celular mantém leitura em uma coluna. Mercenários são identificados como caminho sem guilda, e a área privada continua restrita a membros e administradores das seis guildas. Os detalhes herdam o favicon branco global.

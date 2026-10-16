@@ -6,6 +6,7 @@
 
 {% block head_extra %}
   <link rel="stylesheet" href="{% static 'core/css/guildas-showcase.css' %}">
+  <link rel="stylesheet" href="{% static 'core/css/guild-heraldry.css' %}?v=guild-heraldry-1">
   <style>
     .character-create-page { max-width: 70rem; }
     .character-create-hero { position: relative; overflow: hidden; border-color: var(--codex-border-soft) !important; background: var(--codex-surface); }
@@ -42,30 +43,18 @@
     .character-guild-benefit strong { display: block; font-size: .9rem; }
     .character-guild-benefit p { margin-top: .5rem; color: var(--codex-muted); font-size: .85rem; line-height: 1.75; }
     .character-choice-panel { padding: 1.2rem; border: 1px solid var(--codex-border-soft); border-radius: 0.7rem; background: var(--codex-elevated); }
-    .character-guild-carousel { position: relative; margin-top: 1rem; padding: 0 2.5rem; }
-    .character-guild-carousel .guildas-carousel-track { padding-bottom: .35rem; scroll-behavior: auto; }
     .character-class-carousel { position: relative; margin-top: 1rem; padding: 0 2.5rem; }
     .character-class-carousel .guildas-carousel-track { padding-bottom: .35rem; scroll-behavior: auto; }
-    .character-guild-card { position: relative; cursor: pointer; border-radius: 1rem; }
     .character-class-card { position: relative; cursor: pointer; }
-    .character-guild-card input[type="radio"] { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
     .character-class-card input[type="radio"] { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
-    .character-guild-card.is-selected, .character-guild-card:has(input[type="radio"]:checked) { border-color: var(--codex-accent); background: var(--codex-elevated); box-shadow: 0 0 0 2px rgb(58 131 247 / .24); }
     .character-class-card.is-selected, .character-class-card:has(input[type="radio"]:checked) { border-color: var(--codex-accent); background: var(--codex-elevated); box-shadow: 0 0 0 2px rgb(58 131 247 / .24); }
-    .character-guild-card.is-selected .guilda-showcase-footer h2, .character-guild-card:has(input[type="radio"]:checked) .guilda-showcase-footer strong { color: var(--codex-accent); }
     .character-class-card.is-selected .guilda-showcase-footer strong, .character-class-card:has(input[type="radio"]:checked) .guilda-showcase-footer strong { color: var(--codex-accent); }
-    .character-guild-card:focus-within { border-color: var(--codex-accent); outline: 2px solid rgb(58 131 247 / .3); outline-offset: 2px; }
     .character-class-card:focus-within { border-color: var(--codex-accent); outline: 2px solid rgb(58 131 247 / .3); outline-offset: 2px; }
-    .character-guild-card .guilda-showcase-image { height: 14rem; }
     .character-class-card .guilda-showcase-image { height: 14rem; background: #f0f0f0; }
-    .character-guild-card .guilda-showcase-footer { min-height: 4.8rem; }
     .character-class-card .guilda-showcase-footer { min-height: 4.8rem; }
-    .character-guild-card, .character-class-card { flex-basis: calc((100% - 4.6rem) / 5); }
-    .character-guild-card .guilda-showcase-footer strong { color: var(--codex-text); font-size: clamp(.72rem, 1vw, .9rem); font-weight: 800; line-height: 1.15; text-transform: uppercase; }
+    .character-class-card { flex-basis: calc((100% - 4.6rem) / 5); }
     .character-class-card .guilda-showcase-footer strong { color: var(--codex-text); font-size: clamp(.72rem, 1vw, .9rem); font-weight: 800; line-height: 1.15; text-transform: uppercase; }
-    .character-guild-card .guilda-showcase-footer > span { color: var(--codex-muted); }
     .character-class-card .guilda-showcase-footer > span { color: var(--codex-muted); }
-    .character-guild-carousel .guildas-carousel-button { width: 2.25rem; height: 2.25rem; }
     .character-class-carousel .guildas-carousel-button { width: 2.25rem; height: 2.25rem; }
     .character-native-select { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
     .character-action-row { margin-top: auto; padding-top: 1.25rem; border-top: 1px solid var(--codex-border-soft); }
@@ -100,14 +89,11 @@
       .character-question, .character-choice-panel { padding: .75rem; }
       .character-spell-grid, .character-guild-benefits { grid-template-columns: minmax(0, 1fr); }
       .character-special-field .input { font-size: 16px; }
-      .character-guild-carousel, .character-class-carousel { min-width: 0; padding: 0 2.5rem; }
-      .character-guild-carousel .guildas-carousel-track,
+      .character-class-carousel { min-width: 0; padding: 0 2.5rem; }
       .character-class-carousel .guildas-carousel-track { padding: 0; }
-      .character-guild-card, .character-class-card { flex: 0 0 100%; box-sizing: border-box; scroll-snap-stop: always; }
-      .character-guild-card:hover, .character-class-card:hover { transform: none; }
-      .character-guild-carousel .guildas-carousel-button,
+      .character-class-card { flex: 0 0 100%; box-sizing: border-box; scroll-snap-stop: always; }
+      .character-class-card:hover { transform: none; }
       .character-class-carousel .guildas-carousel-button { display: block; padding: 0; font-size: 0; }
-      .character-guild-carousel .guildas-carousel-button::before,
       .character-class-carousel .guildas-carousel-button::before { content: ''; position: absolute; top: 50%; left: 50%; box-sizing: border-box; width: .5rem; height: .5rem; border-top: 2px solid currentColor; border-right: 2px solid currentColor; }
       .character-create-page .guildas-carousel-prev::before { transform: translate(-25%, -50%) rotate(-135deg); }
       .character-create-page .guildas-carousel-next::before { transform: translate(-75%, -50%) rotate(45deg); }
@@ -163,23 +149,7 @@
             <div class="flex flex-wrap items-end justify-between gap-2">
               <div><p class="label-text font-bold">Guilda</p><p class="mt-1 text-xs text-base-content/55">Escolha o grupo que representa os ideais do personagem.</p></div>
             </div>
-            <div class="character-guild-carousel">
-              <button type="button" class="guildas-carousel-button guildas-carousel-prev" data-character-guild-prev aria-label="Guildas anteriores">&lsaquo;</button>
-              <div class="guildas-carousel-track" data-character-guild-track tabindex="0" aria-label="Escolha uma guilda">
-                {% for guilda in guildas_personagem %}
-                  <label class="guilda-showcase-card character-guild-card {% if form.guilda.value|stringformat:'s' == guilda.value|stringformat:'s' %}is-selected{% endif %}">
-                    <input type="radio" name="guilda" value="{{ guilda.value }}" {% if form.guilda.value|stringformat:'s' == guilda.value|stringformat:'s' %}checked{% endif %} required>
-                    <span class="guilda-showcase-image">
-                      <img src="{% static guilda.imagem %}" alt="Símbolo da guilda {{ guilda.nome }}" loading="lazy">
-                    </span>
-                    <span class="guilda-showcase-footer">
-                      <strong>{{ guilda.nome }}</strong>
-                    </span>
-                  </label>
-                {% endfor %}
-              </div>
-              <button type="button" class="guildas-carousel-button guildas-carousel-next" data-character-guild-next aria-label="Próximas guildas">&rsaquo;</button>
-            </div>
+            {% include 'core/includes/guild_heraldry.html' with items=guildas_personagem mode='select' selected=form.guilda.value %}
             {% if form.guilda.errors %}<span class="mt-2 block text-sm text-error">{{ form.guilda.errors|striptags }}</span>{% endif %}
             <div class="character-guild-details" data-character-guild-details aria-live="polite" aria-atomic="true"><p class="character-guild-empty">Selecione uma guilda para conhecer suas vantagens e desvantagens.</p></div>
             {% for guilda in guildas_personagem %}
@@ -263,32 +233,12 @@
         track.scrollTo({left: track.scrollLeft + card.left - bounds.left, behavior: 'instant'});
       }
     };
-    const guildTrack = document.querySelector('[data-character-guild-track]');
-    const guildPrevious = document.querySelector('[data-character-guild-prev]');
-    const guildNext = document.querySelector('[data-character-guild-next]');
     const guildCards = document.querySelectorAll('.character-guild-card');
-
-    if (guildTrack && guildPrevious && guildNext) {
-      const moveGuilds = function (direction) {
-        const card = guildTrack.querySelector('.character-guild-card');
-        if (!card) return;
-        const styles = getComputedStyle(guildTrack);
-        const gap = Number.parseFloat(styles.columnGap || styles.gap) || 0;
-        guildTrack.scrollBy({
-          left: direction * (card.getBoundingClientRect().width + gap),
-          behavior: 'smooth',
-        });
-      };
-
-      guildPrevious.addEventListener('click', function () { moveGuilds(-1); });
-      guildNext.addEventListener('click', function () { moveGuilds(1); });
-    }
 
     const showGuildDetails = function (value) {
       const template = document.querySelector(`[data-character-guild-info="${value}"]`);
       const detail = document.querySelector('[data-character-guild-details]');
       if (template && detail) detail.replaceChildren(template.content.cloneNode(true));
-      revealSelectedChoice(guildTrack);
     };
     guildCards.forEach(function (card) {
       const radio = card.querySelector('input[type="radio"]');
@@ -345,10 +295,8 @@
     };
 
     const choiceResizeObserver = new ResizeObserver(function () {
-      revealSelectedChoice(guildTrack);
       revealSelectedChoice(classTrack);
     });
-    if (guildTrack) choiceResizeObserver.observe(guildTrack);
     if (classTrack) choiceResizeObserver.observe(classTrack);
 
     classCards.forEach(function (card) {

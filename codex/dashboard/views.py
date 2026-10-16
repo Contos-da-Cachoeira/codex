@@ -60,7 +60,8 @@ def home(request, components=None, preview=False):
             'slug': GUILDA_SLUG_BY_KEY.get(key, ''),
             'lema': info.get('lema') or 'Uma história ainda será escrita.',
         }
-        for key, info in GUILDAS.items()
+        for key in GUILDA_SLUG_BY_KEY
+        for info in [GUILDAS[key]]
         if info.get('imagem')
     ]
     show_character_prompt = (

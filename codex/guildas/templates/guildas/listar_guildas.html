@@ -4,7 +4,8 @@
 {% block title %}Guildas · Contos da Cachoeira{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{% static 'guildas/css/index.css' %}?v=guildas-20261016">
+<link rel="stylesheet" href="{% static 'core/css/guild-heraldry.css' %}?v=guild-heraldry-1">
+<link rel="stylesheet" href="{% static 'guildas/css/index.css' %}?v=guild-heraldry-1">
 {% endblock %}
 
 {% block content %}
@@ -18,17 +19,7 @@
             <a class="guild-index-explore" href="#guildas-caminhos">Explorar os caminhos <span aria-hidden="true">↓</span></a>
         </div>
         {% if guildas_info %}
-        <div class="guild-index-heraldry">
-            <p class="guild-index-caption">Sob qual símbolo você caminharia?</p>
-            <nav class="guild-index-seals" aria-label="Ir para uma guilda ou caminho independente">
-                {% for item in guildas_info %}
-                <a href="#caminho-{{ item.slug }}" class="guild-index-seal" data-guild-theme="{{ item.slug }}" aria-label="{{ item.publica.nome }}" title="{{ item.publica.nome }}">
-                    <img src="{% static item.publica.imagem %}" alt="" width="104" height="104" decoding="async">
-                </a>
-                {% endfor %}
-            </nav>
-            <p class="guild-index-heraldry-note">Uma identidade para cada maneira<br>de viver a Cachoeira.</p>
-        </div>
+        {% include 'core/includes/guild_heraldry.html' with items=guildas_showcase mode='anchors' only %}
         {% endif %}
     </header>
 

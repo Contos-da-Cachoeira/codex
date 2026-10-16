@@ -1,0 +1,28 @@
+{% load static %}
+{# items: flat public dictionaries {nome, imagem, slug, value}; mode: links (default), anchors, or select. #}
+<div class="guild-heraldry{% if mode == 'select' %} guild-heraldry--select{% elif mode == 'anchors' %} guild-index-heraldry{% endif %}">
+    <span class="guild-heraldry-orbit" aria-hidden="true"></span>
+    <span class="guild-heraldry-orbit guild-heraldry-orbit-cross" aria-hidden="true"></span>
+    <p class="guild-heraldry-caption">Sob qual símbolo você caminharia?</p>
+    {% if mode == 'select' %}
+    <div class="guild-heraldry-seals" data-character-guild-track role="radiogroup" aria-label="Escolha a guilda do personagem">
+        {% for item in items %}
+        <label class="guild-heraldry-seal character-guild-card{% if selected|stringformat:'s' == item.value|stringformat:'s' %} is-selected{% endif %}" data-guild-theme="{{ item.slug }}">
+            <input type="radio" name="guilda" value="{{ item.value }}" {% if selected|stringformat:'s' == item.value|stringformat:'s' %}checked{% endif %} required>
+            <span class="guild-heraldry-symbol"><img src="{% static item.imagem %}" alt="" width="104" height="104" decoding="async"></span>
+            <strong class="guild-heraldry-name">{{ item.nome }}</strong>
+            <span class="guild-heraldry-check" aria-hidden="true">✓</span>
+        </label>
+        {% endfor %}
+    </div>
+    {% else %}
+    <nav class="guild-heraldry-seals" aria-label="{% if mode == 'anchors' %}Ir para uma guilda ou caminho independente{% else %}Conhecer as guildas e o caminho independente{% endif %}">
+        {% for item in items %}
+        <a href="{% if mode == 'anchors' %}#caminho-{{ item.slug }}{% else %}{% url 'detalhe_guilda' item.slug %}{% endif %}" class="guild-heraldry-seal{% if mode == 'anchors' %} guild-index-seal{% endif %}" data-guild-theme="{{ item.slug }}" aria-label="{{ item.nome }}" title="{{ item.nome }}">
+            <img src="{% static item.imagem %}" alt="" width="104" height="104" decoding="async">
+        </a>
+        {% endfor %}
+    </nav>
+    {% endif %}
+    <p class="guild-heraldry-note">Uma identidade para cada maneira<br>de viver a Cachoeira.</p>
+</div>

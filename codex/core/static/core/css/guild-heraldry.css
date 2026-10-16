@@ -1,0 +1,128 @@
+.guild-heraldry {
+    --gh-accent: #e3c58e;
+    --gh-rgb: 227 197 142;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    min-height: 25rem;
+    align-content: center;
+    justify-items: center;
+    padding: 2rem .75rem;
+    background: radial-gradient(ellipse at center, rgb(227 197 142 / .05), transparent 65%);
+}
+.guild-heraldry *,
+.guild-heraldry *::before,
+.guild-heraldry *::after { box-sizing: border-box; }
+.guild-heraldry [data-guild-theme="artistas-da-revolucao"] { --gh-accent: #f2c575; --gh-rgb: 242 197 117; }
+.guild-heraldry [data-guild-theme="circulo-do-fogo"] { --gh-accent: #ef776a; --gh-rgb: 239 119 106; }
+.guild-heraldry [data-guild-theme="floresta-do-sol"] { --gh-accent: #a4c882; --gh-rgb: 164 200 130; }
+.guild-heraldry [data-guild-theme="irmandade-das-tavernas"] { --gh-accent: #e1bb68; --gh-rgb: 225 187 104; }
+.guild-heraldry [data-guild-theme="os-rasga-mortalhas"] { --gh-accent: #bba0ed; --gh-rgb: 187 160 237; }
+.guild-heraldry [data-guild-theme="sociedade-zaori"] { --gh-accent: #c2acec; --gh-rgb: 194 172 236; }
+.guild-heraldry [data-guild-theme="mercenarios-independentes"] { --gh-accent: #c1cbd3; --gh-rgb: 193 203 211; }
+.guild-heraldry-orbit {
+    position: absolute;
+    z-index: 0;
+    inset: 8% 14%;
+    border: 1px solid rgb(227 197 142 / .12);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.guild-heraldry-orbit-cross { inset: 1% 22%; transform: rotate(38deg); }
+.guild-heraldry-caption {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 1.4rem;
+    color: var(--codex-muted, #afafaf);
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: .13em;
+    line-height: 1.65;
+    text-align: center;
+    text-transform: uppercase;
+}
+.guild-heraldry-seals {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: min(100%, 30rem);
+    min-width: 0;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem .65rem;
+    overflow: visible;
+}
+.guild-heraldry .guild-heraldry-seal {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    flex: 0 0 calc((100% - 1.95rem) / 4);
+    aspect-ratio: 1;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    color: var(--gh-accent);
+    background: radial-gradient(circle, rgb(var(--gh-rgb) / .09), transparent 72%);
+    text-decoration: none;
+    transition: border-color 180ms ease, transform 180ms ease, background 180ms ease;
+}
+.guild-heraldry .guild-heraldry-seal > img,
+.guild-heraldry-symbol img { display: block; width: 84%; height: 84%; object-fit: contain; }
+.guild-heraldry .guild-heraldry-seal:hover { border-color: rgb(var(--gh-rgb) / .5); transform: translateY(-4px); }
+.guild-heraldry .guild-heraldry-seal:focus-visible { outline: 2px solid var(--gh-accent); outline-offset: 4px; }
+.guild-heraldry-note {
+    position: relative;
+    z-index: 1;
+    margin: 1.4rem 0 0;
+    color: var(--codex-muted, #afafaf);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1rem;
+    font-style: italic;
+    line-height: 1.55;
+    text-align: center;
+}
+.guild-heraldry--select { min-height: 0; padding: 2rem .75rem; }
+.guild-heraldry--select .guild-heraldry-seals { width: min(100%, 44rem); align-items: stretch; gap: .85rem .65rem; }
+.guild-heraldry--select .guild-heraldry-seal.character-guild-card {
+    flex-direction: column;
+    gap: .55rem;
+    aspect-ratio: auto;
+    padding: .65rem .35rem .75rem;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+.guild-heraldry--select .guild-heraldry-seal input[type="radio"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    opacity: 0;
+}
+.guild-heraldry-symbol { display: grid; width: 100%; aspect-ratio: 1; max-width: 7rem; place-items: center; }
+.guild-heraldry-name { display: block; min-height: 2.6em; color: var(--codex-text, #ededed); font-size: clamp(.65rem, .9vw, .8rem); font-weight: 650; line-height: 1.3; text-align: center; overflow-wrap: anywhere; }
+.guild-heraldry-check { position: absolute; top: .35rem; right: .45rem; display: grid; width: 1.2rem; height: 1.2rem; place-items: center; border-radius: 50%; background: var(--gh-accent); color: #121212; font-size: .75rem; opacity: 0; }
+.guild-heraldry--select .guild-heraldry-seal.character-guild-card.is-selected,
+.guild-heraldry--select .guild-heraldry-seal.character-guild-card:has(input:checked) { border-color: var(--gh-accent); background: rgb(var(--gh-rgb) / .1); box-shadow: 0 0 0 1px rgb(var(--gh-rgb) / .2); }
+.guild-heraldry--select .guild-heraldry-seal.character-guild-card.is-selected .guild-heraldry-name,
+.guild-heraldry--select .guild-heraldry-seal.character-guild-card:has(input:checked) .guild-heraldry-name { color: var(--gh-accent); }
+.guild-heraldry--select .guild-heraldry-seal.character-guild-card:has(input:checked) .guild-heraldry-check { opacity: 1; }
+.guild-heraldry--select .guild-heraldry-seal.character-guild-card:has(input:focus-visible) { outline: 2px solid var(--gh-accent); outline-offset: 3px; }
+
+@media (max-width: 760px) {
+    .guild-heraldry { min-height: 0; padding: 1.5rem .5rem; }
+    .guild-heraldry-seals { width: min(100%, 27rem); gap: .35rem; }
+    .guild-heraldry .guild-heraldry-seal { flex-basis: calc((100% - 1.05rem) / 4); }
+    .guild-heraldry-note { display: none; }
+    .guild-heraldry--select .guild-heraldry-seals { gap: .65rem .35rem; }
+    .guild-heraldry--select .guild-heraldry-seal.character-guild-card { padding: .5rem .2rem .65rem; gap: .4rem; }
+    .guild-heraldry--select .guild-heraldry-name { font-size: .65rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .guild-heraldry .guild-heraldry-seal { transition: none; }
+    .guild-heraldry .guild-heraldry-seal:hover { transform: none; }
+}
