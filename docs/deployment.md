@@ -1,5 +1,29 @@
 # Publicação do site
 
+## Biblioteca de documentos da Wiki — 15/10/2026
+
+A Wiki ganhou `/wiki/documentos/`, com os originais de **Manual LARP - 3.3.pdf** e **Cenário_ Contos da Cachoeira.pdf**. Cada documento possui uma tela de leitura, navegação por páginas, zoom, busca no texto, tela cheia e download. A biblioteca é pública, tem acesso pelo menu e pela página inicial da Wiki, e funciona no celular.
+
+Os PDFs permanecem em `docs/`, sem conversão nem alteração do conteúdo. A entrega usa uma lista fixa de dois documentos, suporta GET/HEAD, intervalos de bytes (206/416), ETag e Last-Modified. O download é enviado como anexo com o nome original; o leitor obtém apenas os trechos necessários. Arquivos desconhecidos ou ausentes retornam 404. Não há acesso a caminhos arbitrários do repositório.
+
+O leitor usa uma cópia local de **PDF.js 6.4.299**, com licença e manifesto de integridade, sem dependência de CDN durante a leitura. Os módulos mantêm os bytes do pacote oficial e usam extensão `.js` para compatibilidade com os tipos MIME do servidor existente. Os novos scripts/estilos usam `?v=documents-1`. O utilitário `tools/prepare_wiki_documents.py` confere SHA-512 do pacote e gera as capas a partir da primeira página dos PDFs.
+
+Validação local: **153 testes** em SQLite isolado e teste real de navegador de ambos os PDFs. Foram conferidos download por SHA-256, navegação sem recarga, zoom, busca, tela cheia, celular, última página e fallback de download quando o leitor não carrega. Nenhum usuário ou saldo real foi alterado. Esta atualização não exige migrações.
+
+**Publicação pendente:** a cópia `/root/codex-ops/stage-wiki-documents-20261015-224919/` passou em **168 testes isolados no servidor** e `makemigrations --check` não detectou alterações. O backup e manifesto estão em `/root/codex-ops/backups/wiki-documents-20261015-224919/`. A conexão SSH caiu antes da confirmação dos checks finais e da aplicação; as tentativas seguintes expiraram e o domínio respondeu 530. Os arquivos ativos ainda não receberam esta atualização. Retomar pela conferência dos hashes e `migrate --check`, aplicar a cópia validada, coletar os estáticos e conferir a biblioteca pública, os intervalos e os módulos do leitor.
+
+Para consultar sem depender da conexão de produção, `codex/.venv/Scripts/python.exe tools/wiki_documents_preview.py --port 8012 --duration 3600` abre uma prévia em `http://127.0.0.1:8012/wiki/documentos/`, durante uma hora, com SQLite temporário. A prévia não usa contas nem saldos reais; os PDFs são os originais locais. O desenvolvimento normal mantém suas configurações anteriores.
+
+## Escolhas na criação de personagens — 15/10/2026
+
+Em `/personagens/novo/`, a guilda selecionada apresenta sua vantagem, marca/desvantagem e, quando aplicável, a condição de saída autorizada. Os textos vêm das mesmas informações públicas usadas nas páginas das guildas. A troca acontece no navegador, sem recarregar o documento.
+
+Os campos de divindade de Clérigos/Paladinos e de afinidade do Druida usam rótulos, ajuda, bordas arredondadas e foco no padrão da criação. O Mago escolhe um dos três feitiços antigos por opções de seleção única, com o mesmo estilo das magias. Essa escolha é excluída das opções de uma solicitação adicional de Feitiço Antigo. Campos de outras classes ficam desabilitados; erros de validação preservam a guilda, as magias e o feitiço antigo escolhidos.
+
+Foram corrigidos também o tamanho do seletor interno de classe e o posicionamento da opção selecionada no carrossel ao redimensionar a tela. Validação local: **51 testes de personagens** em SQLite isolado e **dois testes de navegador**, cobrindo Bardo, Clérigo, Paladino, Druida, Mago, as sete guildas, celular, validação e gravação com contas fictícias. Não há migrações. Os scripts da criação e dos talentos usam `?v=creation-options-1`.
+
+Publicado em **https://larp.kw1.com.br** após **161 testes isolados no servidor**. Cópia validada: `/root/codex-ops/stage-creation-options-20261015-220357/`. Backup dos arquivos e manifesto: `/root/codex-ops/backups/creation-options-20261015-220357/`. Foram coletados dois estáticos e o Gunicorn recebeu recarga graciosa. A conferência em transação somente de leitura confirmou a página de criação, os detalhes das sete guildas, as três opções de feitiço antigo e a exigência de login. As proteções anteriores e a consistência do histórico de XP foram preservadas. Os scripts entregues publicamente e pelo servidor local corresponderam aos arquivos validados.
+
 ## Gerenciamento de eventos — 15/10/2026
 
 As telas administrativas de cada LARP passam a ter uma visão geral com indicadores de inscrições, pagamentos e presenças, edição do evento e prévia da capa. A página de participantes reúne pagamento, presença, XP do jogador e ouro do personagem; inclui busca, filtros e detalhes do inscrito. No celular, os participantes aparecem em cartões e os detalhes abrem em uma janela.

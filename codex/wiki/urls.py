@@ -2,10 +2,15 @@ from django.urls import path
 from django.views.generic import RedirectView
 
 from . import views
+from . import documents
 
 urlpatterns = [
     path('gerenciar/', RedirectView.as_view(url='/area-admin/#wiki_panel'), name='wiki_admin_list'),
     path('', views.wiki_home, name='wiki_home'),
+    path('documentos/', documents.document_list, name='wiki_documentos'),
+    path('documentos/<slug:slug>/', documents.document_reader, name='wiki_documento_leitor'),
+    path('documentos/<slug:slug>/arquivo.pdf', documents.document_file, name='wiki_documento_arquivo'),
+    path('documentos/<slug:slug>/baixar/', documents.document_file, {'download': True}, name='wiki_documento_download'),
     path('cenario/', views.cenario_lista, name='wiki_cenario_lista'),
     path('cenario/<slug:slug>/', views.cenario_detalhe, name='wiki_cenario_detalhe'),
     path('regras/', views.regras_lista, name='wiki_regras_lista'),

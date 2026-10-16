@@ -1,0 +1,18 @@
+{% extends 'wiki/base.html' %}
+{% load static %}
+{% block title %}Documentos · Wiki · Codex{% endblock %}
+{% block head_extra %}{{ block.super }}<link rel="stylesheet" href="{% static 'wiki/css/documents.css' %}?v=documents-1">{% endblock %}
+{% block wiki_content %}
+<div class="wd-library">
+  <header class="wd-heading"><p class="wd-eyebrow">Biblioteca da Cachoeira</p><h1>Documentos do jogo</h1><p>As referências completas para a sua jornada. Leia aqui ou leve os PDFs com você.</p></header>
+  <div class="wd-document-grid">
+    {% for document in documents %}<article class="wd-document">
+      <a class="wd-cover" href="{{ document.reader_url }}" aria-label="Ler {{ document.title }}"><img src="{% static document.cover %}" alt="Primeira página de {{ document.title }}" width="640" height="905" loading="lazy"></a>
+      <div class="wd-document-body"><p class="wd-eyebrow">{{ document.category }}</p><h2>{{ document.title }}</h2><p class="wd-edition">{{ document.edition }}</p><p class="wd-description">{{ document.description }}</p><p class="wd-metadata">PDF <span>·</span> {{ document.pages }} páginas{% if document.size_label %} <span>·</span> {{ document.size_label }}{% endif %}</p>
+        {% if document.available %}<div class="wd-actions"><a class="wd-button wd-primary" href="{{ document.reader_url }}">Ler online <span aria-hidden="true">→</span></a><a class="wd-button" href="{{ document.download_url }}">{% include 'wiki/includes/document_icon.html' with kind='download' %}Baixar PDF</a></div>{% else %}<p class="wd-unavailable">Documento temporariamente indisponível.</p>{% endif %}
+      </div>
+    </article>{% endfor %}
+  </div>
+  <p class="wd-library-note">Os downloads mantêm os arquivos originais. Para ler sem conexão, salve uma cópia no seu dispositivo.</p>
+</div>
+{% endblock %}

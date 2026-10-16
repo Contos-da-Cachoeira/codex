@@ -10,7 +10,7 @@
     .character-create-page { max-width: 70rem; }
     .character-create-hero { position: relative; overflow: hidden; border-color: var(--codex-border-soft) !important; background: var(--codex-surface); }
     .character-create-hero::after { position: absolute; right: -4rem; bottom: -5rem; width: 16rem; height: 16rem; border: 1px solid var(--codex-border-soft); border-radius: 50%; content: ""; opacity: 0.7; }
-    .character-create-card { overflow: hidden; }
+    .character-create-card { overflow: clip; }
     .character-tab { position: relative; min-height: 4.25rem; background: var(--codex-surface); color: var(--codex-muted); text-align: left; transition: border-color 160ms ease, background 160ms ease, color 160ms ease; }
     .character-tab:hover, .character-tab:focus-visible { border-color: var(--codex-border); background: var(--codex-elevated); color: var(--codex-text); }
     .character-tab[aria-selected="true"] { border-color: var(--codex-accent); background: var(--codex-elevated); color: var(--codex-text); box-shadow: inset 0 -2px 0 var(--codex-accent); }
@@ -20,13 +20,33 @@
     .character-step-heading h2 { letter-spacing: -0.035em; }
     .character-question { padding: 1.1rem; border: 1px solid var(--codex-border-soft); border-radius: 0.7rem; background: var(--codex-elevated); }
     .character-question .label-text { color: var(--site-text); font-weight: 800; }
-    .character-question input:not([type="checkbox"]), .character-question textarea, .character-question select { margin-top: 0.55rem; width: 100%; }
+    .character-question input:not([type="checkbox"]):not([type="radio"]), .character-question textarea, .character-question select:not(.character-native-select) { margin-top: 0.55rem; width: 100%; }
+    .character-special-field .input { min-height: 3rem; padding: .8rem 1rem; border: 1px solid var(--codex-border); border-radius: .7rem; background: var(--codex-surface); color: var(--codex-text); }
+    .character-special-field .input:focus { border-color: var(--codex-accent); outline: 2px solid color-mix(in srgb, var(--codex-accent) 30%, transparent); outline-offset: 2px; }
+    .character-field-help { margin-top: .65rem; color: var(--codex-muted); font-size: .8rem; line-height: 1.65; }
+    .character-create-page [hidden] { display: none !important; }
+    .character-spell-grid, .character-guild-benefits { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+    .character-spell-option { display: flex; align-items: center; gap: .75rem; min-width: 0; min-height: 3rem; padding: .85rem 1rem; border: 1px solid var(--codex-border-soft); border-radius: .7rem; background: var(--codex-surface); font-size: .9rem; line-height: 1.5; cursor: pointer; transition: border-color 160ms ease, background 160ms ease; }
+    .character-spell-option:has(input:checked) { border-color: var(--codex-accent); background: color-mix(in srgb, var(--codex-accent) 8%, var(--codex-surface)); }
+    .character-spell-option:focus-within { outline: 2px solid var(--codex-accent); outline-offset: 2px; }
+    .character-spell-option:has(input:disabled) { cursor: default; }
+    .character-spell-option input { width: 1.15rem; height: 1.15rem; flex: 0 0 1.15rem; margin: 0; accent-color: var(--codex-accent); }
+    .character-spell-option input[type="radio"] { appearance: auto; }
+    .character-guild-details { margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--codex-border-soft); }
+    .character-guild-details > header { margin-bottom: 1rem; }
+    .character-guild-details h3 { font-size: 1.1rem; font-weight: 800; }
+    .character-guild-details header p, .character-guild-empty { color: var(--codex-muted); font-size: .85rem; line-height: 1.65; margin-top: .4rem; }
+    .character-guild-benefit { min-width: 0; padding: 1rem; border: 1px solid var(--codex-border-soft); border-radius: .75rem; background: var(--codex-surface); overflow-wrap: anywhere; }
+    .character-guild-benefit h4 { margin-bottom: .65rem; color: var(--codex-accent); font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .character-guild-benefit.is-drawback h4 { color: var(--codex-muted); }
+    .character-guild-benefit strong { display: block; font-size: .9rem; }
+    .character-guild-benefit p { margin-top: .5rem; color: var(--codex-muted); font-size: .85rem; line-height: 1.75; }
     .character-choice-panel { padding: 1.2rem; border: 1px solid var(--codex-border-soft); border-radius: 0.7rem; background: var(--codex-elevated); }
     .character-guild-carousel { position: relative; margin-top: 1rem; padding: 0 2.5rem; }
-    .character-guild-carousel .guildas-carousel-track { padding-bottom: .35rem; }
+    .character-guild-carousel .guildas-carousel-track { padding-bottom: .35rem; scroll-behavior: auto; }
     .character-class-carousel { position: relative; margin-top: 1rem; padding: 0 2.5rem; }
-    .character-class-carousel .guildas-carousel-track { padding-bottom: .35rem; }
-    .character-guild-card { position: relative; cursor: pointer; }
+    .character-class-carousel .guildas-carousel-track { padding-bottom: .35rem; scroll-behavior: auto; }
+    .character-guild-card { position: relative; cursor: pointer; border-radius: 1rem; }
     .character-class-card { position: relative; cursor: pointer; }
     .character-guild-card input[type="radio"] { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
     .character-class-card input[type="radio"] { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
@@ -78,6 +98,8 @@
       .character-step-heading h2 { margin-top: 0; font-size: 1.25rem; }
       .character-step-heading > p:last-child { margin-top: .35rem; font-size: .8rem; }
       .character-question, .character-choice-panel { padding: .75rem; }
+      .character-spell-grid, .character-guild-benefits { grid-template-columns: minmax(0, 1fr); }
+      .character-special-field .input { font-size: 16px; }
       .character-guild-carousel, .character-class-carousel { min-width: 0; padding: 0 2.5rem; }
       .character-guild-carousel .guildas-carousel-track,
       .character-class-carousel .guildas-carousel-track { padding: 0; }
@@ -159,6 +181,16 @@
               <button type="button" class="guildas-carousel-button guildas-carousel-next" data-character-guild-next aria-label="Próximas guildas">&rsaquo;</button>
             </div>
             {% if form.guilda.errors %}<span class="mt-2 block text-sm text-error">{{ form.guilda.errors|striptags }}</span>{% endif %}
+            <div class="character-guild-details" data-character-guild-details aria-live="polite" aria-atomic="true"><p class="character-guild-empty">Selecione uma guilda para conhecer suas vantagens e desvantagens.</p></div>
+            {% for guilda in guildas_personagem %}
+              <template data-character-guild-info="{{ guilda.value }}">
+                <header><h3>{{ guilda.nome }}</h3>{% if guilda.lema %}<p>“{{ guilda.lema }}”</p>{% endif %}</header>
+                <div class="character-guild-benefits">
+                  <section class="character-guild-benefit"><h4>Vantagem</h4><strong>{{ guilda.vantagem }}</strong><p>{{ guilda.vantagem_efeito }}</p></section>
+                  <section class="character-guild-benefit is-drawback"><h4>Desvantagem</h4>{% if guilda.marca_nome %}<strong>{{ guilda.marca_nome }}</strong>{% endif %}{% if guilda.marca_efeito %}<p>{{ guilda.marca_efeito }}</p>{% endif %}{% if guilda.desvantagem %}<p>{{ guilda.desvantagem }}</p>{% endif %}{% if guilda.saida %}<p><b>Saída autorizada:</b> {{ guilda.saida }}</p>{% endif %}</section>
+                </div>
+              </template>
+            {% endfor %}
           </div>
           <div class="character-action-row flex justify-between"><button type="button" class="btn btn-ghost" data-character-prev="class">← Voltar</button><button type="button" class="btn btn-primary" data-character-next="talent">Continuar para talentos <span aria-hidden="true">→</span></button></div>
         </div>
@@ -190,9 +222,9 @@
           </div>
           <div class="character-choice-panel field-block hidden" id="magias-wrapper"><h3 class="text-lg font-semibold">Magias que o personagem sabe</h3><div class="mt-1 text-xs text-base-content/55">As opcoes aparecem de acordo com a classe escolhida.</div><div class="mt-3 hidden" id="magias-fixas-info"><div class="alert alert-info">Para esta classe, as magias sao definidas automaticamente.</div></div><div class="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2" id="magias-opcoes"><p class="text-sm text-base-content/70">Escolha uma classe conjuradora para liberar as opcoes.</p></div>{% if form.magias_pretendidas.errors %}<div class="mt-2 text-sm text-error">{{ form.magias_pretendidas.errors|striptags }}</div>{% endif %}</div>
           <p id="spell-count" class="text-sm font-bold" aria-live="polite"></p>
-          <div class="character-question" data-special-field="feitico_antigo"><label>Feitiço antigo inicial do Mago {{ form.feitico_antigo }}</label>{{ form.feitico_antigo.errors }}</div>
-          <div class="character-question" data-special-field="divindade"><label>Divindade do cenário {{ form.divindade }}</label><p class="text-sm opacity-70">Clérigos e Paladinos veneram uma divindade; escolhas personalizadas dependem da comissão.</p>{{ form.divindade.errors }}</div>
-          <div class="character-question" data-special-field="afinidade"><label>Afinidade com a natureza {{ form.afinidade }}</label>{{ form.afinidade.errors }}<p>A comissão definirá três características e um defeito da sua Forma Selvagem antes da aprovação.</p></div>
+          <fieldset class="character-choice-panel" data-special-field="feitico_antigo"><legend class="sr-only">Feitiço antigo inicial do Mago</legend><h3 class="text-lg font-semibold" aria-hidden="true">Feitiço antigo inicial do Mago</h3><p class="character-field-help" id="feitico-antigo-help">Escolha um feitiço antigo, além das quatro magias iniciais.</p><div class="character-spell-grid mt-3">{% for option in form.feitico_antigo %}<label class="character-spell-option" for="{{ option.id_for_label }}">{{ option.tag }}<span>{{ option.choice_label }}</span></label>{% endfor %}</div>{{ form.feitico_antigo.errors }}</fieldset>
+          <div class="character-question character-special-field" data-special-field="divindade"><label class="label-text" for="{{ form.divindade.id_for_label }}">Divindade do cenário</label>{{ form.divindade }}<p class="character-field-help" id="divindade-help">Clérigos e Paladinos veneram uma divindade; escolhas personalizadas dependem da comissão.</p>{{ form.divindade.errors }}</div>
+          <div class="character-question character-special-field" data-special-field="afinidade"><label class="label-text" for="{{ form.afinidade.id_for_label }}">Afinidade com a natureza</label>{{ form.afinidade }}<p class="character-field-help" id="afinidade-help">A comissão definirá três características e um defeito da sua Forma Selvagem antes da aprovação.</p>{{ form.afinidade.errors }}</div>
           <div id="class-rules" class="character-choice-panel space-y-2" aria-live="polite"></div>
           <div class="character-action-row flex justify-between"><button type="button" class="btn btn-ghost" data-character-prev="identity">← Voltar</button><button type="button" class="btn btn-primary" data-character-next="guild">Continuar para guilda <span aria-hidden="true">→</span></button></div>
         </div>
@@ -221,6 +253,16 @@
 
 <script>
   window.addEventListener('DOMContentLoaded', function () {
+    const revealSelectedChoice = function (track) {
+      if (!track || !track.clientWidth) return;
+      const selected = track.querySelector('.is-selected');
+      if (!selected) return;
+      const bounds = track.getBoundingClientRect();
+      const card = selected.getBoundingClientRect();
+      if (card.left < bounds.left - 1 || card.right > bounds.right + 1) {
+        track.scrollTo({left: track.scrollLeft + card.left - bounds.left, behavior: 'instant'});
+      }
+    };
     const guildTrack = document.querySelector('[data-character-guild-track]');
     const guildPrevious = document.querySelector('[data-character-guild-prev]');
     const guildNext = document.querySelector('[data-character-guild-next]');
@@ -242,13 +284,21 @@
       guildNext.addEventListener('click', function () { moveGuilds(1); });
     }
 
+    const showGuildDetails = function (value) {
+      const template = document.querySelector(`[data-character-guild-info="${value}"]`);
+      const detail = document.querySelector('[data-character-guild-details]');
+      if (template && detail) detail.replaceChildren(template.content.cloneNode(true));
+      revealSelectedChoice(guildTrack);
+    };
     guildCards.forEach(function (card) {
       const radio = card.querySelector('input[type="radio"]');
       if (!radio) return;
       radio.addEventListener('change', function () {
         guildCards.forEach(function (otherCard) { otherCard.classList.remove('is-selected'); });
         card.classList.add('is-selected');
+        showGuildDetails(radio.value);
       });
+      if (radio.checked) showGuildDetails(radio.value);
     });
 
     const classTrack = document.querySelector('[data-character-class-track]');
@@ -291,7 +341,15 @@
         card.classList.toggle('is-selected', selected);
         if (radio) radio.checked = selected;
       });
+      revealSelectedChoice(classTrack);
     };
+
+    const choiceResizeObserver = new ResizeObserver(function () {
+      revealSelectedChoice(guildTrack);
+      revealSelectedChoice(classTrack);
+    });
+    if (guildTrack) choiceResizeObserver.observe(guildTrack);
+    if (classTrack) choiceResizeObserver.observe(classTrack);
 
     classCards.forEach(function (card) {
       const radio = card.querySelector('input[type="radio"]');
@@ -313,7 +371,7 @@
 </script>
 
 {{ class_rules|json_script:"class-rules-data" }}
-<script src="{% static 'personagens/creation.js' %}?v=talents-step-1"></script>
-<script src="{% static 'personagens/creation-talents.js' %}?v=manual-audit-2"></script>
+<script src="{% static 'personagens/creation.js' %}?v=creation-options-1"></script>
+<script src="{% static 'personagens/creation-talents.js' %}?v=creation-options-1"></script>
 <script src="{% static 'personagens/portrait.js' %}?v=manual33"></script>
 {% endblock content %}

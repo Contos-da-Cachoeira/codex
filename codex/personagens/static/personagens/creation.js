@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('#magias-fixas-info').classList.toggle('hidden', !fixed);
     for (const spell of spells[id] || []) {
       const label = document.createElement('label');
-      label.className = 'flex items-center gap-3 border border-base-300 rounded-lg px-3 py-2';
+      label.className = 'character-spell-option';
       const input = document.createElement('input');
       input.type = 'checkbox'; input.name = 'magias_pretendidas'; input.value = spell;
       input.className = 'checkbox checkbox-sm magia-checkbox';
@@ -42,8 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     for (const [field, ids] of Object.entries({feitico_antigo:['8'], divindade:['4','9'], afinidade:['5']})) {
       const box = form.querySelector(`[data-special-field="${field}"]`);
-      const input = box.querySelector('input,select');
-      box.hidden = !ids.includes(id); input.disabled = box.hidden; input.required = !box.hidden;
+      box.hidden = !ids.includes(id);
+      box.querySelectorAll('input,select,textarea').forEach(input => {
+        input.disabled = box.hidden; input.required = !box.hidden;
+      });
     }
     const info = document.querySelector('#class-rules'); info.replaceChildren();
     if (data) {

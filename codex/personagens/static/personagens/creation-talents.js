@@ -30,7 +30,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const known = [...form.querySelectorAll('.magia-checkbox:checked')].map(input => input.value);
     const queued = selected.map(item => item.magia);
     let available = spells;
-    if (choice.value === 'FEITICO_ANTIGO') available = ancient.filter(spell => spell !== form.querySelector('[name=feitico_antigo]').value);
+    if (choice.value === 'FEITICO_ANTIGO') {
+      const initialAncient = form.querySelector('[name=feitico_antigo]:checked')?.value || '';
+      available = ancient.filter(spell => spell !== initialAncient);
+    }
     if (choice.value === 'MAGIA_EXTRA_CLASSE') available = own;
     if (choice.value === 'MAGIA_OUTRA_CLASSE') available = spells.filter(spell => !own.includes(spell));
     value('magia').replaceChildren();

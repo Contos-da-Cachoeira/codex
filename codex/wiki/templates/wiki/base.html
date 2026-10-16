@@ -19,6 +19,7 @@
       <a href="{% url 'wiki_talentos_lista' %}" {% if current == 'wiki_talentos_lista' or current == 'wiki_talento_detalhe' %}aria-current="page"{% endif %}>Talentos</a>
       <a href="{% url 'wiki_regras_lista' %}" {% if current == 'wiki_regras_lista' or current == 'wiki_regra_detalhe' %}aria-current="page"{% endif %}>Regras</a>
       <a href="{% url 'wiki_cenario_lista' %}" {% if current == 'wiki_cenario_lista' or current == 'wiki_cenario_detalhe' %}aria-current="page"{% endif %}>Cenário</a>
+      <a href="{% url 'wiki_documentos' %}" {% if current == 'wiki_documentos' or current == 'wiki_documento_leitor' %}aria-current="page"{% endif %}>Documentos</a>
     </div>
     {% endwith %}
   </nav>

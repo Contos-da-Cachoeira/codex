@@ -36,7 +36,8 @@ class PersonagemCreateForm(forms.Form):
     guilda = forms.ChoiceField(choices=GUILDAS_CHOICES, required=True)
     classe = forms.ChoiceField(choices=CLASSES_CHOICES, required=True)
     portrait_mode = forms.ChoiceField(choices=Personagem._meta.get_field('portrait_mode').choices, required=False)
-    feitico_antigo = forms.ChoiceField(choices=[('', 'Selecione')] + [(s, s) for s in ANCIENT_SPELLS], required=False)
+    feitico_antigo = forms.ChoiceField(choices=[(s, s) for s in ANCIENT_SPELLS], required=False,
+                                     widget=forms.RadioSelect(attrs={'class': 'radio radio-sm'}))
     divindade = forms.CharField(max_length=120, required=False)
     afinidade = forms.CharField(max_length=200, required=False)
 
@@ -58,6 +59,13 @@ class PersonagemCreateForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.user = user
         self.pending_talents = []
+
+        for name, placeholder in (('divindade', 'Ex.: Solaris, Artista ou Sun Wukong'),
+                                  ('afinidade', 'Ex.: lobo, coruja ou carvalho')):
+            self.fields[name].widget.attrs.update({'class': 'input input-bordered w-full',
+                                                  'placeholder': placeholder})
+        self.fields['divindade'].widget.attrs['aria-describedby'] = 'divindade-help'
+        self.fields['afinidade'].widget.attrs['aria-describedby'] = 'afinidade-help'
 
         self.fields['image_asset'].queryset = ImageAsset.objects.filter(owner=user) if user else ImageAsset.objects.none()
 

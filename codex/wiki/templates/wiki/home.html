@@ -6,7 +6,7 @@
 
 {% block head_extra %}
   {{ block.super }}
-  <link rel="stylesheet" href="{% static 'wiki/css/home.css' %}?v=manual-audit-2">
+  <link rel="stylesheet" href="{% static 'wiki/css/home.css' %}?v=documents-1">
 {% endblock %}
 
 {% block wiki_content %}
@@ -49,6 +49,8 @@
     {% endfor %}
   </div>
 </section>
+
+<section class="wh-documents" aria-labelledby="wiki-documents-title"><div><p class="wh-eyebrow">Biblioteca do jogador</p><h2 id="wiki-documents-title">Os documentos completos, sempre à mão.</h2><p>Leia o Manual LARP e o Cenário pelo site ou baixe os PDFs para consultar quando quiser.</p></div><a class="wh-primary" href="{% url 'wiki_documentos' %}">Abrir documentos <span aria-hidden="true">→</span></a></section>
 
 <section class="wh-catalog" aria-labelledby="wiki-index-title" data-wiki-catalog>
   <div class="wh-catalog-top">

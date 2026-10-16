@@ -1,0 +1,24 @@
+{% extends 'wiki/base.html' %}
+{% load static %}
+{% block title %}{{ document.title }} · Documentos · Codex{% endblock %}
+{% block wiki_shell_class %}wiki-document-reader{% endblock %}
+{% block head_extra %}{{ block.super }}<link rel="stylesheet" href="{% static 'wiki/vendor/pdfjs/6.4.299/web/pdf_viewer.css' %}"><link rel="stylesheet" href="{% static 'wiki/css/documents.css' %}?v=documents-1">{% endblock %}
+{% block wiki_content %}
+<div class="wd-reader-page">
+  <a class="wd-back" href="{% url 'wiki_documentos' %}">← Voltar aos documentos</a>
+  <header class="wd-heading wd-reader-heading"><p class="wd-eyebrow">{{ document.category }}</p><h1>{{ document.title }}</h1><p>{{ document.edition }} <span>·</span> {{ document.pages }} páginas <span>·</span> {{ document.size_label }}</p></header>
+  <nav class="wd-document-tabs" aria-label="Escolher documento">{% for item in documents %}<a href="{{ item.reader_url }}"{% if item.slug == document.slug %} aria-current="page"{% endif %}>{{ item.title }}</a>{% endfor %}</nav>
+  <section class="wd-reader" data-pdf-reader data-pdf-url="{{ document.file_url }}" aria-label="Leitor de {{ document.title }}">
+    <div class="wd-reader-toolbar" aria-label="Controles de leitura">
+      <div class="wd-page-controls"><button type="button" class="wd-icon-button" data-pdf-previous data-pdf-control disabled aria-label="Página anterior">{% include 'wiki/includes/document_icon.html' with kind='previous' %}</button><label class="wd-page-label">Página <input type="number" min="1" value="1" data-pdf-page data-pdf-control disabled aria-label="Página do documento"></label><span class="wd-page-total">de <span data-pdf-total>{{ document.pages }}</span></span><button type="button" class="wd-icon-button" data-pdf-next data-pdf-control disabled aria-label="Próxima página">{% include 'wiki/includes/document_icon.html' with kind='next' %}</button></div>
+      <div class="wd-view-controls"><label class="wd-sr-only" for="pdf-zoom">Zoom do documento</label><select id="pdf-zoom" data-pdf-zoom data-pdf-control disabled><option value="page-width">Ajustar à largura</option><option value="page-fit">Página inteira</option><option value="0.75">75%</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option><option value="2">200%</option></select><button type="button" class="wd-icon-button" data-pdf-fullscreen aria-label="Tela cheia">{% include 'wiki/includes/document_icon.html' with kind='fullscreen' %}</button><a class="wd-button wd-download" href="{{ document.download_url }}">{% include 'wiki/includes/document_icon.html' with kind='download' %}<span>Baixar PDF</span></a></div>
+      <form class="wd-find" role="search" data-pdf-find>{% include 'wiki/includes/document_icon.html' with kind='search' %}<label class="wd-sr-only" for="pdf-search">Buscar no documento</label><input type="search" id="pdf-search" placeholder="Buscar neste PDF…" data-pdf-search data-pdf-control disabled><button type="submit" data-pdf-control disabled>Buscar</button><span data-pdf-find-count role="status" aria-live="polite"></span></form>
+    </div>
+    <div class="wd-reader-status" role="status" aria-live="polite" data-pdf-status>Carregando documento…</div>
+    <div class="wd-reader-frame"><div class="wd-pdf-container" data-pdf-container tabindex="0" aria-label="Páginas do documento"><div class="pdfViewer" data-pdf-viewer></div></div></div>
+    <noscript><p class="wd-noscript">Ative o JavaScript para usar o leitor, ou <a href="{{ document.file_url }}">abra o PDF diretamente</a>.</p></noscript>
+  </section>
+  <p class="wd-reader-note">Prefere usar o leitor do seu dispositivo? <a href="{{ document.file_url }}" target="_blank" rel="noopener">Abrir PDF em outra aba ↗</a></p>
+</div>
+<script src="{% static 'wiki/js/documents.js' %}?v=documents-1" type="module"></script>
+{% endblock %}

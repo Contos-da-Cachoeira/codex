@@ -88,9 +88,8 @@ def criar_personagem(request):
 		'guildas_personagem': [
 			{
 				'value': guilda_id,
+				**GUILDAS[GUILDA_PUBLIC_KEY_BY_ID[guilda_id]],
 				'nome': GUILDAS[GUILDA_PUBLIC_KEY_BY_ID[guilda_id]].get('nome', label),
-				'imagem': GUILDAS[GUILDA_PUBLIC_KEY_BY_ID[guilda_id]].get('imagem', ''),
-				'lema': GUILDAS[GUILDA_PUBLIC_KEY_BY_ID[guilda_id]].get('lema'),
 				'slug': GUILDA_SLUG_BY_ID[guilda_id],
 			}
 			for guilda_id, label in GUILDAS_CHOICES

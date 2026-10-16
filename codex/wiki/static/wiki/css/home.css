@@ -95,6 +95,10 @@
 .wh-empty p { margin: 0; font-size: .85rem; line-height: 1.7; }
 .wh-empty button { margin-top: 1rem; padding: .5rem .75rem; border-radius: .4rem; background: color-mix(in srgb, var(--site-accent) 12%, transparent); color: var(--site-accent); font-size: .8rem; cursor: pointer; }
 .wh-empty-library { grid-column: 1 / -1; }
+.wh-documents { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; margin-block: 2rem; padding: 1.5rem; border: 1px solid var(--wh-border); border-radius: 1rem; background: var(--site-surface); }
+.wh-documents h2 { font-size: 1.2rem; font-weight: 750; margin-bottom: .5rem; }
+.wh-documents > div > p:last-child { font-size: .85rem; line-height: 1.7; color: var(--site-muted); }
+.wh-documents .wh-primary { flex-shrink: 0; }
 .wh-guide-note { display: flex; align-items: center; gap: .75rem; margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--wh-border); color: var(--site-muted); font-size: .75rem; line-height: 1.7; }
 .wh-guide-note svg { width: 1.1rem; height: 1.1rem; flex: 0 0 auto; color: var(--site-accent); }
 .wh-guide-note a { color: var(--site-accent); }
