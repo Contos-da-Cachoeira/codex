@@ -1,5 +1,13 @@
 # Publicação do site
 
+## Prévias de compartilhamento e favicon — 16/10/2026
+
+As páginas públicas entregam metadados Open Graph e Twitter Card no HTML inicial. Detalhes da Wiki, guildas, LARPs públicos e leitores de documentos usam as imagens vinculadas ao conteúdo. Listas e páginas sem imagem própria ficam sem capa genérica; a página inicial usa uma capa de 1200 × 630 pixels com nome e símbolo do Codex. Fichas de personagens, contas, inscrições e administração não recebem prévias públicas. O símbolo também é usado no favicon PNG e no ícone para atalhos Apple.
+
+Validação local: **160 testes** em SQLite isolado, incluindo sete testes de metadados, conteúdo sem imagem, restrições de acesso, HTTPS encaminhado, dimensões e integridade dos PNGs. O teste de HTTPS respeita o cabeçalho de proxy configurado em cada ambiente, inclusive o cabeçalho próprio do servidor. A [documentação de compartilhamento](compartilhamento-links.md) descreve a escolha das imagens e sua atualização.
+
+Publicado em **https://larp.kw1.com.br** após **175 testes isolados no servidor**, preservando os 15 testes exclusivos de acesso. Cópia validada: `/root/codex-ops/stage-social-links-20261016-133054/`. Backup e manifesto: `/root/codex-ops/backups/social-links-20261016-133054/`. Foram coletados três estáticos e o Gunicorn recebeu recarga graciosa, sem migrações. A conferência anônima pelo domínio público confirmou metadados e imagens com resposta 200 na página inicial, Bardo e Círculo do Fogo; também confirmou os dois ícones PNG, listas sem capa genérica e páginas restritas sem metadados públicos.
+
 ## Biblioteca de documentos da Wiki — 15/10/2026
 
 A Wiki ganhou `/wiki/documentos/`, com os originais de **Manual LARP - 3.3.pdf** e **Cenário_ Contos da Cachoeira.pdf**. Cada documento possui uma tela de leitura, navegação por páginas, zoom, busca no texto, tela cheia e download. A biblioteca é pública, tem acesso pelo menu e pela página inicial da Wiki, e funciona no celular.
@@ -10,7 +18,7 @@ O leitor usa uma cópia local de **PDF.js 6.4.299**, com licença e manifesto de
 
 Validação local: **153 testes** em SQLite isolado e teste real de navegador de ambos os PDFs. Foram conferidos download por SHA-256, navegação sem recarga, zoom, busca, tela cheia, celular, última página e fallback de download quando o leitor não carrega. Nenhum usuário ou saldo real foi alterado. Esta atualização não exige migrações.
 
-**Publicação pendente:** a cópia `/root/codex-ops/stage-wiki-documents-20261015-224919/` passou em **168 testes isolados no servidor** e `makemigrations --check` não detectou alterações. O backup e manifesto estão em `/root/codex-ops/backups/wiki-documents-20261015-224919/`. A conexão SSH caiu antes da confirmação dos checks finais e da aplicação; as tentativas seguintes expiraram e o domínio respondeu 530. Os arquivos ativos ainda não receberam esta atualização. Retomar pela conferência dos hashes e `migrate --check`, aplicar a cópia validada, coletar os estáticos e conferir a biblioteca pública, os intervalos e os módulos do leitor.
+**Publicado em 16/10/2026**, após o restabelecimento da conexão com o servidor. A cópia `/root/codex-ops/stage-wiki-documents-20261015-224919/` passou em **168 testes isolados no servidor**; os hashes e checks finais foram reconferidos antes da aplicação. Backup e manifesto: `/root/codex-ops/backups/wiki-documents-20261015-224919/`. A aplicação coletou 291 estáticos e recarregou o Gunicorn de forma graciosa, sem migrações. Ambos os PDFs abriram pelo domínio público, com 25 e 23 páginas, respostas 206 para intervalos e downloads como anexo. A última página do Cenário também renderizou no celular, sem erros de navegador. As conferências no banco foram somente de leitura, preservando os testes de acesso e a consistência do histórico de XP.
 
 Para consultar sem depender da conexão de produção, `codex/.venv/Scripts/python.exe tools/wiki_documents_preview.py --port 8012 --duration 3600` abre uma prévia em `http://127.0.0.1:8012/wiki/documentos/`, durante uma hora, com SQLite temporário. A prévia não usa contas nem saldos reais; os PDFs são os originais locais. O desenvolvimento normal mantém suas configurações anteriores.
 
