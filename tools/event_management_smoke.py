@@ -48,7 +48,7 @@ class EventManagementSmoke(StaticLiveServerTestCase):
             player = User.objects.create_user(f'player-{index}')
             Profile.objects.create(user=player)
             set_player_xp(player,300,admin,'Saldo fictício do teste')
-            character = Personagem.objects.create(usuario=player,nome=char,classe=index+1,guilda=index+1,
+            character = Personagem.objects.create(usuario=player,nome=char,classe=index+1,guilda=index+1 if index < 5 else 7,
                 status_aprovacao=2,portrait_mode='class',ouro=5)
             registrations.append(LarpInscricao.objects.create(evento=event,usuario=player,personagem=character,
                 nome_completo_jogador=name,telefone='(11) 99999-0000',cpf='000',taxa_paga=index%2==0,
@@ -98,6 +98,14 @@ class EventManagementSmoke(StaticLiveServerTestCase):
             page.wait_for_url(base+'planilha/')
             page.wait_for_load_state('networkidle')
             documents.clear()
+            guild_symbols = page.locator('[data-participant-row] > td:first-child img.em-guild-symbol')
+            expect(guild_symbols).to_have_count(len(registrations))
+            for symbol in guild_symbols.all():
+                expect(symbol).to_be_visible()
+                self.assertTrue(symbol.evaluate('(image) => image.complete && image.naturalWidth > 0'))
+            mercenary_symbol = page.locator(f'[data-participant-row="{registrations[-1].pk}"] .em-guild-symbol')
+            expect(mercenary_symbol).to_have_attribute('alt', 'Mercenários Independentes')
+            expect(mercenary_symbol).to_have_attribute('src', '/static/core/img/guildas/mercenarios-independentes.png')
             second_row = page.locator(f'[data-participant-row="{second.pk}"]')
             second_row.locator('[data-open-participant]').click()
             expect(page.locator('[data-participant-detail] h3')).to_have_text('Selene')
@@ -150,6 +158,9 @@ class EventManagementSmoke(StaticLiveServerTestCase):
             page.set_viewport_size({'width':390,'height':844})
             page.wait_for_function("document.querySelector('[data-sidebar]').getBoundingClientRect().right <= 1")
             self.assertLessEqual(page.evaluate('document.documentElement.scrollWidth'),390)
+            symbol_bounds = first_row.locator('.em-guild-symbol').bounding_box()
+            player_bounds = first_row.locator('.em-player-cell .em-person').bounding_box()
+            self.assertLessEqual(symbol_bounds['x'] + symbol_bounds['width'], player_bounds['x'])
             page.screenshot(path=str(output/'codex-events-participants-mobile.png'),full_page=True,animations='disabled')
             first_row.locator('[data-open-participant]').click()
             dialog = page.locator('[data-participant-dialog]')

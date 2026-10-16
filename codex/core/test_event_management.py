@@ -50,6 +50,14 @@ class EventManagementTests(TestCase):
         self.assertEqual(response.context['metrics'],{'total':3,'paid':0,'pending':3,'present':0,'alerts':1,'paid_percent':0,'present_percent':0})
         self.assertContains(response,'data-participant-template')
         self.assertContains(response,'XP é do jogador')
+        self.assertContains(response,'class="em-guild-symbol"',count=3)
+        self.assertContains(response,'core/img/guildas/artistas-da-revolucao.png',count=3)
+        character = self.registrations[0].personagem
+        character.guilda = None
+        character.save(update_fields=['guilda'])
+        response = self.client.get(self.url)
+        self.assertContains(response,'class="em-guild-symbol"',count=2)
+        self.assertContains(response,'aria-label="Sem símbolo de guilda"',count=1)
 
     def test_save_payment_presence_and_balances_for_selected_participant_only(self):
         registration = self.registrations[0]

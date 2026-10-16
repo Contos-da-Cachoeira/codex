@@ -101,10 +101,13 @@
 .em-participants-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; align-items: start; gap: 1.15rem; }
 .em-participant-form, .em-participant-form fieldset { min-width: 0; padding: 0; margin: 0; border: 0; }
 .em-table-scroll { overflow: auto; max-height: max(360px, calc(100dvh - 390px)); scrollbar-width: thin; }
-.em-table { width: 100%; min-width: 780px; border-collapse: separate; border-spacing: 0; text-align: left; font-size: .75rem; }
+.em-table { width: 100%; min-width: 844px; border-collapse: separate; border-spacing: 0; text-align: left; font-size: .75rem; }
 .em-table th { position: sticky; top: 0; z-index: 1; padding: .9rem .7rem; font-size: .65rem; font-weight: 650; background: var(--site-surface); color: var(--em-muted); border-bottom: 1px solid var(--em-border); }
 .em-table th small { font-size: .6rem; display: block; font-weight: 400; }
 .em-table td { padding: .95rem .7rem; border-bottom: 1px solid var(--em-border); vertical-align: middle; }
+.em-table .em-guild-cell { width: 4rem; min-width: 4rem; text-align: center; }
+.em-guild-symbol { display: block; width: 2.5rem; height: 2.5rem; margin: 0 auto; object-fit: contain; }
+.em-guild-empty { display: inline-grid; place-items: center; width: 2.5rem; height: 2.5rem; color: var(--em-muted); }
 .em-table tbody tr:last-child td { border-bottom: 0; }
 .em-table tr.is-selected td { background: color-mix(in srgb, var(--em-accent) 6%, transparent); }
 .em-table tr.is-selected td:first-child { box-shadow: inset 3px 0 var(--em-accent); }
@@ -195,13 +198,15 @@
   .em-table-scroll { overflow: visible; max-height: none; border: 0; background: transparent; }
   .em-table, .em-table tbody { display: block; min-width: 0; width: 100%; }
   .em-table thead { position: absolute; clip-path: inset(50%); width: 1px; height: 1px; overflow: hidden; }
-  .em-table tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1rem; background: var(--site-surface); border: 1px solid var(--em-border); border-radius: .8rem; padding: 1rem; margin-bottom: .8rem; }
+  .em-table tr { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1rem; background: var(--site-surface); border: 1px solid var(--em-border); border-radius: .8rem; padding: 1rem; margin-bottom: .8rem; }
   .em-table tr.is-selected { border-color: color-mix(in srgb, var(--em-accent) 55%, transparent); }
   .em-table tr.is-selected td { background: transparent; }
   .em-table tr.is-selected td:first-child { box-shadow: none; }
   .em-table td { display: block; padding: 0; border: 0; min-width: 0; }
   .em-table td[data-label]::before { content: attr(data-label); display: block; color: var(--em-muted); font-size: .62rem; margin-bottom: .4rem; }
   .em-table .em-player-cell, .em-table .em-character-cell { grid-column: 1 / -1; }
+  .em-table .em-guild-cell { position: absolute; left: 1rem; top: 1rem; width: 2.5rem; min-width: 0; }
+  .em-table .em-player-cell { padding-left: 3.1rem; min-height: 2.5rem; }
   .em-table .em-character-cell { border-bottom: 1px solid var(--em-border); padding-bottom: .8rem; }
   .em-person strong, .em-person small { max-width: none; }
   .em-number { width: 100%; font-size: 16px; }

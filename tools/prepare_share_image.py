@@ -1,6 +1,7 @@
 """Renderiza a capa de compartilhamento a partir do símbolo e das cores do site."""
 import base64
 from pathlib import Path
+import re
 
 from playwright.sync_api import sync_playwright
 
@@ -11,6 +12,11 @@ ASSETS = ROOT / 'codex/core/static/core/img'
 
 def main():
     symbol = base64.b64encode((ASSETS / 'tesseract.svg').read_bytes()).decode()
+    white_svg = (ASSETS / 'tesseract.svg').read_text(encoding='utf-8').replace('fill="#000000"', 'fill="#FFFFFF"')
+    white_svg = re.sub(r'<!DOCTYPE[^>]*>\s*', '', white_svg)
+    assert 'fill="#FFFFFF"' in white_svg
+    (ASSETS / 'favicon-white.svg').write_text(white_svg, encoding='utf-8')
+    white_symbol = base64.b64encode(white_svg.encode()).decode()
     html = '''<!doctype html><html lang="pt-BR"><meta charset="utf-8"><style>
       * { box-sizing: border-box; }
       body { margin: 0; width: 1200px; height: 630px; background: #090b10; color: #ededed; font-family: Arial, sans-serif; }
@@ -35,12 +41,15 @@ def main():
         page = browser.new_page(viewport={'width': 1200, 'height': 630}, device_scale_factor=1)
         page.set_content(html, wait_until='load')
         page.screenshot(path=str(ASSETS / 'share-card.png'))
-        for size, filename in ((32, 'favicon-32.png'), (180, 'apple-touch-icon.png')):
+        for size, filename in ((32, 'favicon-white-32.png'), (180, 'apple-touch-icon.png')):
             page.set_viewport_size({'width': size, 'height': size})
-            page.set_content('''<!doctype html><style>body { margin: 0; background: #3a83f7; }
+            page.set_content('''<!doctype html><style>body { margin: 0; background: BACKGROUND; }
                 img { display: block; width: 100vw; height: 100vh; padding: 12%; box-sizing: border-box; filter: invert(1); }
-                </style><img alt="" src="data:image/svg+xml;base64,SYMBOL">'''.replace('SYMBOL', symbol), wait_until='load')
-            page.screenshot(path=str(ASSETS / filename))
+                </style><img alt="" src="data:image/svg+xml;base64,SYMBOL">'''
+                .replace('BACKGROUND', 'transparent' if size == 32 else '#3a83f7')
+                .replace('filter: invert(1);', '' if size == 32 else 'filter: invert(1);')
+                .replace('SYMBOL', white_symbol if size == 32 else symbol), wait_until='load')
+            page.screenshot(path=str(ASSETS / filename), omit_background=size == 32)
         browser.close()
     print(ASSETS / 'share-card.png')
 

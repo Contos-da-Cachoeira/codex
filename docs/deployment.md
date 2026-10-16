@@ -1,5 +1,15 @@
 # Publicação do site
 
+## Símbolos das guildas nos participantes e favicon branco — 16/10/2026
+
+A primeira coluna da planilha de participantes mostra somente o símbolo da guilda do personagem, com nome no texto alternativo e ao passar o mouse. Os símbolos vêm do mesmo catálogo público das guildas, incluindo Mercenários Independentes. Personagens sem guilda recebem um traço; não é feita consulta adicional ao banco. No celular, o símbolo fica ao lado da identificação do jogador no cartão. Seleção, filtros e salvamento mantêm o funcionamento anterior.
+
+O favicon usa o símbolo branco em fundo transparente, com SVG e fallback PNG de 32 × 32 pixels. Os novos nomes `favicon-white.svg` e `favicon-white-32.png`, com `?v=2`, evitam reutilizar o endereço do ícone antigo. O CSS de eventos usa `?v=events-guilds-2`.
+
+Validação local: **79 testes de core/dashboard** em SQLite isolado e teste de navegador da gestão de eventos, incluindo carregamento real dos símbolos, Mercenários Independentes, celular sem sobreposição ou rolagem horizontal, filtros, seleção, gravação, conflitos, falha de rede e estado vazio. Os pixels do PNG foram conferidos como brancos, com transparência.
+
+Publicado em **https://larp.kw1.com.br** após **175 testes isolados no servidor**. Cópia validada: `/root/codex-ops/stage-participant-guilds-20261016-135209/`. Backup e manifesto: `/root/codex-ops/backups/participant-guilds-20261016-135209/`. Foram coletados três estáticos e o Gunicorn recebeu recarga graciosa, sem migrações. A conferência somente de leitura confirmou o símbolo correto na primeira coluna dos seis inscritos do evento existente e a consistência do histórico de XP. O SVG branco, o PNG transparente e o CSS atualizado retornaram 200 pelo domínio público, com os mesmos bytes dos arquivos locais.
+
 ## Prévias de compartilhamento e favicon — 16/10/2026
 
 As páginas públicas entregam metadados Open Graph e Twitter Card no HTML inicial. Detalhes da Wiki, guildas, LARPs públicos e leitores de documentos usam as imagens vinculadas ao conteúdo. Listas e páginas sem imagem própria ficam sem capa genérica; a página inicial usa uma capa de 1200 × 630 pixels com nome e símbolo do Codex. Fichas de personagens, contas, inscrições e administração não recebem prévias públicas. O símbolo também é usado no favicon PNG e no ícone para atalhos Apple.

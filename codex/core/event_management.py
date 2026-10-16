@@ -4,11 +4,13 @@ from django.db import transaction
 
 from personagens.models import Personagem
 from personagens.rules import set_player_xp
+from .constants.guildas import GUILDAS
 from .forms import EventCharacterBalanceForm
 from .models import LarpInscricao, Profile
 
 
 EDITABLE = ('xp', 'ouro', 'taxa_paga', 'presenca')
+GUILD_IMAGES = {guild['nome']: guild['imagem'] for guild in GUILDAS.values()}
 
 
 def participant_values(registration, profile=None):
@@ -41,7 +43,9 @@ def participant_rows(registrations, data=None):
             form.fields[name].widget.attrs['data-event-field'] = name
             value = current[name]
             form.fields[name].widget.attrs['data-initial'] = str(int(value)) if isinstance(value, bool) else str(value)
-        rows.append({'registration': registration, 'form': form})
+        guild_name = registration.personagem.get_guilda_display() or 'Sem guilda'
+        rows.append({'registration': registration, 'form': form,
+                     'guild_name': guild_name, 'guild_image': GUILD_IMAGES.get(guild_name, '')})
     return rows
 
 

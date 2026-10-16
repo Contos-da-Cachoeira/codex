@@ -14,7 +14,7 @@ As informações Open Graph e Twitter Card são entregues no HTML inicial das p�
 
 As imagens usam URLs absolutas, respeitando o endereço atual e HTTPS encaminhado pelo proxy. A URL da página não inclui filtros ou parâmetros de consulta. Nenhuma consulta adicional ao banco é feita para gerar os metadados; eles usam o conteúdo já carregado pela página.
 
-O símbolo também aparece como favicon PNG de 32 × 32 pixels e ícone de 180 × 180 pixels para atalhos de dispositivos Apple. Para refazer a capa e esses ícones a partir do SVG existente, execute `codex/.venv/Scripts/python.exe tools/prepare_share_image.py`, com Playwright e Chrome disponíveis. Ao trocar os arquivos, altere também suas versões de cache nos templates e em `core/social.py`.
+O favicon usa o símbolo branco em fundo transparente, em SVG (`favicon-white.svg`) e PNG de 32 × 32 pixels (`favicon-white-32.png`), com endereço novo e versão de cache `v=2`. O ícone de 180 × 180 pixels para atalhos Apple mantém o símbolo branco sobre azul. Para refazer a capa e esses ícones a partir do SVG existente, execute `codex/.venv/Scripts/python.exe tools/prepare_share_image.py`, com Playwright e Chrome disponíveis. Ao trocar os arquivos, altere também suas versões de cache nos templates e em `core/social.py`.
 
 ## Publicação e conferência
 

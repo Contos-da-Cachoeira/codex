@@ -121,7 +121,7 @@ class SocialMetadataTests(TestCase):
         self.assertNotIn('og:title', self.metadata(reverse('admin_dashboard')))
 
     def test_cover_and_favicons_are_valid_pngs_and_linked_in_the_html(self):
-        for filename, size in (('share-card.png', (1200, 630)), ('favicon-32.png', (32, 32)),
+        for filename, size in (('share-card.png', (1200, 630)), ('favicon-white-32.png', (32, 32)),
                                ('apple-touch-icon.png', (180, 180))):
             with self.subTest(filename=filename):
                 image_path = finders.find(f'core/img/{filename}')
@@ -129,7 +129,14 @@ class SocialMetadataTests(TestCase):
                 with Image.open(image_path) as image:
                     self.assertEqual(image.format, 'PNG')
                     self.assertEqual(image.size, size)
-                    image.verify()
+                    if filename == 'favicon-white-32.png':
+                        pixels = list(image.convert('RGBA').getdata())
+                        self.assertTrue(any(alpha == 0 for *rgb, alpha in pixels))
+                        self.assertTrue(any(alpha == 255 for *rgb, alpha in pixels))
+                        self.assertTrue(all(min(rgb) >= 250 for *rgb, alpha in pixels if alpha))
+                    else:
+                        image.verify()
         response = self.client.get('/')
-        self.assertContains(response, '/static/core/img/favicon-32.png?v=1')
+        self.assertContains(response, '/static/core/img/favicon-white-32.png?v=2')
+        self.assertContains(response, '/static/core/img/favicon-white.svg?v=2')
         self.assertContains(response, '/static/core/img/apple-touch-icon.png?v=1')

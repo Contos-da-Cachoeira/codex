@@ -1,4 +1,5 @@
 {% extends 'core/event_management_base.html' %}
+{% load static %}
 {% block title %}Participantes | {{ evento.titulo }}{% endblock %}
 {% block event_content %}
 <section class="em-participants-intro"><div><h2 id="planilha-participantes">Participantes e saldos</h2><p>Confirme as inscrições e registre os saldos finais da sessão.</p></div><span class="em-badge">{{ evento.data_evento|date:'d/m/Y · H:i' }}</span></section>
@@ -17,10 +18,11 @@
         <legend class="em-sr-only">Planilha dos participantes</legend>
         <div class="em-table-scroll em-card">
           <table class="em-table" data-event-table><caption class="em-sr-only">Inscritos, pagamento, presença e saldos finais. Use Tab para avançar entre os campos.</caption>
-            <thead><tr><th>Jogador</th><th>Personagem</th><th>Pagamento</th><th>Presença</th><th>XP <small>jogador</small></th><th>Ouro <small>DO</small></th><th><span class="em-sr-only">Detalhes</span></th></tr></thead>
+            <thead><tr><th class="em-guild-cell" scope="col">Guilda</th><th>Jogador</th><th>Personagem</th><th>Pagamento</th><th>Presença</th><th>XP <small>jogador</small></th><th>Ouro <small>DO</small></th><th><span class="em-sr-only">Detalhes</span></th></tr></thead>
             <tbody>
               {% for row in balance_rows %}{% with registration=row.registration character=row.registration.personagem %}
               <tr data-participant-row="{{ registration.pk }}" data-character-id="{{ character.pk }}" data-participant-search-text="{{ registration.nome_completo_jogador }} {{ registration.apelido_cla }} {{ registration.usuario.username }} {{ character.nome }} {{ character.get_classe_display }} {{ character.get_guilda_display }}" data-saved-paid="{% if registration.taxa_paga %}1{% else %}0{% endif %}" data-saved-presence="{% if registration.presenca_confirmada %}1{% else %}0{% endif %}" data-guild="{{ character.guilda|default:0 }}">
+                <td class="em-guild-cell" title="{{ row.guild_name }}">{% if row.guild_image %}<img class="em-guild-symbol" src="{% static row.guild_image %}" alt="{{ row.guild_name }}" width="40" height="40" decoding="async">{% else %}<span class="em-guild-empty" role="img" aria-label="Sem símbolo de guilda">—</span>{% endif %}</td>
                 <td class="em-player-cell"><div class="em-person">{% include 'core/includes/user_avatar.html' with avatar_user=registration.usuario %}<div><strong>{{ registration.nome_completo_jogador|default:registration.usuario.username }}</strong><small>@{{ registration.usuario.username }}{% if registration.fobia_gatilho %}<span class="em-care-dot" title="Cuidados informados" aria-label="Cuidados informados">●</span>{% endif %}</small></div></div>{{ row.form.xp_anterior }}{{ row.form.ouro_anterior }}{{ row.form.taxa_anterior }}{{ row.form.presenca_anterior }}</td>
                 <td class="em-character-cell"><div class="em-person">{% include 'core/includes/character_avatar.html' with character=character %}<div><strong>{{ character.nome }}</strong><small>{{ character.get_classe_display|default:'Sem classe' }} · {{ character.get_guilda_display|default:'Sem guilda' }}</small></div></div></td>
                 <td data-label="Pagamento"><label class="em-state-control" for="{{ row.form.taxa_paga.id_for_label }}">{{ row.form.taxa_paga }}<span data-state-text="taxa_paga">{% if registration.taxa_paga %}Pago{% else %}Pendente{% endif %}</span><span class="em-sr-only"> — {{ registration.nome_completo_jogador }}</span></label><div class="em-field-error" data-error-for="taxa_paga">{{ row.form.taxa_paga.errors }}</div></td>
@@ -29,8 +31,8 @@
                 <td data-label="Ouro do personagem (DO)"><label class="em-sr-only" for="{{ row.form.ouro.id_for_label }}">Ouro de {{ character.nome }}</label>{{ row.form.ouro }}<div class="em-field-error" data-error-for="ouro">{{ row.form.ouro.errors }}</div></td>
                 <td class="em-detail-cell"><button class="em-row-detail" type="button" data-open-participant="{{ registration.pk }}" aria-pressed="false" aria-label="Ver detalhes de {{ character.nome }}">{% include 'core/includes/event_icon.html' with kind='arrow' %}<span>Detalhes</span></button></td>
               </tr>
-              {% endwith %}{% empty %}<tr><td colspan="7"><div class="em-empty"><span>{% include 'core/includes/event_icon.html' with kind='people' %}</span><h3>A sessão começa com seus jogadores</h3><p>Ainda não há inscrições neste LARP.</p><a class="em-button em-button-secondary" href="{% url 'detalhe_larp' evento.slug %}">Voltar à visão geral</a></div></td></tr>{% endfor %}
-              <tr data-participant-no-results hidden><td colspan="7"><div class="em-empty"><h3>Nenhum participante encontrado</h3><p>Tente outro nome ou ajuste os filtros.</p></div></td></tr>
+              {% endwith %}{% empty %}<tr><td colspan="8"><div class="em-empty"><span>{% include 'core/includes/event_icon.html' with kind='people' %}</span><h3>A sessão começa com seus jogadores</h3><p>Ainda não há inscrições neste LARP.</p><a class="em-button em-button-secondary" href="{% url 'detalhe_larp' evento.slug %}">Voltar à visão geral</a></div></td></tr>{% endfor %}
+              <tr data-participant-no-results hidden><td colspan="8"><div class="em-empty"><h3>Nenhum participante encontrado</h3><p>Tente outro nome ou ajuste os filtros.</p></div></td></tr>
             </tbody>
           </table>
         </div>
