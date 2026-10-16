@@ -1,166 +1,50 @@
 {% extends "core/base.html" %}
 {% load static %}
-
-{% block head_extra %}
-  <link rel="stylesheet" href="{% static 'guildas/css/detail.css' %}">
-  {% if info_publica.imagem %}
-    <link rel="icon" type="image/png" href="{% static info_publica.imagem %}">
-  {% endif %}
-{% endblock %}
-
-{% block title %}{{ info_publica.nome|default:guilda }}{% endblock %}
-
+{% block head_extra %}{{ block.super }}<link rel="stylesheet" href="{% static 'guildas/css/detail.css' %}?v=guild-identities-1">{% endblock %}
+{% block title %}{{ info_publica.nome|default:guilda }} | Codex{% endblock %}
 {% block content %}
-<section class="guild-page space-y-6">
-    <nav class="breadcrumbs text-sm" aria-label="Localização"><ul><li><a href="{% url 'listar_guildas' %}">Guildas</a></li><li>{{ info_publica.nome }}</li></ul></nav>
-    <header class="guild-hero">
-        {% if info_publica.imagem %}
-        <figure class="guild-crest"><img src="{% static info_publica.imagem %}" alt="Brasão de {{ info_publica.nome }}" width="320" height="320" fetchpriority="high"></figure>
-        {% endif %}
-        <div class="guild-heading">
-            <p class="guild-eyebrow">Alianças do Codex</p>
-            <h1>{{ info_publica.nome }}</h1>
-            <p class="guild-subtitle">{% block guilda_subtitulo %}Conheça os ideais, a origem e os caminhos desta guilda.{% endblock %}</p>
-            {% if info_publica.lema %}<blockquote class="guild-motto">“{{ info_publica.lema }}”</blockquote>{% endif %}
-            {% if eh_membro %}<span class="badge badge-outline">Membro da guilda</span>{% elif pode_ver_privado %}<span class="badge badge-outline">Acesso administrativo</span>{% else %}<span class="badge badge-outline">Conheça a guilda</span>{% endif %}
-        </div>
-    </header>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
-        <article class="card bg-base-100 border border-base-300 shadow-lg lg:col-span-2">
-            <div class="card-body space-y-4">
-                <h2 class="card-title">Identidade da guilda</h2>
-
-                <div class="grid sm:grid-cols-2 gap-4">
-                    {% if info_publica.divindade %}
-                        <div class="rounded-box bg-base-200 p-4">
-                            <p class="text-xs uppercase tracking-wide opacity-70">Divindade</p>
-                            <p class="font-medium">{{ info_publica.divindade }}</p>
-                        </div>
-                    {% endif %}
-                    {% if info_publica.terra_natal %}
-                        <div class="rounded-box bg-base-200 p-4">
-                            <p class="text-xs uppercase tracking-wide opacity-70">Terra natal</p>
-                            <p class="font-medium">{{ info_publica.terra_natal }}</p>
-                        </div>
-                    {% endif %}
-                    {% if info_publica.lideranca %}
-                        <div class="rounded-box bg-base-200 p-4">
-                            <p class="text-xs uppercase tracking-wide opacity-70">Liderança</p>
-                            <p class="font-medium">{{ info_publica.lideranca }}</p>
-                        </div>
-                    {% endif %}
-                    {% if info_publica.vantagem %}
-                        <div class="rounded-box bg-base-200 p-4">
-                            <p class="text-xs uppercase tracking-wide opacity-70">Vantagem</p>
-                            <p class="font-medium">{{ info_publica.vantagem }}</p>
-                            {% if info_publica.vantagem_efeito %}<p class="mt-2">{{ info_publica.vantagem_efeito }}</p>{% endif %}
-                        </div>
-                    {% endif %}
-                </div>
-
-                {% if info_publica.marca_nome %}
-                    <div role="alert" class="alert alert-error alert-soft">
-                        <span><strong>{{ info_publica.marca_nome }}:</strong> {{ info_publica.marca_efeito }}</span>
-                    </div>
-                {% endif %}
-                {% if info_publica.saida %}<section><h3 class="font-bold">Saída autorizada</h3><p>{{ info_publica.saida }}</p></section>{% endif %}
-                {% if info_publica.desvantagem %}<section><h3 class="font-bold">Desvantagem</h3><p>{{ info_publica.desvantagem }}</p></section>{% endif %}
-                <p class="text-sm opacity-70">Regras de referência: Manual LARP 3.3, páginas 6–10. Iniciação, pactos, marcas e perdão são avaliados pela comissão.</p>
-            </div>
-        </article>
-
-        <aside class="space-y-5">
-            {% if pode_ver_privado %}
-                <div class="stats stats-vertical shadow w-full bg-base-100 border border-base-300">
-                    <div class="stat">
-                        <div class="stat-title">Personagens ativos</div>
-                        <div class="stat-value text-3xl">{{ total_personagens }}</div>
-                    </div>
-                </div>
-            {% endif %}
-
-            <div class="card bg-base-100 border border-base-300">
-                <div class="card-body">
-                    <h3 class="card-title text-base">Explore o Codex</h3>
-                    <p class="text-sm opacity-70">Descubra outras alianças e os caminhos que seu personagem pode seguir.</p>
-                    <a href="{% url 'wiki_classes_lista' %}" class="btn btn-ghost btn-sm">Conhecer as classes</a>
-                    <a href="{% url 'listar_guildas' %}" class="btn btn-outline btn-sm">Voltar para todas as guildas</a>
-                </div>
-            </div>
-        </aside>
+<article class="guild-page" data-guild-theme="{{ guilda.slug }}" aria-labelledby="guild-name">
+  <nav class="guild-breadcrumbs" aria-label="Localização"><a href="{% url 'listar_guildas' %}"><span aria-hidden="true">←</span> Todas as alianças</a><span aria-hidden="true">/</span><span>{{ info_publica.nome }}</span></nav>
+  <header class="guild-hero">
+    <div class="guild-hero-copy">
+      <p class="guild-eyebrow">{% block guilda_categoria %}Alianças dos Contos da Cachoeira{% endblock %}</p>
+      <h1 id="guild-name">{{ info_publica.nome }}</h1>
+      <p class="guild-subtitle">{% block guilda_subtitulo %}Conheça os ideais, a origem e os caminhos desta guilda.{% endblock %}</p>
+      <div class="guild-traits" aria-label="Identidade">{% block guilda_tracos %}<span>História</span><span>Alianças</span><span>Escolhas</span>{% endblock %}</div>
+      <div class="guild-hero-actions"><a class="guild-button" href="#guild-historia">Conhecer este caminho <span aria-hidden="true">↘</span></a><a class="guild-text-link" href="#guild-pacto">Vantagens e compromissos <span aria-hidden="true">→</span></a></div>
+      {% if eh_membro %}<p class="guild-access"><span aria-hidden="true">●</span> Você faz parte desta guilda</p>{% elif pode_ver_privado %}<p class="guild-access">Acesso administrativo</p>{% endif %}
     </div>
-
-    {% if pode_ver_privado and guilda.descricao_interna %}
-        <article class="card bg-base-100 border border-warning shadow-md">
-            <div class="card-body">
-                <h2 class="card-title">Canal interno da guilda</h2>
-                <div class="prose max-w-none text-base-content/90">{{ guilda.descricao_interna|linebreaks }}</div>
-            </div>
-        </article>
-    {% endif %}
-
-    {% if pode_ver_privado %}
-        <article class="card bg-base-100 border border-base-300 shadow-md">
-            <div class="card-body">
-                <h2 class="card-title">Notícias internas</h2>
-                {% if noticias %}
-                    <ul class="list bg-base-100 rounded-box">
-                        {% for noticia in noticias %}
-                            <li class="list-row">
-                                <div>
-                                    <p class="font-semibold">{{ noticia.titulo }}</p>
-                                    <p class="text-xs opacity-70">{{ noticia.criado_em|date:"d/m/Y H:i" }}</p>
-                                    <p class="mt-2 text-sm">{{ noticia.conteudo }}</p>
-                                </div>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                {% else %}
-                    <p class="text-sm opacity-70">Nenhuma notícia interna publicada.</p>
-                {% endif %}
-            </div>
-        </article>
-    {% endif %}
-
-    {% if pode_ver_privado %}
-    <article class="card bg-base-100 border border-base-300 shadow-md">
-        <div class="card-body">
-            <h2 class="card-title">Personagens aprovados</h2>
-            {% if pode_ver_privado %}
-                {% if personagens_guilda %}
-                    <div class="overflow-x-auto">
-                        <table class="table table-zebra">
-                            <thead>
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>Classe</th>
-                                    <th>Jogador</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for personagem in personagens_guilda %}
-                                    <tr>
-                                        <td>
-                                            {% include 'core/includes/character_avatar.html' with character=personagem %}
-                                            {% if personagem.usuario == user %}
-                                                <a class="link link-primary" href="{% url 'detalhe_personagem' personagem.slug %}">{{ personagem.nome }}</a>
-                                            {% else %}
-                                                {{ personagem.nome }}
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ personagem.get_classe_display }}</td>
-                                        <td>{% include 'core/includes/user_avatar.html' with avatar_user=personagem.usuario %} {{ personagem.usuario.username }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <p class="text-sm opacity-70">Nenhum personagem aprovado nesta guilda.</p>
-                {% endif %}
-            {% endif %}
-        </div>
-    </article>
-    {% endif %}
-</section>
+    <div class="guild-hero-art">{% include 'guildas/includes/hero_ornament.html' %}<div class="guild-crest-frame"><figure class="guild-crest">{% if info_publica.imagem %}<img src="{% static info_publica.imagem %}" alt="Brasão de {{ info_publica.nome }}" width="400" height="400" fetchpriority="high" decoding="async">{% endif %}</figure></div><p class="guild-art-caption">{% block guilda_selo %}{% endblock %}</p></div>
+    <div class="guild-hero-footer"><span>Contos da Cachoeira</span><span>{% block guilda_assinatura %}Histórias que se encontram{% endblock %}</span></div>
+  </header>
+  {% if info_publica.lema %}<div class="guild-motto"><span aria-hidden="true">“</span><blockquote>{{ info_publica.lema }}</blockquote><span class="guild-motto-line" aria-hidden="true"></span></div>{% endif %}
+  <div class="guild-overview" id="guild-historia">
+    <section class="guild-story" aria-labelledby="guild-story-title"><p class="guild-eyebrow">{% block guilda_historia_label %}O espírito da guilda{% endblock %}</p><h2 id="guild-story-title">{% block guilda_historia_titulo %}Uma história para fazer parte.{% endblock %}</h2><div class="guild-story-text">{% block guilda_historia %}<p>Os ideais de uma guilda acompanham seu personagem dentro e fora de cada aventura. Conheça sua origem e os compromissos de quem escolhe este caminho.</p>{% endblock %}</div></section>
+    <aside class="guild-identity" aria-labelledby="guild-identity-title"><p class="guild-eyebrow" id="guild-identity-title">{% block guilda_identidade_label %}Identidade da guilda{% endblock %}</p><dl>
+      {% if info_publica.terra_natal %}<div><dt>Terra natal</dt><dd>{{ info_publica.terra_natal }}</dd></div>{% endif %}
+      {% if info_publica.lideranca %}<div><dt>Liderança</dt><dd>{{ info_publica.lideranca }}</dd></div>{% endif %}
+      {% if info_publica.divindade %}<div><dt>Divindade</dt><dd>{{ info_publica.divindade }}</dd></div>{% endif %}
+      {% block guilda_fato_extra %}{% endblock %}
+    </dl>{% if pode_ver_privado %}<div class="guild-member-count"><strong>{{ total_personagens|default:0 }}</strong><span>personagens ativos<br>nesta guilda</span></div>{% endif %}</aside>
+  </div>
+  <section class="guild-pact" id="guild-pacto" aria-labelledby="guild-pact-title">
+    <header class="guild-section-heading"><div><p class="guild-eyebrow">Escolhas que acompanham você</p><h2 id="guild-pact-title">{% block guilda_pacto_titulo %}O poder e o compromisso.{% endblock %}</h2></div><p>Conheça os benefícios e as responsabilidades deste caminho antes de escolher.</p></header>
+    <div class="guild-pact-grid">
+      {% if info_publica.vantagem %}<article class="guild-rule guild-rule-gift"><div class="guild-rule-heading"><span class="guild-rule-number" aria-hidden="true">01</span><span class="guild-eyebrow">Vantagem</span><span class="guild-rule-mark" aria-hidden="true">✧</span></div><h3>{{ info_publica.vantagem }}</h3>{% if info_publica.vantagem_efeito %}<p>{{ info_publica.vantagem_efeito }}</p>{% endif %}</article>{% endif %}
+      {% if info_publica.marca_nome %}<article class="guild-rule guild-rule-oath"><div class="guild-rule-heading"><span class="guild-rule-number" aria-hidden="true">02</span><span class="guild-eyebrow">Marca e compromisso</span><span class="guild-rule-mark" aria-hidden="true">◇</span></div><h3>{{ info_publica.marca_nome }}</h3><p>{{ info_publica.marca_efeito }}</p></article>{% elif info_publica.desvantagem %}<article class="guild-rule guild-rule-oath"><div class="guild-rule-heading"><span class="guild-rule-number" aria-hidden="true">02</span><span class="guild-eyebrow">Desvantagem</span><span class="guild-rule-mark" aria-hidden="true">◇</span></div><h3>O preço da independência</h3><p>{{ info_publica.desvantagem }}</p></article>{% endif %}
+    </div>
+    {% if info_publica.saida %}<aside class="guild-exit"><span class="guild-eyebrow">Saída autorizada</span><p>{{ info_publica.saida }}</p></aside>{% endif %}
+    <div class="guild-sources"><p>{% block guilda_referencias %}Manual LARP 3.3, páginas 6–10. Iniciação, pactos, marcas e perdão são avaliados pela comissão.{% endblock %}</p><div><a href="{% url 'wiki_documento_leitor' 'manual-larp-3-3' %}">Ler o Manual <span aria-hidden="true">↗</span></a>{% block guilda_cenario_link %}<a href="{% url 'wiki_documento_leitor' 'cenario-contos-da-cachoeira' %}">Ler o Cenário <span aria-hidden="true">↗</span></a>{% endblock %}</div></div>
+  </section>
+  {% if pode_ver_privado %}
+  <section class="guild-private" aria-labelledby="guild-private-title"><header class="guild-section-heading"><div><p class="guild-eyebrow">Área de membros</p><h2 id="guild-private-title">Vida da guilda.</h2></div><span class="guild-private-label">{% if eh_membro %}Seu espaço na guilda{% else %}Acesso administrativo{% endif %}</span></header>
+    {% if guilda.descricao_interna %}<article class="guild-private-note"><h3>Canal interno da guilda</h3><div>{{ guilda.descricao_interna|linebreaks }}</div></article>{% endif %}
+    <div class="guild-private-grid">
+      <section class="guild-private-panel"><h3>Notícias internas</h3>{% if noticias %}<ul class="guild-news">{% for noticia in noticias %}<li><time datetime="{{ noticia.criado_em|date:'c' }}">{{ noticia.criado_em|date:"d/m/Y · H:i" }}</time><h4>{{ noticia.titulo }}</h4><p>{{ noticia.conteudo }}</p></li>{% endfor %}</ul>{% else %}<p class="guild-empty">Nenhuma notícia interna publicada.</p>{% endif %}</section>
+      <section class="guild-private-panel"><h3>Personagens aprovados</h3>{% if personagens_guilda %}<ul class="guild-roster">{% for personagem in personagens_guilda %}<li>{% include 'core/includes/character_avatar.html' with character=personagem %}<div>{% if personagem.usuario == user %}<a href="{% url 'detalhe_personagem' personagem.slug %}">{{ personagem.nome }}</a>{% else %}<strong>{{ personagem.nome }}</strong>{% endif %}<span>{{ personagem.get_classe_display }} · @{{ personagem.usuario.username }}</span></div></li>{% endfor %}</ul>{% else %}<p class="guild-empty">Nenhum personagem aprovado nesta guilda.</p>{% endif %}</section>
+    </div>
+  </section>
+  {% endif %}
+  <footer class="guild-explore"><div><p class="guild-eyebrow">O próximo capítulo é seu</p><h2>{% block guilda_convite %}Que história você quer viver?{% endblock %}</h2><p>Conheça as classes e encontre o caminho do seu personagem.</p></div><div class="guild-explore-actions"><a class="guild-button" href="{% url 'wiki_classes_lista' %}">Explorar as classes <span aria-hidden="true">→</span></a><a class="guild-text-link" href="{% url 'listar_guildas' %}">Ver todas as alianças</a></div></footer>
+</article>
 {% endblock %}

@@ -1,16 +1,184 @@
-.guild-page { --guild-accent: #c9c9c9; max-width: 1280px; margin-inline: auto; }
-.guild-hero { display: grid; grid-template-columns: minmax(200px, .7fr) minmax(0, 1.5fr); align-items: center; gap: clamp(1.5rem, 4vw, 4rem); padding: clamp(1.5rem, 5vw, 4rem); border: 1px solid #ffffff24; border-radius: 1.5rem; background: radial-gradient(ellipse at 15% 40%, #ffffff10, transparent 65%), var(--color-base-100); position: relative; overflow: hidden; }
-.guild-hero::after { content: ''; position: absolute; top: 0; right: 3rem; width: 3rem; height: 5rem; background: #ffffff08; clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%); }
-.guild-crest { display: grid; place-items: center; aspect-ratio: 1; border: 1px solid #ffffff18; border-radius: 50%; background: #c9c9c9; padding: 1.5rem; }
-.guild-crest img { width: 100%; height: 100%; max-height: 290px; object-fit: contain; filter: grayscale(1); }
-.guild-eyebrow { font-size: .7rem; letter-spacing: .25em; text-transform: uppercase; opacity: .65; margin-bottom: 1rem; }
-.guild-heading h1 { font-family: Georgia, serif; font-size: clamp(2.2rem, 4.5vw, 4rem); font-weight: 700; line-height: 1.1; text-wrap: balance; }
-.guild-subtitle { margin-top: 1.25rem; opacity: .7; line-height: 1.8; max-width: 40rem; }
-.guild-motto { font-family: Georgia, serif; font-style: italic; font-size: clamp(1.15rem, 2vw, 1.5rem); border-left: 2px solid var(--guild-accent); padding-left: 1rem; margin-block: 1.75rem; }
-.guild-heading > .badge { margin-top: 1rem; }
-.guild-page .card { border-radius: 1rem; }
-.guild-page .card-title { font-family: Georgia, serif; font-size: 1.4rem; margin-bottom: .5rem; }
-.guild-page .card-body { padding: clamp(1.25rem, 3vw, 2rem); }
-.guild-page .table td { white-space: normal; }
-.guild-page a:focus-visible { outline: 2px solid var(--guild-accent); outline-offset: 4px; }
-@media (max-width: 700px) { .guild-hero { grid-template-columns: 1fr; } .guild-crest { width: 180px; margin-inline: auto; } .guild-heading { text-align: center; } .guild-motto { text-align: left; } }
+.guild-page { --g-accent:#d2c8aa; --g-second:#b9c1cc; --g-bg:#111316; --g-panel:#191b1f; --g-border:#ffffff19; --g-text:#f1eee7; --g-muted:#bcbab6; --g-font:Georgia,'Times New Roman',serif; max-width:1480px; margin:0 auto; color:var(--g-text); }
+.guild-page *, .guild-page *::before, .guild-page *::after { box-sizing:border-box; }
+.guild-page :is(h1,h2,h3,h4,p,figure,blockquote,dl,dd,ul) { margin:0; }
+.guild-page a { text-decoration:none; }
+.guild-page a:focus-visible { outline:2px solid var(--g-accent); outline-offset:5px; }
+.guild-page :is(section,aside)[id] { scroll-margin-top:2rem; }
+.guild-page[data-guild-theme="artistas-da-revolucao"] { --g-accent:#f6c86b; --g-second:#76c8d0; --g-bg:#15141b; --g-panel:#1d1c25; --g-border:#d4bdaa30; --g-muted:#bdb8c3; --g-font:Arial,Helvetica,sans-serif; }
+.guild-page[data-guild-theme="circulo-do-fogo"] { --g-accent:#f57562; --g-second:#e8b77a; --g-bg:#180e10; --g-panel:#221416; --g-border:#ec7d6030; --g-muted:#c7afad; --g-font:Arial,Helvetica,sans-serif; }
+.guild-page[data-guild-theme="floresta-do-sol"] { --g-accent:#c9d784; --g-second:#78ad86; --g-bg:#0d1914; --g-panel:#14241c; --g-border:#b3c99030; --g-muted:#adbdaf; }
+.guild-page[data-guild-theme="irmandade-das-tavernas"] { --g-accent:#e6bd72; --g-second:#7cac86; --g-bg:#171a12; --g-panel:#23251a; --g-border:#c7aa6933; --g-muted:#c2bdab; }
+.guild-page[data-guild-theme="os-rasga-mortalhas"] { --g-accent:#c4a7ee; --g-second:#ded4b6; --g-bg:#15111d; --g-panel:#211a2b; --g-border:#bea2e333; --g-muted:#bcb0c9; }
+.guild-page[data-guild-theme="sociedade-zaori"] { --g-accent:#bba3f3; --g-second:#c9d2e9; --g-bg:#10101f; --g-panel:#19192c; --g-border:#b1a4eb33; --g-muted:#afafc5; }
+.guild-page[data-guild-theme="mercenarios-independentes"] { --g-accent:#d1d5dc; --g-second:#8da5b8; --g-bg:#121518; --g-panel:#1b2025; --g-border:#a5b4c630; --g-muted:#aeb8bf; --g-font:Arial,Helvetica,sans-serif; }
+.guild-breadcrumbs { display:flex; align-items:center; flex-wrap:wrap; gap:.8rem; margin-bottom:1.7rem; color:var(--g-muted); font-size:.75rem; }
+.guild-breadcrumbs a { display:inline-flex; align-items:center; gap:.6rem; color:var(--g-text); }
+.guild-breadcrumbs a:hover { color:var(--g-accent); }
+.guild-hero { isolation:isolate; position:relative; display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); align-items:center; min-height:570px; padding:clamp(2rem,4.2vw,4.5rem); padding-bottom:6rem; overflow:hidden; border:1px solid var(--g-border); border-radius:1.2rem; background:var(--g-bg); }
+.guild-hero::before { position:absolute; inset:0; z-index:-1; content:''; background:radial-gradient(ellipse at 90% 20%,color-mix(in srgb,var(--g-accent) 10%,transparent),transparent 60%); pointer-events:none; }
+.guild-hero-copy { position:relative; z-index:2; min-width:0; }
+.guild-eyebrow { color:var(--g-accent); font-family:Arial,Helvetica,sans-serif; font-size:.66rem; font-weight:700; letter-spacing:.16em; line-height:1.7; text-transform:uppercase; }
+.guild-hero h1 { margin-top:1rem; max-width:12ch; font-family:var(--g-font); font-size:clamp(3.2rem,5.2vw,5.7rem); font-weight:600; letter-spacing:-.055em; line-height:1.02; text-wrap:balance; }
+.guild-subtitle { max-width:34rem; margin-top:1.6rem !important; font-size:clamp(.95rem,1.2vw,1.08rem); line-height:1.8; color:var(--g-muted); }
+.guild-traits { display:flex; flex-wrap:wrap; align-items:center; gap:.6rem 1rem; margin-top:1.7rem; }
+.guild-traits span { display:inline-flex; align-items:center; gap:.5rem; font-size:.7rem; letter-spacing:.035em; color:var(--g-second); }
+.guild-traits span::before { content:''; width:4px; height:4px; background:currentColor; transform:rotate(45deg); }
+.guild-hero-actions { display:flex; align-items:center; flex-wrap:wrap; gap:1.2rem 1.5rem; margin-top:2.1rem; }
+.guild-button { display:inline-flex; align-items:center; justify-content:center; gap:1.4rem; min-height:2.9rem; padding:.85rem 1.15rem; border:1px solid transparent; border-radius:.45rem; background:var(--g-accent); color:var(--g-bg); font-size:.75rem; font-weight:750; transition:filter 160ms ease,transform 160ms ease; }
+.guild-button:hover { filter:brightness(1.12); transform:translateY(-2px); }
+.guild-button span { font-size:1rem; font-weight:400; }
+.guild-text-link { display:inline-flex; align-items:center; gap:.5rem; color:var(--g-text); font-size:.74rem; line-height:1.6; }
+.guild-text-link:hover { color:var(--g-accent); }
+.guild-access { display:flex; align-items:center; gap:.5rem; margin-top:1.3rem !important; color:var(--g-muted); font-size:.68rem; }
+.guild-access span { color:var(--g-accent); font-size:.5rem; }
+.guild-hero-art { position:relative; display:grid; place-items:center; align-self:stretch; min-width:0; min-height:400px; }
+.guild-ornament { position:absolute; inset:0; width:100%; height:100%; color:var(--g-accent); opacity:.4; pointer-events:none; overflow:visible; }
+.guild-crest-frame { position:relative; display:grid; place-items:center; width:min(90%,380px); aspect-ratio:1; }
+.guild-crest { display:grid; place-items:center; width:100%; height:100%; padding:1rem; }
+.guild-crest img { display:block; width:100%; height:100%; max-height:340px; object-fit:contain; filter:drop-shadow(0 12px 28px #0005); }
+.guild-art-caption { position:absolute; bottom:.7rem; left:0; right:0; color:var(--g-second); text-align:center; font-size:.61rem; letter-spacing:.17em; text-transform:uppercase; }
+.guild-hero-footer { position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between; gap:1rem; padding:1.15rem clamp(2rem,4.2vw,4.5rem); border-top:1px solid var(--g-border); color:var(--g-muted); font-size:.6rem; letter-spacing:.13em; text-transform:uppercase; }
+.guild-motto { display:flex; align-items:center; gap:1.3rem; padding:2.1rem .3rem; }
+.guild-motto > span:first-child { color:var(--g-accent); font-family:Georgia,serif; font-size:4rem; line-height:.65; padding-top:.6rem; }
+.guild-motto blockquote { max-width:52rem; font-family:Georgia,serif; font-size:clamp(1.15rem,1.8vw,1.65rem); font-style:italic; color:var(--g-text); line-height:1.5; }
+.guild-motto-line { flex:1; height:1px; min-width:2rem; background:var(--g-border); }
+.guild-overview { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(270px,.8fr); gap:clamp(2rem,5vw,6rem); padding:2.5rem 0 3.5rem; align-items:start; }
+.guild-story h2, .guild-section-heading h2, .guild-explore h2 { max-width:18ch; font-family:var(--g-font); font-weight:500; font-size:clamp(1.9rem,2.8vw,2.9rem); line-height:1.15; letter-spacing:-.035em; text-wrap:balance; }
+.guild-story h2 { margin-top:.9rem; }
+.guild-story-text { max-width:45rem; margin-top:1.4rem; color:var(--g-muted); font-size:.93rem; line-height:1.9; }
+.guild-story-text p + p { margin-top:1.1rem; }
+.guild-story-text strong { color:var(--g-text); font-weight:650; }
+.guild-identity { padding:1.7rem 1.8rem; border:1px solid var(--g-border); border-top:2px solid var(--g-accent); border-radius:.5rem; background:var(--g-panel); }
+.guild-identity dl { margin-top:.6rem; }
+.guild-identity dl > div { padding:1rem 0; border-bottom:1px solid var(--g-border); }
+.guild-identity dl > div:last-child { border-bottom:0; padding-bottom:0; }
+.guild-identity dt { font-size:.64rem; color:var(--g-muted); margin-bottom:.35rem; }
+.guild-identity dd { font-size:.9rem; color:var(--g-text); line-height:1.6; }
+.guild-member-count { display:flex; gap:1rem; align-items:center; margin-top:1.3rem; padding-top:1.3rem; border-top:1px solid var(--g-border); }
+.guild-member-count strong { font-size:2rem; line-height:1; color:var(--g-accent); }
+.guild-member-count span { font-size:.68rem; line-height:1.5; color:var(--g-muted); }
+.guild-pact { padding:2.8rem 0 3rem; border-top:1px solid var(--g-border); }
+.guild-section-heading { display:flex; align-items:end; justify-content:space-between; flex-wrap:wrap; gap:1.5rem; margin-bottom:1.7rem; }
+.guild-section-heading h2 { max-width:25ch; margin-top:.7rem; font-size:clamp(1.7rem,2.5vw,2.45rem); }
+.guild-section-heading > p { max-width:25rem; font-size:.8rem; line-height:1.75; color:var(--g-muted); }
+.guild-pact-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1.2rem; }
+.guild-rule { position:relative; min-width:0; padding:1.8rem 2rem 2.2rem; border:1px solid var(--g-border); border-radius:.7rem; background:var(--g-panel); }
+.guild-rule-gift { border-top:2px solid var(--g-accent); }
+.guild-rule-oath { background:color-mix(in srgb,var(--g-panel) 65%,var(--g-bg)); }
+.guild-rule-heading { display:flex; align-items:center; gap:.75rem; margin-bottom:2rem; }
+.guild-rule-number { color:var(--g-muted); font-size:.62rem; font-variant-numeric:tabular-nums; }
+.guild-rule-mark { margin-left:auto; color:var(--g-accent); font-size:1.5rem; line-height:1; }
+.guild-rule h3 { color:var(--g-text); font-family:var(--g-font); font-weight:500; font-size:1.55rem; line-height:1.25; letter-spacing:-.02em; margin-bottom:1rem; }
+.guild-rule p { color:var(--g-muted); font-size:.85rem; line-height:1.85; }
+.guild-exit { display:grid; grid-template-columns:9rem minmax(0,1fr); gap:1.5rem; margin-top:1.2rem; padding:1.4rem 1.7rem; border:1px dashed var(--g-border); border-radius:.5rem; }
+.guild-exit p { color:var(--g-muted); font-size:.81rem; line-height:1.8; }
+.guild-sources { display:flex; align-items:start; justify-content:space-between; gap:1.4rem; flex-wrap:wrap; margin-top:1.5rem; }
+.guild-sources > p { color:var(--g-muted); font-size:.68rem; line-height:1.7; max-width:42rem; }
+.guild-sources > div { display:flex; flex-wrap:wrap; gap:1rem; }
+.guild-sources a { color:var(--g-accent); font-size:.7rem; }
+.guild-sources a:hover { text-decoration:underline; }
+.guild-private { padding:2rem; border:1px solid var(--g-border); border-radius:.8rem; background:var(--g-bg); margin-bottom:3rem; }
+.guild-private-label { color:var(--g-muted); font-size:.65rem; border:1px solid var(--g-border); padding:.5rem .7rem; border-radius:.4rem; }
+.guild-private-note { margin-bottom:1.3rem; padding:1.3rem; background:var(--g-panel); border-left:2px solid var(--g-accent); border-radius:.35rem; }
+.guild-private h3 { font-size:.95rem; font-weight:700; color:var(--g-text); }
+.guild-private-note > div { margin-top:.7rem; font-size:.85rem; line-height:1.85; color:var(--g-muted); overflow-wrap:anywhere; }
+.guild-private-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:2rem; }
+.guild-private-panel { min-width:0; }
+.guild-private-panel > h3 { padding-bottom:.8rem; border-bottom:1px solid var(--g-border); margin-bottom:.8rem; }
+.guild-news { list-style:none; padding:0; }
+.guild-news li { padding:1rem 0; border-bottom:1px solid var(--g-border); }
+.guild-news li:last-child { border-bottom:0; }
+.guild-news time { color:var(--g-accent); font-size:.62rem; }
+.guild-news h4 { margin-top:.35rem; font-size:.87rem; font-weight:650; overflow-wrap:anywhere; }
+.guild-news p { margin-top:.5rem; font-size:.8rem; line-height:1.8; color:var(--g-muted); overflow-wrap:anywhere; }
+.guild-roster { list-style:none; padding:0; }
+.guild-roster li { display:flex; align-items:center; gap:.8rem; padding:1rem 0; border-bottom:1px solid var(--g-border); }
+.guild-roster li:last-child { border-bottom:0; }
+.guild-roster .identity-avatar { width:2.5rem; height:2.5rem; flex-shrink:0; }
+.guild-roster li > div { min-width:0; }
+.guild-roster :is(strong,a) { font-size:.85rem; font-weight:650; overflow-wrap:anywhere; }
+.guild-roster a { color:var(--g-accent); }
+.guild-roster li > div > span { display:block; margin-top:.3rem; color:var(--g-muted); font-size:.68rem; overflow-wrap:anywhere; }
+.guild-empty { font-size:.78rem; line-height:1.8; color:var(--g-muted); padding:.5rem 0; }
+.guild-explore { display:flex; align-items:center; justify-content:space-between; gap:2rem; padding:2.6rem 3rem; border:1px solid var(--g-border); border-radius:.8rem; background:var(--g-panel); }
+.guild-explore h2 { max-width:28ch; margin-top:.7rem; font-size:clamp(1.7rem,2.2vw,2.3rem); }
+.guild-explore p:last-child { color:var(--g-muted); margin-top:.8rem; font-size:.8rem; line-height:1.7; }
+.guild-explore-actions { display:flex; flex-direction:column; align-items:center; gap:1.2rem; flex-shrink:0; }
+.guild-page[data-guild-theme="artistas-da-revolucao"] .guild-hero { border-radius:.7rem 2.8rem .7rem .7rem; }
+.guild-page[data-guild-theme="artistas-da-revolucao"] .guild-hero::before { background:linear-gradient(116deg,transparent 57%,#db66561a 57%,#db66561a 62%,transparent 62%),linear-gradient(70deg,transparent 68%,#76c8d01c 68%,#76c8d01c 74%,transparent 74%); }
+.guild-page[data-guild-theme="artistas-da-revolucao"] .guild-hero h1 { font-weight:850; font-style:italic; letter-spacing:-.065em; }
+.guild-page[data-guild-theme="artistas-da-revolucao"] .guild-crest-frame { transform:rotate(-5deg); border:1px solid #76c8d070; border-radius:.6rem; background:linear-gradient(145deg,#29232d,#14161e); box-shadow:16px 16px 0 -1px var(--g-bg),16px 16px 0 #f6c86b55; }
+.guild-page[data-guild-theme="artistas-da-revolucao"] .guild-crest img { transform:rotate(5deg); }
+.guild-page[data-guild-theme="circulo-do-fogo"] .guild-hero { border-radius:.4rem; border-top:3px solid #b92f31; }
+.guild-page[data-guild-theme="circulo-do-fogo"] .guild-hero::before { background:linear-gradient(125deg,transparent 62%,#ae343018 62%),repeating-linear-gradient(90deg,transparent 0 79px,#a82f2f0a 79px 80px); }
+.guild-page[data-guild-theme="circulo-do-fogo"] .guild-hero h1 { font-weight:850; text-transform:uppercase; font-size:clamp(3rem,4.9vw,5.3rem); }
+.guild-page[data-guild-theme="circulo-do-fogo"] .guild-crest-frame { background:linear-gradient(#40181c,#1c0f12); clip-path:polygon(0 0,100% 0,100% 87%,50% 100%,0 87%); width:min(82%,330px); }
+.guild-page[data-guild-theme="circulo-do-fogo"] .guild-crest { padding:1rem 1.5rem 3rem; }
+.guild-page[data-guild-theme="circulo-do-fogo"] :is(.guild-rule,.guild-identity,.guild-button) { border-radius:.25rem; }
+.guild-page[data-guild-theme="floresta-do-sol"] .guild-hero { border-radius:1.2rem 5rem 1.2rem 1.2rem; }
+.guild-page[data-guild-theme="floresta-do-sol"] .guild-hero::before { background:radial-gradient(ellipse at 80% 50%,#5e985a1c,transparent 60%),linear-gradient(145deg,#13362933,transparent 55%); }
+.guild-page[data-guild-theme="floresta-do-sol"] .guild-crest-frame { border:1px solid #a4c47b66; border-radius:50% 50% 43% 43%; background:radial-gradient(ellipse,#446b3033,transparent 65%); }
+.guild-page[data-guild-theme="floresta-do-sol"] .guild-crest img { padding:.5rem; }
+.guild-page[data-guild-theme="floresta-do-sol"] .guild-identity { border-radius:.5rem .5rem 2rem .5rem; }
+.guild-page[data-guild-theme="irmandade-das-tavernas"] .guild-hero { grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr); }
+.guild-page[data-guild-theme="irmandade-das-tavernas"] .guild-hero-copy { grid-column:2; grid-row:1; padding-left:2rem; }
+.guild-page[data-guild-theme="irmandade-das-tavernas"] .guild-hero-art { grid-column:1; grid-row:1; }
+.guild-page[data-guild-theme="irmandade-das-tavernas"] .guild-hero::before { background:repeating-linear-gradient(0deg,transparent 0 69px,#b9945310 69px 70px),linear-gradient(100deg,#69532d22,transparent 65%); }
+.guild-page[data-guild-theme="irmandade-das-tavernas"] .guild-crest-frame { width:min(82%,335px); border:1px solid #b1b86a55; border-radius:45% 45% .8rem .8rem; background:#34432633; }
+.guild-page[data-guild-theme="irmandade-das-tavernas"] .guild-identity { border:1px solid var(--g-border); border-bottom:3px solid var(--g-second); }
+.guild-page[data-guild-theme="os-rasga-mortalhas"] .guild-hero { border-radius:2rem 2rem .5rem .5rem; }
+.guild-page[data-guild-theme="os-rasga-mortalhas"] .guild-hero::before { background:radial-gradient(ellipse at 82% 45%,#8054aa24,transparent 60%),linear-gradient(180deg,#1c142b,#15111d); }
+.guild-page[data-guild-theme="os-rasga-mortalhas"] .guild-hero h1 { font-weight:400; }
+.guild-page[data-guild-theme="os-rasga-mortalhas"] .guild-crest-frame { border:1px solid #d2c5a34a; border-radius:50%; background:#170f22; box-shadow:0 0 0 12px #bfa1eb08,0 0 0 13px #bfa1eb25; }
+.guild-page[data-guild-theme="os-rasga-mortalhas"] .guild-rule-oath { border-top:2px solid var(--g-second); }
+.guild-page[data-guild-theme="sociedade-zaori"] .guild-hero { border-radius:.8rem; }
+.guild-page[data-guild-theme="sociedade-zaori"] .guild-hero::before { background-image:radial-gradient(#c4b2ed55 .8px,transparent .8px),radial-gradient(ellipse at 90% 50%,#6b52bb22,transparent 60%); background-size:63px 71px,100% 100%; }
+.guild-page[data-guild-theme="sociedade-zaori"] .guild-hero h1 { font-weight:400; letter-spacing:-.03em; }
+.guild-page[data-guild-theme="sociedade-zaori"] .guild-crest-frame { border:1px solid #af98ea50; border-radius:50%; background:radial-gradient(ellipse,#7663ad15,transparent 70%); }
+.guild-page[data-guild-theme="sociedade-zaori"] .guild-identity { border-top:1px solid var(--g-border); border-left:2px solid var(--g-accent); }
+.guild-page[data-guild-theme="mercenarios-independentes"] .guild-hero { border-radius:.35rem; border-color:#7b91a840; }
+.guild-page[data-guild-theme="mercenarios-independentes"] .guild-hero::before { background:repeating-linear-gradient(135deg,transparent 0 79px,#a6b9ca09 79px 80px); }
+.guild-page[data-guild-theme="mercenarios-independentes"] .guild-hero h1 { font-weight:750; font-size:clamp(2.8rem,4.7vw,5.1rem); }
+.guild-page[data-guild-theme="mercenarios-independentes"] .guild-crest-frame { border:1px dashed #a4b3bf60; border-radius:.5rem; background:#21293055; }
+.guild-page[data-guild-theme="mercenarios-independentes"] .guild-rule-oath { border-style:dashed; }
+@media (min-width:1700px) { .guild-hero { min-height:620px; } .guild-hero-art { min-height:450px; } .guild-crest-frame { width:400px; } .guild-crest img { max-height:370px; } }
+@media (max-width:1100px) { .guild-hero { min-height:510px; padding:2.5rem 2.3rem 5.5rem; } .guild-hero h1 { font-size:clamp(2.8rem,5vw,4rem); } .guild-hero-art { min-height:340px; } .guild-crest-frame { width:90%; } .guild-overview { grid-template-columns:minmax(0,1.3fr) minmax(260px,.8fr); gap:2rem; } .guild-hero-actions { align-items:start; flex-direction:column; gap:1rem; } .guild-page[data-guild-theme="irmandade-das-tavernas"] .guild-hero-copy { padding-left:1.5rem; } }
+@media (max-width:760px) {
+  .guild-breadcrumbs { font-size:.65rem; margin-bottom:1rem; gap:.6rem; }
+  .guild-hero, .guild-page[data-guild-theme="irmandade-das-tavernas"] .guild-hero { display:flex; flex-direction:column; gap:1.5rem; min-height:0; padding:1.7rem 1.4rem 5rem; border-radius:.8rem; }
+  .guild-hero-copy, .guild-page[data-guild-theme="irmandade-das-tavernas"] .guild-hero-copy { padding:0; width:100%; }
+  .guild-hero h1, .guild-page[data-guild-theme="circulo-do-fogo"] .guild-hero h1, .guild-page[data-guild-theme="mercenarios-independentes"] .guild-hero h1 { font-size:clamp(2.5rem,9.7vw,3.8rem); max-width:15ch; }
+  .guild-subtitle { margin-top:1.1rem !important; font-size:.87rem; line-height:1.8; }
+  .guild-traits { margin-top:1.1rem; gap:.5rem .9rem; }
+  .guild-traits span { font-size:.63rem; }
+  .guild-hero-actions { margin-top:1.5rem; }
+  .guild-hero-art { min-height:275px; width:100%; align-self:center; }
+  .guild-page .guild-crest-frame { width:230px; max-width:85%; }
+  .guild-crest img { max-height:230px; }
+  .guild-art-caption { bottom:0; font-size:.53rem; }
+  .guild-hero-footer { padding:1rem 1.4rem; font-size:.5rem; letter-spacing:.08em; }
+  .guild-hero-footer span:last-child { text-align:right; }
+  .guild-motto { padding:1.7rem 0; gap:.8rem; }
+  .guild-motto blockquote { font-size:1.1rem; }
+  .guild-motto-line { display:none; }
+  .guild-overview { grid-template-columns:minmax(0,1fr); gap:1.8rem; padding:1.5rem 0 2.3rem; }
+  .guild-story h2 { font-size:1.9rem; }
+  .guild-story-text { font-size:.85rem; line-height:1.85; }
+  .guild-identity { padding:1.3rem 1.4rem; }
+  .guild-pact { padding:2rem 0; }
+  .guild-section-heading { margin-bottom:1.3rem; gap:.9rem; }
+  .guild-section-heading h2 { font-size:1.8rem; }
+  .guild-section-heading > p { font-size:.77rem; }
+  .guild-pact-grid { grid-template-columns:minmax(0,1fr); gap:1rem; }
+  .guild-rule { padding:1.4rem; }
+  .guild-rule-heading { margin-bottom:1.4rem; }
+  .guild-rule h3 { font-size:1.4rem; }
+  .guild-rule p { font-size:.81rem; }
+  .guild-exit { grid-template-columns:minmax(0,1fr); gap:.65rem; padding:1.3rem; }
+  .guild-private { padding:1.3rem; margin-bottom:2rem; }
+  .guild-private-grid { grid-template-columns:minmax(0,1fr); gap:1.5rem; }
+  .guild-explore { padding:1.6rem 1.4rem; flex-direction:column; align-items:start; gap:1.5rem; }
+  .guild-explore-actions { align-items:start; }
+  .guild-button { font-size:.72rem; }
+}
+@media (prefers-reduced-motion:reduce) { .guild-page * { transition:none !important; scroll-behavior:auto !important; } .guild-button:hover { transform:none; } }

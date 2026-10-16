@@ -1,0 +1,339 @@
+.site-main-guildas:has(.guild-index) {
+    max-width: none;
+    padding: clamp(1.5rem, 4vw, 4rem) clamp(1rem, 3.5vw, 4rem) 4rem;
+}
+
+.guild-index {
+    --gi-ink: var(--codex-text, #ededed);
+    --gi-muted: var(--codex-muted, #afafaf);
+    --gi-border: var(--codex-border, #393939);
+    width: min(100%, 100rem);
+    margin-inline: auto;
+    color: var(--gi-ink);
+}
+
+.guild-index *,
+.guild-index *::before,
+.guild-index *::after { box-sizing: border-box; }
+
+.guild-index [data-guild-theme] {
+    --gi-accent: #e8be7a;
+    --gi-secondary: #7bc2cc;
+    --gi-rgb: 232 190 122;
+}
+.guild-index [data-guild-theme="artistas-da-revolucao"] {
+    --gi-accent: #f2c575;
+    --gi-secondary: #e48079;
+    --gi-rgb: 242 197 117;
+    --gi-ornament: repeating-conic-gradient(from 18deg, transparent 0deg 24deg, rgb(104 201 211 / .13) 24deg 25deg, transparent 25deg 45deg);
+}
+.guild-index [data-guild-theme="circulo-do-fogo"] {
+    --gi-accent: #ef776a;
+    --gi-secondary: #eda84e;
+    --gi-rgb: 239 119 106;
+    --gi-ornament: repeating-conic-gradient(from 0deg, transparent 0deg 42deg, rgb(239 119 106 / .14) 42deg 44deg, transparent 44deg 60deg);
+}
+.guild-index [data-guild-theme="floresta-do-sol"] {
+    --gi-accent: #a4c882;
+    --gi-secondary: #e6c579;
+    --gi-rgb: 164 200 130;
+    --gi-ornament: repeating-conic-gradient(from 0deg, transparent 0deg 11deg, rgb(230 197 121 / .13) 11deg 12deg, transparent 12deg 30deg);
+}
+.guild-index [data-guild-theme="irmandade-das-tavernas"] {
+    --gi-accent: #e1bb68;
+    --gi-secondary: #88b575;
+    --gi-rgb: 225 187 104;
+    --gi-ornament: repeating-linear-gradient(45deg, transparent 0 24px, rgb(136 181 117 / .08) 24px 25px, transparent 25px 48px);
+}
+.guild-index [data-guild-theme="os-rasga-mortalhas"] {
+    --gi-accent: #bba0ed;
+    --gi-secondary: #e6dbc0;
+    --gi-rgb: 187 160 237;
+    --gi-ornament: repeating-radial-gradient(circle, transparent 0 22px, rgb(187 160 237 / .11) 22px 23px, transparent 23px 44px);
+}
+.guild-index [data-guild-theme="sociedade-zaori"] {
+    --gi-accent: #c2acec;
+    --gi-secondary: #adb6d2;
+    --gi-rgb: 194 172 236;
+    --gi-ornament: repeating-conic-gradient(from 45deg, transparent 0deg 42deg, rgb(194 172 236 / .13) 42deg 43deg, transparent 43deg 90deg);
+}
+.guild-index [data-guild-theme="mercenarios-independentes"] {
+    --gi-accent: #c1cbd3;
+    --gi-secondary: #8da0ae;
+    --gi-rgb: 193 203 211;
+    --gi-ornament: repeating-linear-gradient(135deg, transparent 0 24px, rgb(193 203 211 / .09) 24px 25px, transparent 25px 48px);
+}
+
+.guild-index-hero {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    align-items: center;
+    gap: clamp(2rem, 6vw, 7rem);
+    padding: clamp(1rem, 3vw, 3rem) 0 clamp(2.75rem, 5vw, 5rem);
+    border-bottom: 1px solid var(--gi-border);
+}
+.guild-index-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin: 0;
+    color: var(--gi-muted);
+    font-size: .67rem;
+    font-weight: 700;
+    letter-spacing: .19em;
+    line-height: 1.6;
+    text-transform: uppercase;
+}
+.guild-index-eyebrow > span {
+    width: .45rem;
+    height: .45rem;
+    background: #e3c58e;
+    transform: rotate(45deg);
+}
+.guild-index-intro h1 {
+    margin: 1.25rem 0 1.5rem;
+    font-size: clamp(3.4rem, 5.6vw, 6rem);
+    font-weight: 650;
+    letter-spacing: -.065em;
+    line-height: .98;
+}
+.guild-index-intro h1 em {
+    color: #e3c58e;
+    font-family: Georgia, "Times New Roman", serif;
+    font-weight: 400;
+    letter-spacing: -.045em;
+}
+.guild-index-lead {
+    margin: 0 0 .65rem;
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    font-weight: 500;
+    letter-spacing: -.02em;
+    line-height: 1.5;
+}
+.guild-index-description {
+    max-width: 35rem;
+    margin: 0;
+    color: var(--gi-muted);
+    font-size: .92rem;
+    line-height: 1.8;
+}
+.guild-index-explore {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 2rem;
+    margin-top: 1.7rem;
+    border-bottom: 1px solid #e3c58e;
+    color: #e3c58e;
+    font-size: .8rem;
+    font-weight: 650;
+    text-decoration: none;
+}
+.guild-index-explore span { font-size: 1.25rem; }
+.guild-index-heraldry {
+    position: relative;
+    display: grid;
+    min-height: 25rem;
+    align-content: center;
+    justify-items: center;
+    padding: 2rem .75rem;
+    background: radial-gradient(ellipse at center, rgb(227 197 142 / .05), transparent 65%);
+}
+.guild-index-heraldry::before,
+.guild-index-heraldry::after {
+    content: "";
+    position: absolute;
+    inset: 8% 14%;
+    z-index: -1;
+    border: 1px solid rgb(227 197 142 / .1);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.guild-index-heraldry::after { inset: 1% 22%; transform: rotate(38deg); }
+.guild-index-caption {
+    margin: 0 0 1.4rem;
+    color: var(--gi-muted);
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-align: center;
+    text-transform: uppercase;
+}
+.guild-index-seals {
+    display: flex;
+    max-width: 30rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .5rem .65rem;
+}
+.guild-index-seal {
+    display: flex;
+    width: clamp(5rem, 6.2vw, 7rem);
+    height: clamp(5rem, 6.2vw, 7rem);
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgb(var(--gi-rgb) / .09), transparent 72%);
+    transition: border-color 180ms ease, transform 180ms ease;
+}
+.guild-index-seal img { width: 84%; height: 84%; object-fit: contain; }
+.guild-index-seal:hover { border-color: rgb(var(--gi-rgb) / .5); transform: translateY(-4px); }
+.guild-index-heraldry-note {
+    margin: 1.4rem 0 0;
+    color: var(--gi-muted);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 1rem;
+    font-style: italic;
+    line-height: 1.55;
+    text-align: center;
+}
+.guild-index-section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 2.75rem 0 1.75rem;
+    scroll-margin-top: 1rem;
+}
+.guild-index-section-heading h2 {
+    margin: .5rem 0 0;
+    font-size: clamp(1.65rem, 2.4vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -.045em;
+    line-height: 1.2;
+}
+.guild-index-section-heading > p {
+    margin: 0;
+    color: var(--gi-muted);
+    font-size: .8rem;
+    line-height: 1.65;
+    text-align: right;
+}
+.guild-index-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; }
+.guild-index-card {
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgb(var(--gi-rgb) / .22);
+    border-radius: 1.15rem;
+    background: color-mix(in srgb, var(--codex-surface, #212121) 70%, var(--codex-background, #000));
+    scroll-margin-top: 1.5rem;
+    transition: border-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+}
+.guild-index-card:hover,
+.guild-index-card:focus-within {
+    border-color: rgb(var(--gi-rgb) / .65);
+    box-shadow: 0 1rem 2rem rgb(0 0 0 / .2);
+    transform: translateY(-3px);
+}
+.guild-index-card-link { display: flex; height: 100%; flex-direction: column; color: inherit; text-decoration: none; }
+.guild-index-card-art {
+    position: relative;
+    display: grid;
+    height: clamp(15rem, 20vw, 21rem);
+    flex: none;
+    overflow: hidden;
+    place-items: center;
+    background: radial-gradient(ellipse at 50% 70%, rgb(var(--gi-rgb) / .11), transparent 75%), var(--gi-ornament, none), #101312;
+}
+.guild-index-card-number,
+.guild-index-card-category { position: absolute; top: 1.25rem; color: var(--gi-accent); font-size: .62rem; font-weight: 650; letter-spacing: .14em; line-height: 1; text-transform: uppercase; }
+.guild-index-card-number { left: 1.4rem; opacity: .75; }
+.guild-index-card-category { right: 1.4rem; }
+.guild-index-card-orbit {
+    position: absolute;
+    width: 70%;
+    aspect-ratio: 1;
+    border: 1px solid rgb(var(--gi-rgb) / .15);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1.1rem rgb(var(--gi-rgb) / .025), 0 0 0 1.15rem rgb(var(--gi-rgb) / .05);
+}
+.guild-index-crest {
+    position: relative;
+    width: 67%;
+    height: 78%;
+    object-fit: contain;
+    filter: drop-shadow(0 .7rem .8rem rgb(0 0 0 / .4));
+    transition: transform 220ms ease;
+}
+.guild-index-card:hover .guild-index-crest { transform: scale(1.035); }
+.guild-index-card-art-line { position: absolute; right: 1.4rem; bottom: 0; left: 1.4rem; height: 1px; background: linear-gradient(90deg, transparent, rgb(var(--gi-rgb) / .65), transparent); }
+.guild-index-card-copy { display: flex; flex: 1; flex-direction: column; padding: 1.5rem; }
+.guild-index-card-copy h3 { margin: 0; font-size: clamp(1.4rem, 1.7vw, 1.9rem); font-weight: 650; letter-spacing: -.035em; line-height: 1.15; }
+.guild-index-motto { min-height: 3.4rem; margin: .8rem 0 1.25rem; color: var(--gi-accent); font-family: Georgia, "Times New Roman", serif; font-size: 1rem; font-style: italic; line-height: 1.6; }
+.guild-index-card-facts { display: grid; gap: .8rem; margin: auto 0 1.5rem; }
+.guild-index-card-facts div { display: grid; grid-template-columns: 5.7rem 1fr; gap: .75rem; align-items: baseline; }
+.guild-index-card-facts dt { color: var(--gi-muted); font-size: .61rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.guild-index-card-facts dd { margin: 0; color: var(--gi-ink); font-size: .78rem; line-height: 1.55; }
+.guild-index-card-action { display: flex; min-height: 2.5rem; align-items: center; justify-content: space-between; gap: 1rem; padding-top: 1rem; border-top: 1px solid rgb(var(--gi-rgb) / .19); color: var(--gi-accent); font-size: .75rem; font-weight: 650; }
+.guild-index-card-action > span { font-size: 1.2rem; transition: transform 180ms ease; }
+.guild-index-card:hover .guild-index-card-action > span { transform: translate(2px, -2px); }
+.guild-index-card[data-guild-theme="mercenarios-independentes"] { grid-column: 1 / -1; }
+.guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-card-link { display: grid; grid-template-columns: .8fr 1.2fr; }
+.guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-card-art { height: 21rem; }
+.guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-card-copy { justify-content: center; padding: clamp(1.5rem, 3vw, 3.25rem); }
+.guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-card-copy h3 { font-size: clamp(1.6rem, 2.5vw, 2.5rem); }
+.guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-motto { min-height: 0; font-size: 1.15rem; }
+.guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-card-facts { margin-top: 1rem; }
+.guild-index-reading {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+    padding: clamp(1.5rem, 3vw, 2.75rem);
+    border: 1px solid var(--gi-border);
+    border-radius: 1.15rem;
+    background: linear-gradient(120deg, rgb(227 197 142 / .04), transparent 70%);
+}
+.guild-index-reading-icon { display: grid; width: 3rem; height: 3rem; place-items: center; color: #e3c58e; }
+.guild-index-reading-icon svg { width: 100%; height: 100%; }
+.guild-index-reading h2 { margin: .4rem 0 .5rem; font-size: clamp(1.2rem, 1.8vw, 1.7rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.3; }
+.guild-index-reading div > p:last-child { margin: 0; color: var(--gi-muted); font-size: .8rem; line-height: 1.6; }
+.guild-index-reading > a { display: flex; min-height: 2.75rem; align-items: center; justify-content: space-between; gap: 1.5rem; padding: .7rem 1rem; border: 1px solid rgb(227 197 142 / .3); border-radius: .65rem; color: #e3c58e; font-size: .75rem; font-weight: 650; text-decoration: none; }
+.guild-index-reading > a:hover { background: rgb(227 197 142 / .08); }
+.guild-index-empty { padding: 3rem 1.5rem; border: 1px solid var(--gi-border); border-radius: 1rem; color: var(--gi-muted); text-align: center; }
+.guild-index a:focus-visible { outline: 2px solid var(--gi-accent, #e3c58e); outline-offset: 5px; }
+.guild-index-card-link:focus-visible { outline-offset: -5px; border-radius: 1rem; }
+
+@media (max-width: 1170px) {
+    .guild-index-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .guild-index-hero { gap: 2rem; }
+    .guild-index-seal { width: 5.2rem; height: 5.2rem; }
+    .guild-index-card-art { height: 19rem; }
+}
+@media (max-width: 760px) {
+    .guild-index-hero { grid-template-columns: 1fr; gap: 1.5rem; padding-top: 1.2rem; padding-bottom: 2rem; }
+    .guild-index-intro h1 { font-size: clamp(3.25rem, 9.5vw, 5rem); }
+    .guild-index-heraldry { min-height: 0; padding: 1.5rem .5rem; }
+    .guild-index-seals { max-width: 27rem; gap: .35rem; }
+    .guild-index-seal { width: clamp(3.75rem, 15vw, 5rem); height: clamp(3.75rem, 15vw, 5rem); }
+    .guild-index-heraldry-note { display: none; }
+    .guild-index-section-heading { align-items: start; padding-top: 2rem; }
+    .guild-index-section-heading > p { display: none; }
+    .guild-index-grid { gap: 1rem; }
+    .guild-index-card-art { height: 15rem; }
+    .guild-index-card-copy { padding: 1.2rem; }
+    .guild-index-card-facts div { grid-template-columns: 1fr; gap: .15rem; }
+    .guild-index-reading { grid-template-columns: auto 1fr; gap: 1rem; margin-top: 1.75rem; }
+    .guild-index-reading > a { grid-column: 1 / -1; justify-self: start; }
+}
+@media (max-width: 540px) {
+    .guild-index-grid { grid-template-columns: 1fr; }
+    .guild-index-card-art { height: 18.5rem; }
+    .guild-index-crest { width: 64%; height: 78%; }
+    .guild-index-card-copy { padding: 1.4rem; }
+    .guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-card-link { display: flex; }
+    .guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-card-art { height: 18.5rem; }
+    .guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-card-copy { padding: 1.4rem; }
+    .guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-card-copy h3 { font-size: 1.7rem; }
+    .guild-index-card[data-guild-theme="mercenarios-independentes"] .guild-index-motto { font-size: 1rem; }
+    .guild-index-card-copy h3 { font-size: 1.7rem; }
+    .guild-index-motto { min-height: 0; }
+    .guild-index-card-facts div { grid-template-columns: 5.7rem 1fr; gap: .75rem; }
+    .guild-index-reading { grid-template-columns: 1fr; }
+    .guild-index-reading-icon { width: 2.25rem; height: 2.25rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .guild-index *, .guild-index *::before, .guild-index *::after { scroll-behavior: auto !important; transition: none !important; }
+}

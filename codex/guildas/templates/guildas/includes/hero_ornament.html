@@ -1,0 +1,17 @@
+<svg class="guild-ornament" viewBox="0 0 500 500" fill="none" stroke="currentColor" stroke-width="1" aria-hidden="true">
+{% if guilda.slug == 'artistas-da-revolucao' %}
+  <path d="M55 100 380 40 450 410 125 470Z M30 360 430 120 M60 405 460 165"/><circle cx="410" cy="72" r="22"/><path d="m63 78 0 32m-16-16h32"/>
+{% elif guilda.slug == 'circulo-do-fogo' %}
+  <path d="M78 42h344v352L250 474 78 394Z M98 62h304v318L250 450 98 380Z"/><path d="M45 135h34m342 0h34M45 365h34m342 0h34M250 12v32"/><circle cx="250" cy="248" r="164" stroke-dasharray="3 12"/>
+{% elif guilda.slug == 'floresta-do-sol' %}
+  <circle cx="250" cy="236" r="176"/><circle cx="250" cy="236" r="192" stroke-dasharray="1 15"/><path d="M250 13v30m0 386v30M25 236h30m390 0h30M90 76l20 20m280 280 20 20M90 396l20-20M390 96l20-20 M116 437C20 336 40 133 135 93 M384 437c96-101 76-304-19-344"/><path d="m84 325-37-20m34-20-37-28m43-18-34-35m46-12-28-40m33 179 24-33m-34-17 24-33M416 325l37-20m-34-20 37-28m-43-18 34-35m-46-12 28-40"/>
+{% elif guilda.slug == 'irmandade-das-tavernas' %}
+  <path d="M100 418V195a150 150 0 0 1 300 0v223ZM78 438h344M70 464h360 M120 412V195a130 130 0 0 1 260 0v217"/><path d="M250 18v36M167 39l17 30m149-30-17 30M35 198h40m350 0h40"/><circle cx="100" cy="120" r="7"/><circle cx="400" cy="120" r="7"/>
+{% elif guilda.slug == 'os-rasga-mortalhas' %}
+  <circle cx="250" cy="235" r="188"/><circle cx="250" cy="235" r="204" stroke-dasharray="4 10"/><path d="M250 16v32m0 374v40M30 235h32m376 0h32 M166 415h168m-136 20h104m-73 18h42"/><path d="M82 78v70h32V110h32V78h32M418 78v70h-32v-38h-32V78h-32 M80 392h32v-32h32v32h32m244 0h-32v-32h-32v32h-32"/>
+{% elif guilda.slug == 'sociedade-zaori' %}
+  <circle cx="250" cy="250" r="177"/><circle cx="250" cy="250" r="212" stroke-dasharray="1 18"/><path d="m250 12 238 238-238 238L12 250Z M80 80h340v340H80Z M250 12v476M12 250h476"/><path d="m250 24 8 16-8 16-8-16ZM250 444l8 16-8 16-8-16ZM24 250l16-8 16 8-16 8ZM444 250l16-8 16 8-16 8Z"/>
+{% else %}
+  <path d="M52 52h396v396H52Z" stroke-dasharray="7 10"/><path d="M30 110V30h80m280 0h80v80M30 390v80h80m280 0h80v-80M250 8v40m0 404v40M8 250h40m404 0h40 M55 445 445 55"/><circle cx="250" cy="250" r="202" stroke-dasharray="1 24"/>
+{% endif %}
+</svg>

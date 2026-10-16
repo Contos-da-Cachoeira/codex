@@ -1,26 +1,90 @@
 {% extends "core/base.html" %}
 {% load static %}
 
-{% block title %}Guildas{% endblock %}
+{% block title %}Guildas · Contos da Cachoeira{% endblock %}
 
 {% block head_extra %}
-<link rel="stylesheet" href="{% static 'core/css/guildas-showcase.css' %}">
+<link rel="stylesheet" href="{% static 'guildas/css/index.css' %}?v=guildas-20261016">
 {% endblock %}
 
 {% block content %}
-<section class="guildas-page" aria-labelledby="guildas-title">
-    <header class="guildas-showcase-heading">
-        <h1 id="guildas-title">As guildas</h1>
-        <div class="guildas-heading-line" aria-hidden="true"><span></span><i>&#10022;</i><span></span></div>
-        <p>Escolha seu caminho e conheca as guildas que dao vida ao Codex.</p>
+<section class="guild-index" aria-labelledby="guild-index-title">
+    <header class="guild-index-hero">
+        <div class="guild-index-intro">
+            <p class="guild-index-eyebrow"><span aria-hidden="true"></span> Contos da Cachoeira</p>
+            <h1 id="guild-index-title">Encontre a sua<br><em>aliança.</em></h1>
+            <p class="guild-index-lead">Ideais que unem. Escolhas que deixam marcas.</p>
+            <p class="guild-index-description">Conheça as guildas, seus símbolos e suas histórias. Explore as vantagens e os dogmas de cada uma ou descubra o caminho dos mercenários independentes.</p>
+            <a class="guild-index-explore" href="#guildas-caminhos">Explorar os caminhos <span aria-hidden="true">↓</span></a>
+        </div>
+        {% if guildas_info %}
+        <div class="guild-index-heraldry">
+            <p class="guild-index-caption">Sob qual símbolo você caminharia?</p>
+            <nav class="guild-index-seals" aria-label="Ir para uma guilda ou caminho independente">
+                {% for item in guildas_info %}
+                <a href="#caminho-{{ item.slug }}" class="guild-index-seal" data-guild-theme="{{ item.slug }}" aria-label="{{ item.publica.nome }}" title="{{ item.publica.nome }}">
+                    <img src="{% static item.publica.imagem %}" alt="" width="104" height="104" decoding="async">
+                </a>
+                {% endfor %}
+            </nav>
+            <p class="guild-index-heraldry-note">Uma identidade para cada maneira<br>de viver a Cachoeira.</p>
+        </div>
+        {% endif %}
     </header>
 
-    {% if guildas_showcase %}
-        {% include "core/includes/guildas_showcase.html" %}
-    {% else %}
-        <div role="alert" class="alert alert-info">
-            <span>Nenhuma guilda disponivel no momento.</span>
+    <div class="guild-index-section-heading" id="guildas-caminhos">
+        <div>
+            <p class="guild-index-eyebrow">Guildas e independentes</p>
+            <h2>Escolha o que move você.</h2>
         </div>
+        <p>Cada caminho tem sua própria história.<br>Abra um brasão e conheça a sua.</p>
+    </div>
+
+    {% if guildas_info %}
+    <div class="guild-index-grid">
+        {% for item in guildas_info %}
+        <article class="guild-index-card" id="caminho-{{ item.slug }}" data-guild-theme="{{ item.slug }}">
+            <a class="guild-index-card-link" href="{% url 'detalhe_guilda' item.slug %}" aria-labelledby="guild-name-{{ item.slug }}">
+                <div class="guild-index-card-art">
+                    <span class="guild-index-card-number" aria-hidden="true">0{{ forloop.counter }}</span>
+                    <span class="guild-index-card-category">{% if item.slug == 'mercenarios-independentes' %}Caminho independente{% else %}Guilda{% endif %}</span>
+                    <span class="guild-index-card-orbit" aria-hidden="true"></span>
+                    <img class="guild-index-crest" src="{% static item.publica.imagem %}" alt="Brasão de {{ item.publica.nome }}" width="256" height="256" loading="lazy" decoding="async">
+                    <span class="guild-index-card-art-line" aria-hidden="true"></span>
+                </div>
+                <div class="guild-index-card-copy">
+                    <h3 id="guild-name-{{ item.slug }}">{{ item.publica.nome }}</h3>
+                    {% if item.publica.lema %}
+                    <p class="guild-index-motto">“{{ item.publica.lema }}”</p>
+                    {% else %}
+                    <p class="guild-index-motto">Sem guilda. Livres para firmar e mudar alianças.</p>
+                    {% endif %}
+                    <dl class="guild-index-card-facts">
+                        <div>
+                            <dt>{% if item.publica.terra_natal %}Terra natal{% else %}Vínculo{% endif %}</dt>
+                            <dd>{{ item.publica.terra_natal|default:"Sem vínculo de guilda" }}</dd>
+                        </div>
+                        <div>
+                            <dt>Vantagem</dt>
+                            <dd>{{ item.publica.vantagem }}</dd>
+                        </div>
+                    </dl>
+                    <span class="guild-index-card-action">{% if item.slug == 'mercenarios-independentes' %}Conhecer o caminho{% else %}Conhecer a guilda{% endif %}<span aria-hidden="true">↗</span></span>
+                </div>
+            </a>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="guild-index-empty" role="status">Nenhuma guilda disponível no momento.</p>
     {% endif %}
+
+    <aside class="guild-index-reading" aria-label="Leitura do cenário e das regras">
+        <span class="guild-index-reading-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M16 8c-3.5-2.8-8-3.8-12-3v21c4-.8 8.5.2 12 3 3.5-2.8 8-3.8 12-3V5c-4-.8-8.5.2-12 3Z"/><path d="M16 8v21M8 10c1.6 0 3 .4 4 1M8 15c1.6 0 3 .4 4 1M20 11c1-.6 2.4-1 4-1M20 16c1-.6 2.4-1 4-1"/></svg>
+        </span>
+        <div><p class="guild-index-eyebrow">Continue a descoberta</p><h2>A história vai além do brasão.</h2><p>Leia o Cenário e o Manual LARP para conhecer o mundo, as guildas e as regras completas.</p></div>
+        <a href="{% url 'wiki_documentos' %}">Ler os documentos <span aria-hidden="true">↗</span></a>
+    </aside>
 </section>
 {% endblock %}

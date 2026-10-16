@@ -1,5 +1,13 @@
 # Publicação do site
 
+## Identidades visuais das guildas — 16/10/2026
+
+O índice e os sete detalhes de `/guildas/` receberam composições amplas, paletas próprias, brasões coloridos, ornamentos em SVG/CSS, narrativas e referências dos PDFs. O desktop usa grade e colunas para aproveitar a largura; o celular mantém leitura em uma coluna. Mercenários são identificados como caminho sem guilda, e a área privada continua restrita a membros e administradores das seis guildas. Os detalhes herdam o favicon branco global.
+
+Validação local: **160 testes** em SQLite isolado e teste Chrome do índice e dos sete detalhes em 1920/1440/390 pixels. Foram verificados imagens, links, regras públicas, títulos e brasões sem cortes, ausência de rolagem horizontal e o isolamento dos conteúdos internos entre visitante, usuário externo, membro e admin. A [documentação de design](design-guildas-2026-10-16.md) registra as referências e escolhas.
+
+Publicado em **https://larp.kw1.com.br/guildas/** após **175 testes isolados no servidor** e oito verificações de guildas/metadados sobre a última legenda dos Mercenários. Cópia validada: `/root/codex-ops/stage-guild-design-20261016-145613/`. Backup e manifesto: `/root/codex-ops/backups/guild-design-20261016-145613/`. Foram coletados dois estilos e o Gunicorn recebeu recarga graciosa, sem migrações. O índice e os sete detalhes retornaram 200 pelo domínio público, com brasões, metadados e CSS correspondentes aos arquivos locais, sem cortes ou transbordamento em 1920/390 pixels. A conferência em transação somente de leitura confirmou as restrições das áreas de membros, a independência dos Mercenários e a consistência do histórico de XP.
+
 ## Símbolos das guildas nos participantes e favicon branco — 16/10/2026
 
 A primeira coluna da planilha de participantes mostra somente o símbolo da guilda do personagem, com nome no texto alternativo e ao passar o mouse. Os símbolos vêm do mesmo catálogo público das guildas, incluindo Mercenários Independentes. Personagens sem guilda recebem um traço; não é feita consulta adicional ao banco. No celular, o símbolo fica ao lado da identificação do jogador no cartão. Seleção, filtros e salvamento mantêm o funcionamento anterior.
